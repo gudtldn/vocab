@@ -1,0 +1,1 @@
+export const WRONG_ANSWER_RELEARN_THRESHOLD = 3;
