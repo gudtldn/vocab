@@ -5,12 +5,16 @@ interface HeaderProps {
   currentView: AppView;
   setView: (view: AppView) => void;
   hasWrongAnswers: boolean;
+  darkMode: boolean;
+  toggleDarkMode: () => void;
 }
 
 const Header: React.FC<HeaderProps> = ({
   setView,
   currentView,
   hasWrongAnswers,
+  darkMode,
+  toggleDarkMode,
 }) => {
   const NavButton: React.FC<{ view: AppView; children: React.ReactNode }> = ({
     view,
@@ -47,6 +51,13 @@ const Header: React.FC<HeaderProps> = ({
           <NavButton view={AppView.Home}>ホーム</NavButton>
           <NavButton view={AppView.WrongAnswers}>誤答ノート</NavButton>
           <NavButton view={AppView.Statistics}>統計</NavButton>
+          <button
+            onClick={toggleDarkMode}
+            className="nav-button theme-toggle"
+            title={darkMode ? "ライトモード" : "ダークモード"}
+          >
+            {darkMode ? "☀️" : "🌙"}
+          </button>
         </nav>
       </div>
     </header>

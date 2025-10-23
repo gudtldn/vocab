@@ -9,6 +9,214 @@ body {
   color: #1c1e21;
   margin: 0;
   line-height: 1.5;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Dark Mode */
+body.dark-mode {
+  background-color: #1a1a1a;
+  color: #e4e4e4;
+}
+
+body.dark-mode .app-header {
+  background-color: #2d2d2d;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .app-title {
+  color: #e4e4e4;
+}
+
+body.dark-mode .nav-button {
+  background-color: #2d2d2d;
+  color: #7ab7ff;
+}
+
+body.dark-mode .nav-button.active {
+  background-color: #0066cc;
+  color: white;
+}
+
+body.dark-mode .nav-button:not(.active):hover {
+  background-color: #3d3d3d;
+}
+
+body.dark-mode .nav-button:disabled {
+  background-color: #2d2d2d;
+  color: #666;
+}
+
+body.dark-mode .home-container,
+body.dark-mode .game-screen,
+body.dark-mode .wrong-answer-note-container,
+body.dark-mode .statistics-container {
+  background-color: #2d2d2d;
+  color: #e4e4e4;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .button-primary {
+  background-color: #0066cc;
+}
+
+body.dark-mode .button-primary:hover {
+  background-color: #0052a3;
+}
+
+body.dark-mode .button-choice {
+  background-color: #1f8838;
+}
+
+body.dark-mode .button-choice:hover {
+  background-color: #196d2e;
+}
+
+body.dark-mode .button-input {
+  background-color: #5a32a3;
+}
+
+body.dark-mode .button-input:hover {
+  background-color: #4a2883;
+}
+
+body.dark-mode .word-display-container {
+  background-color: #3d3d3d;
+}
+
+body.dark-mode .choice-button {
+  background-color: #3d3d3d;
+  border-color: #555;
+  color: #e4e4e4;
+}
+
+body.dark-mode .choice-button:hover:not(.disabled) {
+  background-color: #4d4d4d;
+}
+
+body.dark-mode .choice-button.selected {
+  border-color: #7ab7ff;
+  box-shadow: 0 0 0 2px rgba(122, 183, 255, 0.25);
+}
+
+body.dark-mode .input-field {
+  background-color: #3d3d3d;
+  border-color: #555;
+  color: #e4e4e4;
+}
+
+body.dark-mode .input-field:focus {
+  border-color: #7ab7ff;
+  box-shadow: 0 0 0 2px rgba(122, 183, 255, 0.25);
+}
+
+body.dark-mode .input-field:disabled {
+  background-color: #2d2d2d;
+}
+
+body.dark-mode .book-item {
+  background-color: #3d3d3d;
+  border-color: transparent;
+}
+
+body.dark-mode .book-item:hover {
+  background-color: #4d4d4d;
+}
+
+body.dark-mode .book-item.selected {
+  border-color: #7ab7ff;
+  background-color: #1a3d5c;
+}
+
+body.dark-mode .book-name {
+  color: #e4e4e4;
+}
+
+body.dark-mode .book-details {
+  color: #999;
+}
+
+body.dark-mode .tag-input {
+  background-color: #3d3d3d;
+  border-color: #555;
+  color: #e4e4e4;
+}
+
+body.dark-mode .tag-input:focus {
+  border-color: #7ab7ff;
+  box-shadow: 0 0 0 2px rgba(122, 183, 255, 0.1);
+}
+
+body.dark-mode .progress-bar-track {
+  background-color: #3d3d3d;
+}
+
+body.dark-mode .toggle-track {
+  background-color: #555;
+}
+
+body.dark-mode .wrong-answer-table thead {
+  background-color: #3d3d3d;
+  color: #e4e4e4;
+}
+
+body.dark-mode .wrong-answer-table th,
+body.dark-mode .wrong-answer-table td {
+  border-bottom-color: #444;
+}
+
+body.dark-mode .most-missed-item {
+  background-color: #3d3d3d;
+}
+
+body.dark-mode .most-missed-item:hover {
+  background-color: #4d4d4d;
+}
+
+body.dark-mode .stat-card {
+  background-color: #2d2d2d;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .most-missed-section {
+  background-color: #2d2d2d;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .subsection-title {
+  color: #e4e4e4;
+}
+
+body.dark-mode .stat-label {
+  color: #999;
+}
+
+body.dark-mode .dialog-overlay {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+body.dark-mode .dialog-content {
+  background-color: #2d2d2d;
+  color: #e4e4e4;
+}
+
+body.dark-mode .dialog-title {
+  color: #e4e4e4;
+}
+
+body.dark-mode .dialog-message {
+  color: #ccc;
+}
+
+body.dark-mode .section-title {
+  color: #e4e4e4;
+}
+
+body.dark-mode .home-title {
+  color: #e4e4e4;
+}
+
+body.dark-mode .home-subtitle {
+  color: #999;
 }
 
 .app-container {
@@ -188,6 +396,18 @@ body {
   background-color: #e9ecef;
   color: #6c757d;
   cursor: not-allowed;
+}
+
+.theme-toggle {
+  font-size: 1.25rem;
+  padding: 0.375rem 0.625rem !important;
+  min-width: auto;
+}
+
+@media (min-width: 768px) {
+  .theme-toggle {
+    padding: 0.5rem 0.75rem !important;
+  }
 }
 
 /* Home Component */

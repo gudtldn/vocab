@@ -23,6 +23,61 @@ const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [totalWordsStudied, setTotalWordsStudied] = useState(0);
   const [totalGamesPlayed, setTotalGamesPlayed] = useState(0);
+  const [darkMode, setDarkMode] = useState(false);
+
+  // 다크모드 설정 불러오기
+  useEffect(() => {
+    const loadDarkMode = async () => {
+      try {
+        const fileExists = await exists("settings.json", {
+          baseDir: BaseDirectory.AppData,
+        });
+
+        if (fileExists) {
+          const data = await readTextFile("settings.json", {
+            baseDir: BaseDirectory.AppData,
+          });
+          const settings = JSON.parse(data);
+          setDarkMode(settings.darkMode ?? false);
+        }
+      } catch (error) {
+        console.error("설정 불러오기 실패:", error);
+      }
+    };
+
+    loadDarkMode();
+  }, []);
+
+  // 다크모드 변경 시 저장
+  useEffect(() => {
+    const saveDarkMode = async () => {
+      if (!isLoading) {
+        try {
+          const appDataPath = await appDataDir();
+          await mkdir(appDataPath, { recursive: true }).catch(() => {});
+
+          await writeTextFile(
+            "settings.json",
+            JSON.stringify({ darkMode }, null, 2),
+            { baseDir: BaseDirectory.AppData }
+          );
+        } catch (error) {
+          console.error("설정 저장 실패:", error);
+        }
+      }
+    };
+
+    saveDarkMode();
+  }, [darkMode, isLoading]);
+
+  // 다크모드 클래스 적용
+  useEffect(() => {
+    if (darkMode) {
+      document.body.classList.add("dark-mode");
+    } else {
+      document.body.classList.remove("dark-mode");
+    }
+  }, [darkMode]);
 
   // 앱 시작 시 오답 노트 불러오기
   useEffect(() => {
@@ -285,6 +340,8 @@ const App: React.FC = () => {
         currentView={view}
         setView={setView}
         hasWrongAnswers={wrongAnswers.length > 0}
+        darkMode={darkMode}
+        toggleDarkMode={() => setDarkMode(!darkMode)}
       />
       <main className="main-content">{renderContent()}</main>
     </div>
