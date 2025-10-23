@@ -60,8 +60,15 @@ body.dark-mode .button-primary {
   background-color: #0066cc;
 }
 
-body.dark-mode .button-primary:hover {
+body.dark-mode .button-primary:hover:not(:disabled) {
   background-color: #0052a3;
+}
+
+body.dark-mode .button:disabled {
+  background-color: #444 !important;
+  color: #777 !important;
+  border-color: #444 !important;
+  opacity: 0.6;
 }
 
 body.dark-mode .button-choice {
@@ -97,6 +104,18 @@ body.dark-mode .choice-button:hover:not(.disabled) {
 body.dark-mode .choice-button.selected {
   border-color: #7ab7ff;
   box-shadow: 0 0 0 2px rgba(122, 183, 255, 0.25);
+}
+
+body.dark-mode .choice-button.correct {
+  background-color: #1e4620 !important;
+  border-color: #28a745 !important;
+  color: #9fdf9f !important;
+}
+
+body.dark-mode .choice-button.incorrect {
+  background-color: #5c1f1f !important;
+  border-color: #dc3545 !important;
+  color: #f5b5ba !important;
 }
 
 body.dark-mode .input-field {
@@ -195,6 +214,87 @@ body.dark-mode .subsection-title {
 
 body.dark-mode .stat-label {
   color: #999;
+}
+
+/* Dark Mode - 홈 화면 요소들 */
+body.dark-mode .section-subtitle {
+  color: #e4e4e4;
+}
+
+body.dark-mode .file-name-display {
+  color: #ccc;
+}
+
+body.dark-mode .file-name {
+  color: #7ab7ff;
+}
+
+body.dark-mode .mode-title {
+  color: #e4e4e4;
+}
+
+body.dark-mode .error-message {
+  background-color: #5c1f1f;
+  color: #f5b5ba;
+  border: 1px solid #dc3545;
+}
+
+body.dark-mode .saved-books-section {
+  border-top-color: #444;
+}
+
+body.dark-mode .mode-selection {
+  border-top-color: #444;
+}
+
+body.dark-mode .word-text {
+  color: #e4e4e4;
+}
+
+body.dark-mode .furigana-rt {
+  color: #999;
+}
+
+/* Dark Mode - 후리가나 토글 */
+body.dark-mode .toggle-text {
+  color: #ccc;
+}
+
+body.dark-mode .toggle-track {
+  background-color: #4d4d4d;
+}
+
+body.dark-mode .toggle-track.active {
+  background-color: #0066cc;
+}
+
+/* Dark Mode - 게임 화면 버튼 */
+body.dark-mode .button-confirm {
+  background-color: #0066cc;
+  border-color: #0066cc;
+  color: white;
+}
+
+body.dark-mode .button-confirm:hover:not(:disabled) {
+  background-color: #0052a3;
+  border-color: #0052a3;
+}
+
+body.dark-mode .button-confirm:disabled {
+  background-color: #3d3d3d;
+  color: #666;
+  border-color: #555;
+}
+
+body.dark-mode .button-skip {
+  background-color: #3d3d3d;
+  color: #ccc;
+  border-color: #555;
+}
+
+body.dark-mode .button-skip:hover {
+  background-color: #4d4d4d;
+  border-color: #666;
 }
 
 /* Dark Mode - Review Screen */
@@ -343,8 +443,11 @@ body.dark-mode .home-subtitle {
 }
 
 .button:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
+  background-color: #6c757d !important;
+  color: #adb5bd !important;
+  border-color: #6c757d !important;
 }
 
 .button-primary {
@@ -352,8 +455,10 @@ body.dark-mode .home-subtitle {
   color: white;
 }
 
-.button-primary:hover {
+.button-primary:hover:not(:disabled) {
   background-color: #0056b3;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
 }
 
 .hidden-input {
@@ -1238,12 +1343,18 @@ body.dark-mode .button-bulk-delete:hover {
 
 .choice-button.correct {
   background-color: #d4edda !important;
-  border-color: #c3e6cb !important;
+  border-color: #28a745 !important;
+  border-width: 3px !important;
+  color: #155724 !important;
+  font-weight: 600 !important;
 }
 
 .choice-button.incorrect {
   background-color: #f8d7da !important;
-  border-color: #f5c6cb !important;
+  border-color: #dc3545 !important;
+  border-width: 3px !important;
+  color: #721c24 !important;
+  font-weight: 600 !important;
 }
 
 .choice-button.disabled {
@@ -1335,16 +1446,27 @@ body.dark-mode .button-bulk-delete:hover {
 
 .button-confirm {
   flex-grow: 1;
-  background-color: #343a40;
+  background-color: #007bff;
   color: white;
+  font-weight: 600;
+  border: 2px solid #007bff;
+  transition: all 0.2s ease;
 }
 
-.button-confirm:hover {
-  background-color: #23272b;
+.button-confirm:hover:not(:disabled) {
+  background-color: #0056b3;
+  border-color: #0056b3;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
 }
 
 .button-confirm:disabled {
-  background-color: #6c757d;
+  background-color: #e9ecef;
+  color: #adb5bd;
+  border-color: #dee2e6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 .button-skip {
