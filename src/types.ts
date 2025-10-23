@@ -30,4 +30,10 @@ export enum AppView {
   WrongAnswers = "wrong-answers",
   Statistics = "statistics",
   VocabEditor = "vocab-editor",
+  Review = "review",
+}
+
+export interface ReviewItem extends VocabularyItem {
+  isCorrect: boolean;
+  userAnswer?: string;
 }

@@ -4,6 +4,7 @@ import GameScreen from "./components/GameScreen";
 import WrongAnswerNote from "./components/WrongAnswerNote";
 import Statistics from "./components/Statistics";
 import VocabEditor from "./components/VocabEditor";
+import ReviewScreen from "./components/ReviewScreen";
 import Header from "./components/Header";
 import {
   AppView,
@@ -11,6 +12,7 @@ import {
   VocabularyItem,
   WrongAnswerItem,
   VocabularyBook,
+  ReviewItem,
 } from "./types";
 import { shuffleArray } from "./utils";
 import {
@@ -28,6 +30,8 @@ const App: React.FC = () => {
   const [gameVocabulary, setGameVocabulary] = useState<VocabularyItem[]>([]);
   const [gameMode, setGameMode] = useState<GameMode>(GameMode.MultipleChoice);
   const [wrongAnswers, setWrongAnswers] = useState<WrongAnswerItem[]>([]);
+  const [reviewItems, setReviewItems] = useState<ReviewItem[]>([]);
+  const [lastGameStats, setLastGameStats] = useState({ correct: 0, total: 0 });
   const [isLoading, setIsLoading] = useState(true);
   const [totalWordsStudied, setTotalWordsStudied] = useState(0);
   const [totalGamesPlayed, setTotalGamesPlayed] = useState(0);
@@ -274,8 +278,16 @@ const App: React.FC = () => {
   const handleGameEnd = useCallback(
     (
       sessionWrongAnswers: VocabularyItem[],
-      sessionCorrectAnswers: VocabularyItem[]
+      sessionCorrectAnswers: VocabularyItem[],
+      reviewItems: ReviewItem[]
     ) => {
+      // Review 데이터 저장
+      setReviewItems(reviewItems);
+      setLastGameStats({
+        correct: sessionCorrectAnswers.length,
+        total: gameVocabulary.length,
+      });
+
       setWrongAnswers((prevWrongAnswers) => {
         const updatedAnswers = [...prevWrongAnswers];
 
@@ -328,7 +340,7 @@ const App: React.FC = () => {
       setTotalGamesPlayed((prev) => prev + 1);
       setTotalWordsStudied((prev) => prev + gameVocabulary.length);
 
-      setView(AppView.WrongAnswers);
+      setView(AppView.Review);
     },
     [gameVocabulary.length]
   );
@@ -336,6 +348,17 @@ const App: React.FC = () => {
   const handleExitGame = () => {
     setGameVocabulary([]);
     setView(AppView.Home);
+  };
+
+  const handleReturnFromReview = () => {
+    setView(AppView.Home);
+  };
+
+  const handleReviewWrongFromReview = () => {
+    const wrongItems = reviewItems.filter((item) => !item.isCorrect);
+    if (wrongItems.length > 0) {
+      handleStartGame(wrongItems, GameMode.MultipleChoice);
+    }
   };
 
   const handleDeleteWrongAnswer = useCallback(
@@ -488,6 +511,16 @@ const App: React.FC = () => {
             currentBook={currentBooks.length === 1 ? currentBooks[0] : null}
             onSave={handleSaveVocabulary}
             onExportCSV={handleExportCSV}
+          />
+        );
+      case AppView.Review:
+        return (
+          <ReviewScreen
+            reviewItems={reviewItems}
+            totalQuestions={lastGameStats.total}
+            correctCount={lastGameStats.correct}
+            onReturnHome={handleReturnFromReview}
+            onReviewWrong={handleReviewWrongFromReview}
           />
         );
       case AppView.Home:

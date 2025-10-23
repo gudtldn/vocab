@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { GameMode, VocabularyItem } from "../types";
+import { GameMode, VocabularyItem, ReviewItem } from "../types";
 import Furigana from "./Furigana";
 import { shuffleArray } from "../utils";
 
@@ -8,7 +8,8 @@ interface GameScreenProps {
   mode: GameMode;
   onGameEnd: (
     wrongAnswers: VocabularyItem[],
-    correctAnswers: VocabularyItem[]
+    correctAnswers: VocabularyItem[],
+    reviewItems: ReviewItem[]
   ) => void;
   onExit: () => void;
 }
@@ -33,6 +34,7 @@ const GameScreen: React.FC<GameScreenProps> = ({
   const [sessionCorrectAnswers, setSessionCorrectAnswers] = useState<
     VocabularyItem[]
   >([]);
+  const [reviewItems, setReviewItems] = useState<ReviewItem[]>([]);
   const [showFurigana, setShowFurigana] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -88,6 +90,16 @@ const GameScreen: React.FC<GameScreenProps> = ({
     } else {
       isCorrect = lowerCaseMeanings.includes(userInput.toLowerCase().trim());
     }
+
+    // Review 아이템 추가
+    setReviewItems((prev) => [
+      ...prev,
+      {
+        ...currentWord,
+        isCorrect,
+        userAnswer: !isCorrect ? userInput : undefined,
+      },
+    ]);
 
     if (isCorrect) {
       setFeedback("correct");
@@ -164,7 +176,7 @@ const GameScreen: React.FC<GameScreenProps> = ({
 
   useEffect(() => {
     if (isFinished) {
-      onGameEnd(sessionWrongAnswers, sessionCorrectAnswers);
+      onGameEnd(sessionWrongAnswers, sessionCorrectAnswers, reviewItems);
     }
   }, [isFinished]); // eslint-disable-line react-hooks/exhaustive-deps
 
