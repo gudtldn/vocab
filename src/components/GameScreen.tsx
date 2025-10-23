@@ -12,6 +12,7 @@ interface GameScreenProps {
     reviewItems: ReviewItem[]
   ) => void;
   onExit: () => void;
+  allVocabulary?: VocabularyItem[]; // 선택지 생성용 전체 어휘
 }
 
 const GameScreen: React.FC<GameScreenProps> = ({
@@ -19,6 +20,7 @@ const GameScreen: React.FC<GameScreenProps> = ({
   mode,
   onGameEnd,
   onExit,
+  allVocabulary,
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentWord, setCurrentWord] = useState<VocabularyItem | null>(null);
@@ -44,7 +46,11 @@ const GameScreen: React.FC<GameScreenProps> = ({
 
     if (mode === GameMode.MultipleChoice) {
       const correctAnswers = word.meanings;
-      const allMeanings = vocabulary.flatMap((v) => v.meanings);
+      // 선택지 생성에는 전체 어휘 사용 (allVocabulary가 있으면 사용, 없으면 vocabulary 사용)
+      const vocabularyForChoices = allVocabulary && allVocabulary.length > vocabulary.length 
+        ? allVocabulary 
+        : vocabulary;
+      const allMeanings = vocabularyForChoices.flatMap((v) => v.meanings);
       const uniqueMeanings = [...new Set(allMeanings)];
 
       const distractors = uniqueMeanings
@@ -61,7 +67,7 @@ const GameScreen: React.FC<GameScreenProps> = ({
 
     setUserInput("");
     setFeedback(null);
-  }, [currentIndex, vocabulary, mode]);
+  }, [currentIndex, vocabulary, mode, allVocabulary]);
 
   useEffect(() => {
     if (vocabulary.length > 0 && currentIndex < vocabulary.length) {
@@ -170,6 +176,16 @@ const GameScreen: React.FC<GameScreenProps> = ({
       }
       return [...prev, currentWord];
     });
+
+    // Review 아이템에 스킵된 문제 추가
+    setReviewItems((prev) => [
+      ...prev,
+      {
+        ...currentWord,
+        isCorrect: false,
+        userAnswer: "(スキップ)", // 스킵 표시
+      },
+    ]);
 
     handleNext();
   };

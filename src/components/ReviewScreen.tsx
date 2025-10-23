@@ -70,36 +70,39 @@ const ReviewScreen: React.FC<ReviewScreenProps> = ({
       </div>
 
       <div className="review-list">
-        {filteredItems.map((item, index) => (
-          <div
-            key={index}
-            className={`review-item ${item.isCorrect ? "correct" : "wrong"}`}
-          >
-            <div className="review-item-header">
-              <span className={`review-badge ${item.isCorrect ? "correct" : "wrong"}`}>
-                {item.isCorrect ? "✓ 正解" : "✗ 不正解"}
-              </span>
-            </div>
-            <div className="review-item-content">
-              <div className="review-word">
-                <Furigana word={item.word} reading={item.reading} show={true} />
+        {filteredItems.map((item, index) => {
+          const isSkipped = item.userAnswer === "(スキップ)";
+          return (
+            <div
+              key={index}
+              className={`review-item ${item.isCorrect ? "correct" : "wrong"} ${isSkipped ? "skipped" : ""}`}
+            >
+              <div className="review-item-header">
+                <span className={`review-badge ${item.isCorrect ? "correct" : "wrong"}`}>
+                  {item.isCorrect ? "✓ 正解" : isSkipped ? "⊘ スキップ" : "✗ 不正解"}
+                </span>
               </div>
-              <div className="review-meanings">
-                <strong>意味:</strong> {item.meanings.join(", ")}
+              <div className="review-item-content">
+                <div className="review-word">
+                  <Furigana word={item.word} reading={item.reading} show={true} />
+                </div>
+                <div className="review-meanings">
+                  <strong>意味:</strong> {item.meanings.join(", ")}
+                </div>
+                {!item.isCorrect && item.userAnswer && (
+                  <div className="review-user-answer">
+                    <strong>{isSkipped ? "状態:" : "あなたの回答:"}</strong> {item.userAnswer}
+                  </div>
+                )}
+                {item.note && (
+                  <div className="review-note">
+                    <strong>📝 メモ:</strong> {item.note}
+                  </div>
+                )}
               </div>
-              {!item.isCorrect && item.userAnswer && (
-                <div className="review-user-answer">
-                  <strong>あなたの回答:</strong> {item.userAnswer}
-                </div>
-              )}
-              {item.note && (
-                <div className="review-note">
-                  <strong>📝 メモ:</strong> {item.note}
-                </div>
-              )}
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className="review-actions">

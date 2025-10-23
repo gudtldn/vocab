@@ -28,6 +28,7 @@ import { save } from "@tauri-apps/plugin-dialog";
 const App: React.FC = () => {
   const [view, setView] = useState<AppView>(AppView.Home);
   const [gameVocabulary, setGameVocabulary] = useState<VocabularyItem[]>([]);
+  const [allVocabulary, setAllVocabulary] = useState<VocabularyItem[]>([]); // 선택지 생성용 전체 어휘
   const [gameMode, setGameMode] = useState<GameMode>(GameMode.MultipleChoice);
   const [wrongAnswers, setWrongAnswers] = useState<WrongAnswerItem[]>([]);
   const [reviewItems, setReviewItems] = useState<ReviewItem[]>([]);
@@ -267,6 +268,10 @@ const App: React.FC = () => {
     setGameMode(mode);
     // 현재 단어장 데이터 저장 (편집 화면에서 사용)
     setCurrentVocabulary(vocabulary);
+    // allVocabulary가 비어있으면 현재 vocabulary를 사용 (첫 게임 시작 시)
+    if (allVocabulary.length === 0) {
+      setAllVocabulary(vocabulary);
+    }
     setView(AppView.Game);
   };
 
@@ -462,6 +467,8 @@ const App: React.FC = () => {
     (books: VocabularyBook[], vocabulary: VocabularyItem[]) => {
       setCurrentBooks(books);
       setCurrentVocabulary(vocabulary);
+      // 선택지 생성용으로 전체 어휘 저장
+      setAllVocabulary(vocabulary);
     },
     []
   );
@@ -484,6 +491,7 @@ const App: React.FC = () => {
             mode={gameMode}
             onGameEnd={handleGameEnd}
             onExit={handleExitGame}
+            allVocabulary={allVocabulary}
           />
         );
       case AppView.WrongAnswers:

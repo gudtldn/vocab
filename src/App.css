@@ -227,6 +227,16 @@ body.dark-mode .review-user-answer strong {
   color: #ffd54f;
 }
 
+/* 다크 모드 - 스킵된 항목 */
+body.dark-mode .review-item.skipped .review-user-answer {
+  background-color: #3d3d3d;
+  border-left-color: #999;
+}
+
+body.dark-mode .review-item.skipped .review-user-answer strong {
+  color: #ccc;
+}
+
 body.dark-mode .review-note {
   background-color: #1a2d3d;
   border-left-color: #7ab7ff;
@@ -2035,6 +2045,20 @@ body.dark-mode .button-bulk-delete:hover {
 
 .review-user-answer strong {
   color: #856404;
+}
+
+/* 스킵된 항목 스타일 */
+.review-item.skipped .review-user-answer {
+  background-color: #f8f9fa;
+  border-left-color: #6c757d;
+}
+
+.review-item.skipped .review-user-answer strong {
+  color: #495057;
+}
+
+.review-item.skipped .review-badge {
+  background-color: #6c757d;
 }
 
 .review-note {
