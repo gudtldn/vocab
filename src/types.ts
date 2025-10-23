@@ -14,6 +14,7 @@ export interface VocabularyBook {
   filePath: string;
   lastUsed: number;
   wordCount: number;
+  tags: string[];
 }
 
 export enum GameMode {

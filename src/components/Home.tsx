@@ -19,6 +19,9 @@ const Home: React.FC<HomeProps> = ({ onStartGame }) => {
   const [fileName, setFileName] = useState<string>("");
   const [savedBooks, setSavedBooks] = useState<VocabularyBook[]>([]);
   const [selectedBookIds, setSelectedBookIds] = useState<string[]>([]);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [editingBookId, setEditingBookId] = useState<string>("");
+  const [tagInput, setTagInput] = useState<string>("");
 
   // 저장된 단어장 목록 불러오기
   useEffect(() => {
@@ -107,6 +110,7 @@ const Home: React.FC<HomeProps> = ({ onStartGame }) => {
           filePath: selectedPath,
           lastUsed: Date.now(),
           wordCount: parsedData.length,
+          tags: [],
         };
 
         newBooks.push(newBook);
@@ -227,6 +231,55 @@ const Home: React.FC<HomeProps> = ({ onStartGame }) => {
     }
   };
 
+  const handleAddTag = async (bookId: string) => {
+    if (!tagInput.trim()) return;
+
+    const updatedBooks = savedBooks.map((book) => {
+      if (book.id === bookId) {
+        const newTags = book.tags || [];
+        if (!newTags.includes(tagInput.trim())) {
+          return { ...book, tags: [...newTags, tagInput.trim()] };
+        }
+      }
+      return book;
+    });
+
+    setSavedBooks(updatedBooks);
+    await saveBooksToFile(updatedBooks);
+    setTagInput("");
+  };
+
+  const handleRemoveTag = async (bookId: string, tag: string) => {
+    const updatedBooks = savedBooks.map((book) => {
+      if (book.id === bookId) {
+        return { ...book, tags: book.tags.filter((t) => t !== tag) };
+      }
+      return book;
+    });
+
+    setSavedBooks(updatedBooks);
+    await saveBooksToFile(updatedBooks);
+  };
+
+  const handleToggleTagFilter = (tag: string) => {
+    setSelectedTags((prev) =>
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+    );
+  };
+
+  // 모든 태그 목록 가져오기
+  const allTags = Array.from(
+    new Set(savedBooks.flatMap((book) => book.tags || []))
+  ).sort();
+
+  // 태그 필터링된 단어장 목록
+  const filteredBooks =
+    selectedTags.length === 0
+      ? savedBooks
+      : savedBooks.filter((book) =>
+          selectedTags.some((tag) => book.tags?.includes(tag))
+        );
+
   const canStartGame = vocabulary.length > 0;
 
   return (
@@ -252,9 +305,35 @@ const Home: React.FC<HomeProps> = ({ onStartGame }) => {
 
       {savedBooks.length > 0 && (
         <div className="saved-books-section">
-          <h3 className="section-subtitle">保存された単語帳</h3>
+          <div className="section-header">
+            <h3 className="section-subtitle">保存された単語帳</h3>
+            {allTags.length > 0 && (
+              <div className="tag-filters">
+                <span className="filter-label">タグでフィルター:</span>
+                {allTags.map((tag) => (
+                  <button
+                    key={tag}
+                    onClick={() => handleToggleTagFilter(tag)}
+                    className={`tag-filter ${
+                      selectedTags.includes(tag) ? "active" : ""
+                    }`}
+                  >
+                    {tag}
+                  </button>
+                ))}
+                {selectedTags.length > 0 && (
+                  <button
+                    onClick={() => setSelectedTags([])}
+                    className="clear-filter"
+                  >
+                    クリア
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
           <div className="saved-books-list">
-            {savedBooks.map((book) => (
+            {filteredBooks.map((book) => (
               <div
                 key={book.id}
                 className={`book-item ${
@@ -276,7 +355,65 @@ const Home: React.FC<HomeProps> = ({ onStartGame }) => {
                     {book.wordCount}個の単語 • 最終使用:{" "}
                     {new Date(book.lastUsed).toLocaleDateString("ja-JP")}
                   </div>
+                  {book.tags && book.tags.length > 0 && (
+                    <div className="book-tags">
+                      {book.tags.map((tag) => (
+                        <span key={tag} className="book-tag">
+                          {tag}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRemoveTag(book.id, tag);
+                            }}
+                            className="tag-remove"
+                          >
+                            ✕
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  {editingBookId === book.id && (
+                    <div
+                      className="tag-input-section"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <input
+                        type="text"
+                        value={tagInput}
+                        onChange={(e) => setTagInput(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            handleAddTag(book.id);
+                          } else if (e.key === "Escape") {
+                            setEditingBookId("");
+                            setTagInput("");
+                          }
+                        }}
+                        placeholder="新しいタグ..."
+                        className="tag-input"
+                        autoFocus
+                      />
+                      <button
+                        onClick={() => handleAddTag(book.id)}
+                        className="button-tag-add"
+                      >
+                        追加
+                      </button>
+                    </div>
+                  )}
                 </div>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setEditingBookId(editingBookId === book.id ? "" : book.id);
+                    setTagInput("");
+                  }}
+                  className="button button-tag"
+                  title="タグ編集"
+                >
+                  🏷️
+                </button>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
