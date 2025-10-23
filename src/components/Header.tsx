@@ -50,7 +50,6 @@ const Header: React.FC<HeaderProps> = ({
         <nav className="navigation">
           <NavButton view={AppView.Home}>ホーム</NavButton>
           <NavButton view={AppView.WrongAnswers}>誤答ノート</NavButton>
-          <NavButton view={AppView.VocabEditor}>単語帳編集</NavButton>
           <NavButton view={AppView.Statistics}>統計</NavButton>
           <button
             onClick={toggleDarkMode}
