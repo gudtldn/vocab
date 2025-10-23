@@ -282,6 +282,51 @@ const Home: React.FC<HomeProps> = ({ onStartGame }) => {
           selectedTags.some((tag) => book.tags?.includes(tag))
         );
 
+  // 전체 선택/해제
+  const handleSelectAll = async () => {
+    const allFilteredIds = filteredBooks.map((book) => book.id);
+    setSelectedBookIds(allFilteredIds);
+
+    // 모든 단어장의 단어를 합치기
+    try {
+      let allVocabulary: VocabularyItem[] = [];
+      
+      for (const book of filteredBooks) {
+        const parsedData: VocabularyItem[] = await invoke("parse_vocab_file", {
+          filePath: book.filePath,
+        });
+        allVocabulary = [...allVocabulary, ...parsedData];
+      }
+
+      setVocabulary(allVocabulary);
+      setFileName(
+        filteredBooks.length === 1
+          ? filteredBooks[0].name
+          : `${filteredBooks.length}個の単語帳`
+      );
+
+      // 마지막 사용 시간 업데이트
+      const updatedBooks = savedBooks.map((b) =>
+        allFilteredIds.includes(b.id) ? { ...b, lastUsed: Date.now() } : b
+      );
+      setSavedBooks(updatedBooks.sort((a, b) => b.lastUsed - a.lastUsed));
+      await saveBooksToFile(updatedBooks);
+    } catch (err) {
+      console.error("단어장 불러오기 실패:", err);
+      setError(err instanceof Error ? err.message : String(err));
+    }
+  };
+
+  const handleDeselectAll = () => {
+    setSelectedBookIds([]);
+    setVocabulary([]);
+    setFileName("");
+  };
+
+  const allFilteredSelected =
+    filteredBooks.length > 0 &&
+    filteredBooks.every((book) => selectedBookIds.includes(book.id));
+
   const canStartGame = vocabulary.length > 0;
 
   return (
@@ -309,31 +354,42 @@ const Home: React.FC<HomeProps> = ({ onStartGame }) => {
         <div className="saved-books-section">
           <div className="section-header">
             <h3 className="section-subtitle">保存された単語帳</h3>
-            {allTags.length > 0 && (
-              <div className="tag-filters">
-                <span className="filter-label">タグでフィルター:</span>
-                {allTags.map((tag) => (
-                  <button
-                    key={tag}
-                    onClick={() => handleToggleTagFilter(tag)}
-                    className={`tag-filter ${
-                      selectedTags.includes(tag) ? "active" : ""
-                    }`}
-                  >
-                    {tag}
-                  </button>
-                ))}
-                {selectedTags.length > 0 && (
-                  <button
-                    onClick={() => setSelectedTags([])}
-                    className="clear-filter"
-                  >
-                    クリア
-                  </button>
-                )}
-              </div>
+            {filteredBooks.length > 0 && (
+              <label className="select-all-label">
+                <input
+                  type="checkbox"
+                  className="select-all-checkbox"
+                  checked={allFilteredSelected}
+                  onChange={allFilteredSelected ? handleDeselectAll : handleSelectAll}
+                />
+                <span>全選択</span>
+              </label>
             )}
           </div>
+          {allTags.length > 0 && (
+            <div className="tag-filters">
+              <span className="filter-label">タグでフィルター:</span>
+              {allTags.map((tag) => (
+                <button
+                  key={tag}
+                  onClick={() => handleToggleTagFilter(tag)}
+                  className={`tag-filter ${
+                    selectedTags.includes(tag) ? "active" : ""
+                  }`}
+                >
+                  {tag}
+                </button>
+              ))}
+              {selectedTags.length > 0 && (
+                <button
+                  onClick={() => setSelectedTags([])}
+                  className="clear-filter"
+                >
+                  クリア
+                </button>
+              )}
+            </div>
+          )}
           <div className="saved-books-list">
             {filteredBooks.map((book) => (
               <div
