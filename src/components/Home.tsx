@@ -370,6 +370,26 @@ const Home: React.FC<HomeProps> = ({ onStartGame, onUpdateCurrentBooks, onEditBo
         {error && <p className="error-message">{error}</p>}
       </div>
 
+      {canStartGame && (
+        <div className="mode-selection">
+          <h3 className="mode-title">学習モード選択</h3>
+          <div className="mode-buttons">
+            <button
+              onClick={() => onStartGame(vocabulary, GameMode.MultipleChoice)}
+              className="button button-choice"
+            >
+              客観式
+            </button>
+            <button
+              onClick={() => onStartGame(vocabulary, GameMode.DirectInput)}
+              className="button button-input"
+            >
+              主観式
+            </button>
+          </div>
+        </div>
+      )}
+
       {savedBooks.length > 0 && (
         <div className="saved-books-section">
           <div className="section-header">
@@ -490,35 +510,6 @@ const Home: React.FC<HomeProps> = ({ onStartGame, onUpdateCurrentBooks, onEditBo
                       ))}
                     </div>
                   )}
-                  {editingBookId === book.id && (
-                    <div
-                      className="tag-input-section"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <input
-                        type="text"
-                        value={tagInput}
-                        onChange={(e) => setTagInput(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            handleAddTag(book.id);
-                          } else if (e.key === "Escape") {
-                            setEditingBookId("");
-                            setTagInput("");
-                          }
-                        }}
-                        placeholder="新しいタグ..."
-                        className="tag-input"
-                        autoFocus
-                      />
-                      <button
-                        onClick={() => handleAddTag(book.id)}
-                        className="button-tag-add"
-                      >
-                        追加
-                      </button>
-                    </div>
-                  )}
                 </div>
                 <button
                   onClick={(e) => {
@@ -531,28 +522,37 @@ const Home: React.FC<HomeProps> = ({ onStartGame, onUpdateCurrentBooks, onEditBo
                 >
                   🏷️
                 </button>
+                {editingBookId === book.id && (
+                  <div
+                    className="tag-input-section"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <input
+                      type="text"
+                      value={tagInput}
+                      onChange={(e) => setTagInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          handleAddTag(book.id);
+                        } else if (e.key === "Escape") {
+                          setEditingBookId("");
+                          setTagInput("");
+                        }
+                      }}
+                      placeholder="新しいタグ..."
+                      className="tag-input"
+                      autoFocus
+                    />
+                    <button
+                      onClick={() => handleAddTag(book.id)}
+                      className="button-tag-add"
+                    >
+                      追加
+                    </button>
+                  </div>
+                )}
               </div>
             ))}
-          </div>
-        </div>
-      )}
-
-      {canStartGame && (
-        <div className="mode-selection">
-          <h3 className="mode-title">学習モード選択</h3>
-          <div className="mode-buttons">
-            <button
-              onClick={() => onStartGame(vocabulary, GameMode.MultipleChoice)}
-              className="button button-choice"
-            >
-              客観式
-            </button>
-            <button
-              onClick={() => onStartGame(vocabulary, GameMode.DirectInput)}
-              className="button button-input"
-            >
-              主観式
-            </button>
           </div>
         </div>
       )}
