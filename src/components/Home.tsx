@@ -11,9 +11,11 @@ import {
 
 interface HomeProps {
   onStartGame: (vocabulary: VocabularyItem[], mode: GameMode) => void;
+  onUpdateCurrentBooks: (books: VocabularyBook[], vocabulary: VocabularyItem[]) => void;
+  onEditBook: (book: VocabularyBook, vocabulary: VocabularyItem[]) => void;
 }
 
-const Home: React.FC<HomeProps> = ({ onStartGame }) => {
+const Home: React.FC<HomeProps> = ({ onStartGame, onUpdateCurrentBooks, onEditBook }) => {
   const [vocabulary, setVocabulary] = useState<VocabularyItem[]>([]);
   const [error, setError] = useState<string>("");
   const [fileName, setFileName] = useState<string>("");
@@ -208,6 +210,9 @@ const Home: React.FC<HomeProps> = ({ onStartGame }) => {
       );
       setSavedBooks(updatedBooks.sort((a, b) => b.lastUsed - a.lastUsed));
       await saveBooksToFile(updatedBooks);
+      
+      // 부모 컴포넌트에 현재 선택된 단어장 정보 전달
+      onUpdateCurrentBooks(selectedBooks, allVocabulary);
     } catch (err) {
       console.error("단어장 불러오기 실패:", err);
       setError(err instanceof Error ? err.message : String(err));
@@ -267,6 +272,21 @@ const Home: React.FC<HomeProps> = ({ onStartGame }) => {
     setSelectedTags((prev) =>
       prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
     );
+  };
+
+  const handleEditBook = async (book: VocabularyBook) => {
+    try {
+      // 해당 단어장의 단어들을 불러오기
+      const parsedData: VocabularyItem[] = await invoke("parse_vocab_file", {
+        filePath: book.filePath,
+      });
+      
+      // 편집 화면으로 전환
+      onEditBook(book, parsedData);
+    } catch (err) {
+      console.error("단어장 불러오기 실패:", err);
+      setError(err instanceof Error ? err.message : String(err));
+    }
   };
 
   // 모든 태그 목록 가져오기
@@ -471,6 +491,16 @@ const Home: React.FC<HomeProps> = ({ onStartGame }) => {
                   title="タグ編集"
                 >
                   🏷️
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleEditBook(book);
+                  }}
+                  className="button button-edit"
+                  title="単語帳を編集"
+                >
+                  ✏️
                 </button>
                 <button
                   onClick={(e) => {

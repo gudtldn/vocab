@@ -2,6 +2,7 @@ export interface VocabularyItem {
   word: string;
   reading: string;
   meanings: string[];
+  note?: string; // 개인 메모
 }
 
 export interface WrongAnswerItem extends VocabularyItem {
@@ -28,4 +29,5 @@ export enum AppView {
   Game = "game",
   WrongAnswers = "wrong-answers",
   Statistics = "statistics",
+  VocabEditor = "vocab-editor",
 }

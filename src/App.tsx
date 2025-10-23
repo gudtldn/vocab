@@ -3,8 +3,9 @@ import Home from "./components/Home";
 import GameScreen from "./components/GameScreen";
 import WrongAnswerNote from "./components/WrongAnswerNote";
 import Statistics from "./components/Statistics";
+import VocabEditor from "./components/VocabEditor";
 import Header from "./components/Header";
-import { AppView, GameMode, VocabularyItem, WrongAnswerItem } from "./types";
+import { AppView, GameMode, VocabularyItem, WrongAnswerItem, VocabularyBook } from "./types";
 import { shuffleArray } from "./utils";
 import {
   writeTextFile,
@@ -14,6 +15,8 @@ import {
   mkdir,
 } from "@tauri-apps/plugin-fs";
 import { appDataDir } from "@tauri-apps/api/path";
+import { save } from "@tauri-apps/plugin-dialog";
+import { invoke } from "@tauri-apps/api/core";
 
 const App: React.FC = () => {
   const [view, setView] = useState<AppView>(AppView.Home);
@@ -24,6 +27,10 @@ const App: React.FC = () => {
   const [totalWordsStudied, setTotalWordsStudied] = useState(0);
   const [totalGamesPlayed, setTotalGamesPlayed] = useState(0);
   const [darkMode, setDarkMode] = useState(false);
+  
+  // 단어장 편집을 위한 상태
+  const [currentVocabulary, setCurrentVocabulary] = useState<VocabularyItem[]>([]);
+  const [currentBooks, setCurrentBooks] = useState<VocabularyBook[]>([]);
 
   // 다크모드 설정 불러오기
   useEffect(() => {
@@ -187,6 +194,8 @@ const App: React.FC = () => {
   const handleStartGame = (vocabulary: VocabularyItem[], mode: GameMode) => {
     setGameVocabulary(shuffleArray(vocabulary));
     setGameMode(mode);
+    // 현재 단어장 데이터 저장 (편집 화면에서 사용)
+    setCurrentVocabulary(vocabulary);
     setView(AppView.Game);
   };
 
@@ -280,6 +289,95 @@ const App: React.FC = () => {
     setTotalGamesPlayed(0);
   }, []);
 
+  const handleSaveVocabulary = useCallback(
+    async (updatedVocabulary: VocabularyItem[]) => {
+      // 현재 단어장 데이터 업데이트
+      setCurrentVocabulary(updatedVocabulary);
+
+      // 선택된 단어장 파일이 하나만 있는 경우, 해당 파일에 저장
+      if (currentBooks.length === 1) {
+        try {
+          const book = currentBooks[0];
+          const csvContent = updatedVocabulary
+            .map((item) => {
+              const meanings = item.meanings.join(",");
+              const note = item.note ? `,${item.note}` : "";
+              return `${item.word},${item.reading},${meanings}${note}`;
+            })
+            .join("\n");
+
+          await writeTextFile(book.filePath, csvContent);
+          console.log("단어장 파일 저장 성공:", book.filePath);
+          alert("単語帳を保存しました！");
+        } catch (error) {
+          console.error("단어장 파일 저장 실패:", error);
+          alert("単語帳の保存に失敗しました。");
+        }
+      } else if (currentBooks.length > 1) {
+        // 여러 단어장이 선택된 경우, 새 파일로 저장 안내
+        alert(
+          "複数の単語帳が選択されています。\n変更を保存するには、単一の単語帳を選択してください。"
+        );
+      } else {
+        // 단어장이 선택되지 않은 경우
+        alert(
+          "単語帳が選択されていません。\nホーム画面で単語帳を選択してください。"
+        );
+      }
+    },
+    [currentBooks]
+  );
+
+  const handleExportCSV = useCallback(async () => {
+    // 현재 편집 중인 단어장이 있으면 그것을, 없으면 오답노트를 출력
+    const dataToExport = currentVocabulary.length > 0 ? currentVocabulary : wrongAnswers;
+    
+    if (dataToExport.length === 0) {
+      alert("出力するデータがありません。");
+      return;
+    }
+
+    try {
+      const filePath = await save({
+        defaultPath: "vocabulary.csv",
+        filters: [
+          {
+            name: "CSV",
+            extensions: ["csv"],
+          },
+        ],
+      });
+
+      if (filePath) {
+        // CSV 형식으로 변환
+        const csvContent = dataToExport
+          .map((item) => {
+            const meanings = item.meanings.join(",");
+            const note = item.note ? `,${item.note}` : "";
+            return `${item.word},${item.reading},${meanings}${note}`;
+          })
+          .join("\n");
+
+        await writeTextFile(filePath, csvContent);
+        alert("CSV ファイルに出力しました！");
+      }
+    } catch (error) {
+      console.error("CSV 출력 실패:", error);
+      alert("CSV出力に失敗しました。");
+    }
+  }, [currentVocabulary, wrongAnswers]);
+
+  const handleUpdateCurrentBooks = useCallback((books: VocabularyBook[], vocabulary: VocabularyItem[]) => {
+    setCurrentBooks(books);
+    setCurrentVocabulary(vocabulary);
+  }, []);
+
+  const handleEditBook = useCallback((book: VocabularyBook, vocabulary: VocabularyItem[]) => {
+    setCurrentBooks([book]);
+    setCurrentVocabulary(vocabulary);
+    setView(AppView.VocabEditor);
+  }, []);
+
   const renderContent = () => {
     switch (view) {
       case AppView.Game:
@@ -309,9 +407,18 @@ const App: React.FC = () => {
             onResetStatistics={handleResetStatistics}
           />
         );
+      case AppView.VocabEditor:
+        return (
+          <VocabEditor
+            vocabulary={currentVocabulary}
+            currentBook={currentBooks.length === 1 ? currentBooks[0] : null}
+            onSave={handleSaveVocabulary}
+            onExportCSV={handleExportCSV}
+          />
+        );
       case AppView.Home:
       default:
-        return <Home onStartGame={handleStartGame} />;
+        return <Home onStartGame={handleStartGame} onUpdateCurrentBooks={handleUpdateCurrentBooks} onEditBook={handleEditBook} />;
     }
   };
 

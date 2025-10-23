@@ -762,6 +762,21 @@ body.dark-mode .select-all-checkbox {
   transform: scale(1.1);
 }
 
+.button.button-edit {
+  padding: 0.5rem;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1.25rem;
+  transition: transform 0.2s;
+  flex-shrink: 0;
+  color: inherit;
+}
+
+.button.button-edit:hover {
+  transform: scale(1.1);
+}
+
 .mode-selection {
   border-top: 1px solid #eee;
   margin-top: 2rem;
@@ -1608,3 +1623,443 @@ body.dark-mode .select-all-checkbox {
   gap: 0.75rem;
 }
 
+/* Vocab Editor Styles */
+.vocab-editor-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.editor-title-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.current-book-name {
+  font-size: 0.95rem;
+  color: #6c757d;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  background-color: #e7f3ff;
+  border-radius: 6px;
+  border-left: 3px solid #1877f2;
+}
+
+.editor-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.button-export {
+  background-color: #17a2b8;
+  color: white;
+}
+
+.button-export:hover {
+  background-color: #138496;
+}
+
+.button-edit {
+  background-color: #ffc107;
+  color: #1c1e21;
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+}
+
+.button-edit:hover {
+  background-color: #e0a800;
+}
+
+.button-save {
+  background-color: #28a745;
+  color: white;
+}
+
+.button-save:hover {
+  background-color: #218838;
+}
+
+.button-delete-small {
+  background-color: #dc3545;
+  color: white;
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+}
+
+.button-delete-small:hover {
+  background-color: #c82333;
+}
+
+.search-section {
+  margin-bottom: 1.5rem;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border: 2px solid #ced4da;
+  border-radius: 8px;
+  transition: border-color 0.2s;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #1877f2;
+}
+
+.add-form {
+  background-color: #f8f9fa;
+  border: 2px solid #e9ecef;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.form-title {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  font-size: 1.25rem;
+  color: #1c1e21;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-group label {
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #495057;
+}
+
+.form-input,
+.form-textarea {
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  transition: border-color 0.2s;
+  font-family: inherit;
+}
+
+.form-input:focus,
+.form-textarea:focus {
+  outline: none;
+  border-color: #1877f2;
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-start;
+}
+
+.vocab-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.vocab-count {
+  font-size: 0.9rem;
+  color: #6c757d;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.vocab-item {
+  background-color: white;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  transition: box-shadow 0.2s;
+}
+
+.vocab-item:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.vocab-item.editing {
+  flex-direction: column;
+  background-color: #f8f9fa;
+  border-color: #1877f2;
+}
+
+.item-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.item-word {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1c1e21;
+}
+
+.item-meanings {
+  font-size: 1rem;
+  color: #495057;
+}
+
+.item-note {
+  font-size: 0.9rem;
+  color: #6c757d;
+  font-style: italic;
+  padding: 0.5rem;
+  background-color: #fff3cd;
+  border-radius: 4px;
+  border-left: 3px solid #ffc107;
+}
+
+.item-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.empty-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1c1e21;
+  margin-bottom: 1rem;
+}
+
+.empty-description {
+  font-size: 1rem;
+  color: #6c757d;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.empty-hint {
+  font-size: 0.9rem;
+  color: #495057;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border-left: 3px solid #1877f2;
+}
+
+/* Dark Mode - Vocab Editor */
+body.dark-mode .vocab-editor-container {
+  color: #e4e4e4;
+}
+
+body.dark-mode .current-book-name {
+  background-color: #1a3a52;
+  border-left-color: #7ab7ff;
+  color: #b8b8b8;
+}
+
+body.dark-mode .button-export {
+  background-color: #138496;
+}
+
+body.dark-mode .button-export:hover {
+  background-color: #117a8b;
+}
+
+body.dark-mode .button-edit {
+  background-color: #e0a800;
+  color: #1c1e21;
+}
+
+body.dark-mode .button-edit:hover {
+  background-color: #d39e00;
+}
+
+body.dark-mode .button-save {
+  background-color: #218838;
+}
+
+body.dark-mode .button-save:hover {
+  background-color: #1e7e34;
+}
+
+body.dark-mode .button-delete-small {
+  background-color: #c82333;
+}
+
+body.dark-mode .button-delete-small:hover {
+  background-color: #bd2130;
+}
+
+body.dark-mode .search-input {
+  background-color: #3d3d3d;
+  border-color: #555;
+  color: #e4e4e4;
+}
+
+body.dark-mode .search-input::placeholder {
+  color: #999;
+}
+
+body.dark-mode .add-form {
+  background-color: #2d2d2d;
+  border-color: #444;
+}
+
+body.dark-mode .form-title {
+  color: #e4e4e4;
+}
+
+body.dark-mode .form-group label {
+  color: #b8b8b8;
+}
+
+body.dark-mode .form-input,
+body.dark-mode .form-textarea {
+  background-color: #3d3d3d;
+  border-color: #555;
+  color: #e4e4e4;
+}
+
+body.dark-mode .form-input::placeholder,
+body.dark-mode .form-textarea::placeholder {
+  color: #999;
+}
+
+body.dark-mode .vocab-count {
+  color: #999;
+}
+
+body.dark-mode .vocab-item {
+  background-color: #3d3d3d;
+  border-color: #555;
+}
+
+body.dark-mode .vocab-item:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+body.dark-mode .vocab-item.editing {
+  background-color: #2d2d2d;
+  border-color: #7ab7ff;
+}
+
+body.dark-mode .item-word {
+  color: #e4e4e4;
+}
+
+body.dark-mode .item-meanings {
+  color: #b8b8b8;
+}
+
+body.dark-mode .item-note {
+  background-color: #3d3000;
+  border-left-color: #e0a800;
+  color: #d4d4d4;
+}
+
+body.dark-mode .empty-state {
+  color: #e4e4e4;
+}
+
+body.dark-mode .empty-title {
+  color: #e4e4e4;
+}
+
+body.dark-mode .empty-description {
+  color: #999;
+}
+
+body.dark-mode .empty-hint {
+  background-color: #2d2d2d;
+  border-left-color: #7ab7ff;
+  color: #b8b8b8;
+}
+
+/* Responsive - Vocab Editor */
+@media (max-width: 640px) {
+  .vocab-editor-container {
+    padding: 1rem;
+  }
+
+  .editor-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+  }
+
+  .editor-actions {
+    width: 100%;
+  }
+
+  .editor-actions button {
+    flex: 1;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-group.full-width {
+    grid-column: 1;
+  }
+
+  .vocab-item {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .item-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 768px) {
+  .vocab-editor-container {
+    padding: 1.25rem;
+  }
+}
