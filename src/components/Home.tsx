@@ -1,5 +1,7 @@
-import React, { useState, useRef } from 'react';
-import { GameMode, VocabularyItem } from '../types';
+import React, { useState } from "react";
+import { GameMode, VocabularyItem } from "../types";
+import { invoke } from "@tauri-apps/api/core";
+import { open } from "@tauri-apps/plugin-dialog";
 
 interface HomeProps {
   onStartGame: (vocabulary: VocabularyItem[], mode: GameMode) => void;
@@ -7,52 +9,59 @@ interface HomeProps {
 
 const Home: React.FC<HomeProps> = ({ onStartGame }) => {
   const [vocabulary, setVocabulary] = useState<VocabularyItem[]>([]);
-  const [error, setError] = useState<string>('');
-  const [fileName, setFileName] = useState<string>('');
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [error, setError] = useState<string>("");
+  const [fileName, setFileName] = useState<string>("");
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+  const handleButtonClick = async () => {
+    setError(""); // 에러 초기화
+    setFileName(""); // 파일 이름 초기화
+    setVocabulary([]); // 단어 목록 초기화
 
-    setFileName(file.name);
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const text = e.target?.result as string;
-      try {
-        const parsedData = text
-          .split('\n')
-          .filter(line => line.trim() !== '')
-          .map((line, index) => {
-            const parts = line.split(',');
-            if (parts.length < 3) {
-              throw new Error(`Line ${index + 1} is invalid. Each line must have a word, a reading, and at least one meaning.`);
-            }
-            const [word, reading, ...meanings] = parts.map(p => p.trim());
-            if (!word || !reading || meanings.length === 0 || meanings.some(m => !m)) {
-                throw new Error(`Line ${index + 1} has missing parts. Format: word,reading,meaning1,meaning2,...`);
-            }
-            return { id: `${word}-${index}`, word, reading, meanings };
-          });
-        
-        if (parsedData.length === 0) {
-            throw new Error("The file is empty or does not contain valid data.");
-        }
+    try {
+      // Tauri 파일 열기 다이얼로그 호출
+      // https://v2.tauri.app/plugin/dialog/#open-a-file-selector-dialog
+      const selectedPath = await open({
+        multiple: false,
+        filters: [
+          {
+            name: "Vocabulary Files",
+            extensions: ["txt", "csv"],
+          },
+        ],
+      });
 
-        setVocabulary(parsedData);
-        setError('');
-      } catch (err: any) {
-        setError(err.message);
-        setVocabulary([]);
-        setFileName('');
+      if (!selectedPath) {
+        // 사용자가 파일 선택을 취소했을 때
+        setFileName("");
+        return;
       }
-    };
-    reader.readAsText(file);
+
+      const pathParts = selectedPath.split(/[/\\]/); // OS에 따라 / 또는 \로 분리
+      const name = pathParts[pathParts.length - 1];
+      setFileName(name);
+
+      // Rust 백엔드의 parse_vocab_file 커맨드 호출
+      const parsedData: VocabularyItem[] = await invoke("parse_vocab_file", {
+        filePath: selectedPath,
+      });
+
+      // 결과 처리
+      if (parsedData.length === 0) {
+        throw new Error(
+          "The file is empty or does not contain valid data (Rust parsing result)."
+        );
+      }
+
+      setVocabulary(parsedData);
+      setError("");
+    } catch (err) {
+      console.error("Tauri invoke error:", err);
+      // Rust 커맨드에서 발생한 에러 메시지를 표시
+      setError(err instanceof Error ? err.message : String(err));
+      setVocabulary([]);
+      setFileName("");
+    }
   };
-  
-  const handleButtonClick = () => {
-      fileInputRef.current?.click();
-  }
 
   const canStartGame = vocabulary.length > 0;
 
@@ -60,24 +69,20 @@ const Home: React.FC<HomeProps> = ({ onStartGame }) => {
     <div className="home-container">
       <div>
         <h2 className="home-title">学習を始めましょう</h2>
-        <p className="home-subtitle">単語帳ファイルをアップロードして、学習モードを選択してください。</p>
+        <p className="home-subtitle">
+          単語帳ファイルをアップロードして、学習モードを選択してください。
+        </p>
       </div>
 
       <div className="upload-section">
-        <input
-          type="file"
-          accept=".txt,.csv"
-          onChange={handleFileChange}
-          className="hidden-input"
-          ref={fileInputRef}
-        />
-        <button
-          onClick={handleButtonClick}
-          className="button button-primary"
-        >
+        <button onClick={handleButtonClick} className="button button-primary">
           単語帳をアップロード
         </button>
-        {fileName && <p className="file-name-display">ファイル: <span className="file-name">{fileName}</span></p>}
+        {fileName && (
+          <p className="file-name-display">
+            ファイル: <span className="file-name">{fileName}</span>
+          </p>
+        )}
         {error && <p className="error-message">{error}</p>}
       </div>
 
