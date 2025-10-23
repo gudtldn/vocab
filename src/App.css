@@ -297,6 +297,19 @@ body.dark-mode .button-skip:hover {
   border-color: #666;
 }
 
+/* Dark Mode - 피드백 배지 */
+body.dark-mode .feedback-badge.correct {
+  background-color: #1e4620;
+  color: #9fdf9f;
+  border-color: #28a745;
+}
+
+body.dark-mode .feedback-badge.incorrect {
+  background-color: #5c1f1f;
+  color: #f5b5ba;
+  border-color: #dc3545;
+}
+
 /* Dark Mode - Review Screen */
 body.dark-mode .review-title {
   color: #e4e4e4;
@@ -1390,49 +1403,34 @@ body.dark-mode .button-bulk-delete:hover {
   background-color: #e9ecef;
 }
 
-.feedback-section {
-  margin-top: 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  align-items: stretch;
-}
-
-.feedback-message {
-  padding: 1.25rem;
-  border-radius: 12px;
+/* 간결한 피드백 배지 */
+.feedback-badge {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
   text-align: center;
   font-weight: 600;
-  color: white;
-  font-size: 1.125rem;
-  line-height: 1.5;
+  font-size: 0.9375rem;
+  margin-bottom: 1rem;
+  animation: fadeInSlide 0.3s ease-out;
 }
 
 @media (min-width: 768px) {
-  .feedback-message {
-    padding: 1.5rem;
-    font-size: 1.25rem;
+  .feedback-badge {
+    font-size: 1rem;
+    padding: 0.875rem 1.25rem;
   }
 }
 
-.feedback-message.correct {
-  background-color: #28a745;
+.feedback-badge.correct {
+  background-color: #d4edda;
+  color: #155724;
+  border: 2px solid #28a745;
 }
 
-.feedback-message.incorrect {
-  background-color: #dc3545;
-}
-
-.feedback-next-button {
-  flex-shrink: 0;
-  font-size: 1.125rem;
-  padding: 1rem 2rem;
-}
-
-@media (min-width: 768px) {
-  .feedback-next-button {
-    font-size: 1.25rem;
-  }
+.feedback-badge.incorrect {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 2px solid #dc3545;
 }
 
 .action-buttons {
@@ -1442,6 +1440,19 @@ body.dark-mode .button-bulk-delete:hover {
 .confirm-skip-container {
   display: flex;
   gap: 1rem;
+}
+
+.button-next {
+  width: 100%;
+  font-size: 1.125rem;
+  padding: 1rem 2rem;
+  font-weight: 600;
+}
+
+@media (min-width: 768px) {
+  .button-next {
+    font-size: 1.25rem;
+  }
 }
 
 .button-confirm {

@@ -304,36 +304,41 @@ const GameScreen: React.FC<GameScreenProps> = ({
         )}
       </div>
 
-      {feedback ? (
-        <div className="feedback-section">
-          <div className={`feedback-message ${feedback}`}>
-            {feedback === "correct"
-              ? "正解！"
-              : `不正解... 正解は: ${currentWord.meanings.join(", ")}`}
+      <div className="action-buttons">
+        {feedback && (
+          <div className={`feedback-badge ${feedback}`}>
+            {feedback === "correct" ? (
+              <span>✓ 正解！</span>
+            ) : (
+              <span>✗ 不正解 → {currentWord.meanings.join(", ")}</span>
+            )}
           </div>
-          <button
-            onClick={handleNext}
-            className="button button-primary feedback-next-button"
-          >
-            次へ
-          </button>
-        </div>
-      ) : (
-        <div className="action-buttons">
-          <div className="confirm-skip-container">
+        )}
+        
+        <div className="confirm-skip-container">
+          {feedback ? (
             <button
-              onClick={handleAnswer}
-              disabled={!userInput}
-              className="button button-confirm"
+              onClick={handleNext}
+              className="button button-primary button-next"
             >
-              確認
+              次へ →
             </button>
-            <button onClick={handleSkip} className="button button-skip">
-              スキップ
-            </button>
-          </div>
+          ) : (
+            <>
+              <button
+                onClick={handleAnswer}
+                disabled={!userInput}
+                className="button button-confirm"
+              >
+                確認
+              </button>
+              <button onClick={handleSkip} className="button button-skip">
+                スキップ
+              </button>
+            </>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 };
