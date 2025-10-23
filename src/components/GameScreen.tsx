@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { GameMode, VocabularyItem } from '../types';
 import Furigana from './Furigana';
 import { shuffleArray } from '../utils';
@@ -19,6 +19,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ vocabulary, mode, onGameEnd, on
   const [isFinished, setIsFinished] = useState(false);
   const [sessionWrongAnswers, setSessionWrongAnswers] = useState<VocabularyItem[]>([]);
   const [showFurigana, setShowFurigana] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const setupQuestion = useCallback(() => {
     const word = vocabulary[currentIndex];
@@ -51,7 +52,14 @@ const GameScreen: React.FC<GameScreenProps> = ({ vocabulary, mode, onGameEnd, on
     }
   }, [currentIndex, vocabulary, setupQuestion, onGameEnd]);
 
-  const handleAnswer = () => {
+  // 새 문제가 표시될 때 input에 포커스
+  useEffect(() => {
+    if (mode === GameMode.DirectInput && !feedback && inputRef.current) {
+      setTimeout(() => inputRef.current?.focus(), 0);
+    }
+  }, [currentIndex, feedback, mode]);
+
+  const handleAnswer = useCallback(() => {
     if (!currentWord) return;
 
     let isCorrect = false;
@@ -73,11 +81,29 @@ const GameScreen: React.FC<GameScreenProps> = ({ vocabulary, mode, onGameEnd, on
           return [...prev, currentWord];
       });
     }
-  };
+  }, [currentWord, userInput, mode]);
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     setCurrentIndex(prev => prev + 1);
-  };
+  }, []);
+
+  // Enter 키 전역 이벤트 처리
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        if (feedback) {
+          // 피드백이 표시된 상태면 다음 문제로
+          handleNext();
+        } else if (mode === GameMode.DirectInput && userInput.trim()) {
+          // 주관식 모드이고 입력값이 있으면 답 제출
+          handleAnswer();
+        }
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [feedback, handleNext, handleAnswer, mode, userInput]);
 
   const handleSkip = () => {
     if (!currentWord) return;
@@ -191,10 +217,10 @@ const GameScreen: React.FC<GameScreenProps> = ({ vocabulary, mode, onGameEnd, on
           </div>
         ) : (
           <input
+            ref={inputRef}
             type="text"
             value={userInput}
             onChange={(e) => setUserInput(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && !feedback && handleAnswer()}
             placeholder="意味を入力してください"
             disabled={!!feedback}
             className="input-field"
