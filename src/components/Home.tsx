@@ -374,17 +374,56 @@ const Home: React.FC<HomeProps> = ({ onStartGame, onUpdateCurrentBooks, onEditBo
         <div className="saved-books-section">
           <div className="section-header">
             <h3 className="section-subtitle">保存された単語帳</h3>
-            {filteredBooks.length > 0 && (
-              <label className="select-all-label">
-                <input
-                  type="checkbox"
-                  className="select-all-checkbox"
-                  checked={allFilteredSelected}
-                  onChange={allFilteredSelected ? handleDeselectAll : handleSelectAll}
-                />
-                <span>全選択</span>
-              </label>
-            )}
+            <div className="header-actions">
+              {filteredBooks.length > 0 && (
+                <label className="select-all-label">
+                  <input
+                    type="checkbox"
+                    className="select-all-checkbox"
+                    checked={allFilteredSelected}
+                    onChange={allFilteredSelected ? handleDeselectAll : handleSelectAll}
+                  />
+                  <span>全選択</span>
+                </label>
+              )}
+              <div className="bulk-actions">
+                <button
+                  onClick={() => {
+                    if (selectedBookIds.length === 1) {
+                      const book = savedBooks.find(b => b.id === selectedBookIds[0]);
+                      if (book) handleEditBook(book);
+                    }
+                  }}
+                  className="button button-bulk-edit"
+                  disabled={selectedBookIds.length !== 1}
+                  title={
+                    selectedBookIds.length === 0
+                      ? "編集する単語帳を選択してください"
+                      : selectedBookIds.length === 1
+                      ? "選択した単語帳を編集"
+                      : "編集するには単語帳を1つだけ選択してください"
+                  }
+                >
+                  ✏️ 編集
+                </button>
+                <button
+                  onClick={() => {
+                    if (selectedBookIds.length > 0 && window.confirm(`選択した${selectedBookIds.length}個の単語帳を削除しますか？`)) {
+                      selectedBookIds.forEach(id => handleDeleteBook(id));
+                    }
+                  }}
+                  className="button button-bulk-delete"
+                  disabled={selectedBookIds.length === 0}
+                  title={
+                    selectedBookIds.length === 0
+                      ? "削除する単語帳を選択してください"
+                      : `選択した${selectedBookIds.length}個の単語帳を削除`
+                  }
+                >
+                  🗑️ 削除
+                </button>
+              </div>
+            </div>
           </div>
           {allTags.length > 0 && (
             <div className="tag-filters">
@@ -491,26 +530,6 @@ const Home: React.FC<HomeProps> = ({ onStartGame, onUpdateCurrentBooks, onEditBo
                   title="タグ編集"
                 >
                   🏷️
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleEditBook(book);
-                  }}
-                  className="button button-edit"
-                  title="単語帳を編集"
-                >
-                  ✏️
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDeleteBook(book.id);
-                  }}
-                  className="button button-delete-small"
-                  title="削除"
-                >
-                  ✕
                 </button>
               </div>
             ))}

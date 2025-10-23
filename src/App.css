@@ -487,6 +487,61 @@ body.dark-mode .home-subtitle {
   align-items: center;
   gap: 1rem;
   margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.bulk-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  min-width: 180px;
+  justify-content: flex-end;
+}
+
+.button-bulk-edit {
+  background-color: #ffc107;
+  color: #1c1e21;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  opacity: 1;
+  transition: opacity 0.2s, background-color 0.2s;
+}
+
+.button-bulk-edit:hover:not(:disabled) {
+  background-color: #e0a800;
+}
+
+.button-bulk-edit:disabled {
+  background-color: #e9ecef;
+  color: #adb5bd;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.button-bulk-delete {
+  background-color: #dc3545;
+  color: white;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  opacity: 1;
+  transition: opacity 0.2s, background-color 0.2s;
+}
+
+.button-bulk-delete:hover {
+  background-color: #c82333;
 }
 
 .section-subtitle {
@@ -529,6 +584,28 @@ body.dark-mode .select-all-label:hover {
 
 body.dark-mode .select-all-checkbox {
   accent-color: #7ab7ff;
+}
+
+body.dark-mode .button-bulk-edit {
+  background-color: #e0a800;
+  color: #1c1e21;
+}
+
+body.dark-mode .button-bulk-edit:hover:not(:disabled) {
+  background-color: #d39e00;
+}
+
+body.dark-mode .button-bulk-edit:disabled {
+  background-color: #3d3d3d;
+  color: #666;
+}
+
+body.dark-mode .button-bulk-delete {
+  background-color: #c82333;
+}
+
+body.dark-mode .button-bulk-delete:hover {
+  background-color: #bd2130;
 }
 
 .tag-filters {
@@ -2061,5 +2138,39 @@ body.dark-mode .empty-hint {
 @media (min-width: 641px) and (max-width: 768px) {
   .vocab-editor-container {
     padding: 1.25rem;
+  }
+}
+
+/* Responsive - Home */
+@media (max-width: 640px) {
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .header-actions {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .bulk-actions {
+    width: 100%;
+  }
+
+  .bulk-actions button {
+    flex: 1;
+  }
+
+  .select-all-label {
+    width: 100%;
+    justify-content: center;
+    padding: 0.5rem;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+  }
+
+  body.dark-mode .select-all-label {
+    background-color: #2d2d2d;
   }
 }
