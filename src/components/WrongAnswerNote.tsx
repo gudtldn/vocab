@@ -6,11 +6,15 @@ import { WRONG_ANSWER_RELEARN_THRESHOLD } from "../constants";
 interface WrongAnswerNoteProps {
   wrongAnswers: WrongAnswerItem[];
   onReview: (reviewList: VocabularyItem[]) => void;
+  onDeleteItem: (word: string, reading: string) => void;
+  onClearAll: () => void;
 }
 
 const WrongAnswerNote: React.FC<WrongAnswerNoteProps> = ({
   wrongAnswers,
   onReview,
+  onDeleteItem,
+  onClearAll,
 }) => {
   if (wrongAnswers.length === 0) {
     return (
@@ -31,12 +35,20 @@ const WrongAnswerNote: React.FC<WrongAnswerNoteProps> = ({
     <div className="wrong-answer-note-container">
       <div className="section-header">
         <h2 className="section-title">誤答ノート</h2>
-        <button
-          onClick={() => onReview(wrongAnswers)}
-          className="button button-review"
-        >
-          間違えた単語を復習
-        </button>
+        <div className="button-group">
+          <button
+            onClick={() => onReview(wrongAnswers)}
+            className="button button-review"
+          >
+            間違えた単語を復習
+          </button>
+          <button
+            onClick={onClearAll}
+            className="button button-danger"
+          >
+            全て削除
+          </button>
+        </div>
       </div>
 
       <div className="table-container">
@@ -46,6 +58,7 @@ const WrongAnswerNote: React.FC<WrongAnswerNoteProps> = ({
               <th>単語</th>
               <th>意味</th>
               <th className="text-center">間違い回数</th>
+              <th className="text-center">削除</th>
             </tr>
           </thead>
           <tbody>
@@ -70,6 +83,15 @@ const WrongAnswerNote: React.FC<WrongAnswerNoteProps> = ({
                   >
                     {item.missCount}
                   </span>
+                </td>
+                <td className="text-center">
+                  <button
+                    onClick={() => onDeleteItem(item.word, item.reading)}
+                    className="button button-delete-small"
+                    title="削除"
+                  >
+                    ✕
+                  </button>
                 </td>
               </tr>
             ))}

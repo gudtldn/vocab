@@ -109,6 +109,16 @@ const App: React.FC = () => {
     setView(AppView.Home);
   };
 
+  const handleDeleteWrongAnswer = useCallback((word: string, reading: string) => {
+    setWrongAnswers((prev) =>
+      prev.filter((item) => !(item.word === word && item.reading === reading))
+    );
+  }, []);
+
+  const handleClearAllWrongAnswers = useCallback(() => {
+    setWrongAnswers([]);
+  }, []);
+
   const renderContent = () => {
     switch (view) {
       case AppView.Game:
@@ -125,6 +135,8 @@ const App: React.FC = () => {
           <WrongAnswerNote
             wrongAnswers={wrongAnswers}
             onReview={handleReviewWrongAnswers}
+            onDeleteItem={handleDeleteWrongAnswer}
+            onClearAll={handleClearAllWrongAnswers}
           />
         );
       case AppView.Home:
