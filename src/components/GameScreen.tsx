@@ -6,7 +6,7 @@ import { shuffleArray } from '../utils';
 interface GameScreenProps {
   vocabulary: VocabularyItem[];
   mode: GameMode;
-  onGameEnd: (wrongAnswers: VocabularyItem[]) => void;
+  onGameEnd: (wrongAnswers: VocabularyItem[], correctAnswers: VocabularyItem[]) => void;
   onExit: () => void;
 }
 
@@ -18,6 +18,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ vocabulary, mode, onGameEnd, on
   const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null);
   const [isFinished, setIsFinished] = useState(false);
   const [sessionWrongAnswers, setSessionWrongAnswers] = useState<VocabularyItem[]>([]);
+  const [sessionCorrectAnswers, setSessionCorrectAnswers] = useState<VocabularyItem[]>([]);
   const [showFurigana, setShowFurigana] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -48,9 +49,8 @@ const GameScreen: React.FC<GameScreenProps> = ({ vocabulary, mode, onGameEnd, on
       setupQuestion();
     } else if (vocabulary.length > 0) {
       setIsFinished(true);
-      onGameEnd(sessionWrongAnswers);
     }
-  }, [currentIndex, vocabulary, setupQuestion, onGameEnd]);
+  }, [currentIndex, vocabulary, setupQuestion]);
 
   // 새 문제가 표시될 때 input에 포커스
   useEffect(() => {
@@ -72,6 +72,13 @@ const GameScreen: React.FC<GameScreenProps> = ({ vocabulary, mode, onGameEnd, on
 
     if (isCorrect) {
       setFeedback('correct');
+      // 정답인 경우 정답 목록에 추가
+      setSessionCorrectAnswers(prev => {
+        if (prev.find(item => item.word === currentWord.word && item.reading === currentWord.reading)) {
+          return prev;
+        }
+        return [...prev, currentWord];
+      });
     } else {
       setFeedback('incorrect');
       setSessionWrongAnswers(prev => {
@@ -117,6 +124,12 @@ const GameScreen: React.FC<GameScreenProps> = ({ vocabulary, mode, onGameEnd, on
 
     handleNext();
   };
+
+  useEffect(() => {
+    if (isFinished) {
+      onGameEnd(sessionWrongAnswers, sessionCorrectAnswers);
+    }
+  }, [isFinished]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (isFinished) {
     return (

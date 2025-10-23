@@ -6,6 +6,7 @@ export interface VocabularyItem {
 
 export interface WrongAnswerItem extends VocabularyItem {
   missCount: number;
+  correctStreak: number; // 연속 정답 횟수
 }
 
 export interface VocabularyBook {

@@ -78,6 +78,7 @@ const WrongAnswerNote: React.FC<WrongAnswerNoteProps> = ({
                 <th>単語</th>
                 <th>意味</th>
                 <th className="text-center">間違い回数</th>
+                <th className="text-center">連続正解</th>
                 <th className="text-center">削除</th>
               </tr>
             </thead>
@@ -102,6 +103,15 @@ const WrongAnswerNote: React.FC<WrongAnswerNoteProps> = ({
                       }`}
                     >
                       {item.missCount}
+                    </span>
+                  </td>
+                  <td className="text-center">
+                    <span
+                      className={`correct-streak-badge ${
+                        (item.correctStreak || 0) >= 2 ? "near-mastery" : ""
+                      }`}
+                    >
+                      {item.correctStreak || 0}/3
                     </span>
                   </td>
                   <td className="text-center">

@@ -37,8 +37,13 @@ const App: React.FC = () => {
             baseDir: BaseDirectory.AppData,
           });
           const parsed = JSON.parse(data) as WrongAnswerItem[];
-          setWrongAnswers(parsed);
-          console.log("오답 노트 불러오기 성공:", parsed.length, "개");
+          // 기존 데이터에 correctStreak 필드가 없는 경우 0으로 초기화
+          const migratedData = parsed.map((item) => ({
+            ...item,
+            correctStreak: item.correctStreak ?? 0,
+          }));
+          setWrongAnswers(migratedData);
+          console.log("오답 노트 불러오기 성공:", migratedData.length, "개");
         }
       } catch (error) {
         console.error("오답 노트 불러오기 실패:", error);
@@ -135,9 +140,11 @@ const App: React.FC = () => {
     handleStartGame(reviewList, GameMode.MultipleChoice);
   };
 
-  const handleGameEnd = useCallback((sessionWrongAnswers: VocabularyItem[]) => {
+  const handleGameEnd = useCallback((sessionWrongAnswers: VocabularyItem[], sessionCorrectAnswers: VocabularyItem[]) => {
     setWrongAnswers((prevWrongAnswers) => {
       const updatedAnswers = [...prevWrongAnswers];
+      
+      // 틀린 단어 처리
       sessionWrongAnswers.forEach((wrongItem) => {
         const existing = updatedAnswers.find(
           (item) =>
@@ -145,11 +152,33 @@ const App: React.FC = () => {
         );
         if (existing) {
           existing.missCount += 1;
+          existing.correctStreak = 0; // 틀렸으므로 연속 정답 초기화
         } else {
-          updatedAnswers.push({ ...wrongItem, missCount: 1 });
+          updatedAnswers.push({ ...wrongItem, missCount: 1, correctStreak: 0 });
         }
       });
-      return updatedAnswers;
+      
+      // 맞은 단어 처리 (오답노트에 있는 경우)
+      sessionCorrectAnswers.forEach((correctItem) => {
+        const existing = updatedAnswers.find(
+          (item) =>
+            item.word === correctItem.word && item.reading === correctItem.reading
+        );
+        if (existing) {
+          existing.correctStreak = (existing.correctStreak || 0) + 1;
+        }
+      });
+      
+      // 3회 연속 정답인 단어 제거 (숙달 완료)
+      const masteredAnswers = updatedAnswers.filter(
+        (item) => item.correctStreak >= 3
+      );
+      
+      if (masteredAnswers.length > 0) {
+        console.log("숙달 완료:", masteredAnswers.map(item => item.word).join(", "));
+      }
+      
+      return updatedAnswers.filter((item) => item.correctStreak < 3);
     });
     
     // 통계 업데이트
