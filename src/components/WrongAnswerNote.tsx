@@ -49,8 +49,8 @@ const WrongAnswerNote: React.FC<WrongAnswerNoteProps> = ({
             </tr>
           </thead>
           <tbody>
-            {sortedAnswers.map((item) => (
-              <tr key={item.id}>
+            {sortedAnswers.map((item, index) => (
+              <tr key={`${item.word}-${item.reading}-${index}`}>
                 <td className="word-cell">
                   <Furigana
                     word={item.word}

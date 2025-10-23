@@ -1,5 +1,4 @@
 export interface VocabularyItem {
-  id: string;
   word: string;
   reading: string;
   meanings: string[];

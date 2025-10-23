@@ -75,7 +75,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ vocabulary, mode, onGameEnd, on
     } else {
       setFeedback('incorrect');
       setSessionWrongAnswers(prev => {
-          if (prev.find(item => item.id === currentWord.id)) {
+          if (prev.find(item => item.word === currentWord.word && item.reading === currentWord.reading)) {
               return prev;
           }
           return [...prev, currentWord];
@@ -109,7 +109,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ vocabulary, mode, onGameEnd, on
     if (!currentWord) return;
 
     setSessionWrongAnswers(prev => {
-        if (prev.find(item => item.id === currentWord.id)) {
+        if (prev.find(item => item.word === currentWord.word && item.reading === currentWord.reading)) {
             return prev;
         }
         return [...prev, currentWord];
