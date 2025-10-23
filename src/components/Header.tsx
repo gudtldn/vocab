@@ -46,6 +46,7 @@ const Header: React.FC<HeaderProps> = ({
         <nav className="navigation">
           <NavButton view={AppView.Home}>ホーム</NavButton>
           <NavButton view={AppView.WrongAnswers}>誤答ノート</NavButton>
+          <NavButton view={AppView.Statistics}>統計</NavButton>
         </nav>
       </div>
     </header>

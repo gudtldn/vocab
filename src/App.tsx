@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect } from "react";
 import Home from "./components/Home";
 import GameScreen from "./components/GameScreen";
 import WrongAnswerNote from "./components/WrongAnswerNote";
+import Statistics from "./components/Statistics";
 import Header from "./components/Header";
 import { AppView, GameMode, VocabularyItem, WrongAnswerItem } from "./types";
 import { shuffleArray } from "./utils";
@@ -20,6 +21,8 @@ const App: React.FC = () => {
   const [gameMode, setGameMode] = useState<GameMode>(GameMode.MultipleChoice);
   const [wrongAnswers, setWrongAnswers] = useState<WrongAnswerItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [totalWordsStudied, setTotalWordsStudied] = useState(0);
+  const [totalGamesPlayed, setTotalGamesPlayed] = useState(0);
 
   // 앱 시작 시 오답 노트 불러오기
   useEffect(() => {
@@ -39,6 +42,25 @@ const App: React.FC = () => {
         }
       } catch (error) {
         console.error("오답 노트 불러오기 실패:", error);
+      }
+
+      // 통계 데이터 불러오기
+      try {
+        const statsExists = await exists("statistics.json", {
+          baseDir: BaseDirectory.AppData,
+        });
+
+        if (statsExists) {
+          const statsData = await readTextFile("statistics.json", {
+            baseDir: BaseDirectory.AppData,
+          });
+          const stats = JSON.parse(statsData);
+          setTotalWordsStudied(stats.totalWordsStudied || 0);
+          setTotalGamesPlayed(stats.totalGamesPlayed || 0);
+          console.log("통계 불러오기 성공");
+        }
+      } catch (error) {
+        console.error("통계 불러오기 실패:", error);
       } finally {
         setIsLoading(false);
       }
@@ -74,6 +96,34 @@ const App: React.FC = () => {
     saveWrongAnswers();
   }, [wrongAnswers, isLoading]);
 
+  // 통계 데이터 저장
+  useEffect(() => {
+    const saveStatistics = async () => {
+      if (!isLoading) {
+        try {
+          const appDataPath = await appDataDir();
+          await mkdir(appDataPath, { recursive: true }).catch(() => {});
+
+          const stats = {
+            totalWordsStudied,
+            totalGamesPlayed,
+          };
+
+          await writeTextFile(
+            "statistics.json",
+            JSON.stringify(stats, null, 2),
+            { baseDir: BaseDirectory.AppData }
+          );
+          console.log("통계 저장 성공");
+        } catch (error) {
+          console.error("통계 저장 실패:", error);
+        }
+      }
+    };
+
+    saveStatistics();
+  }, [totalWordsStudied, totalGamesPlayed, isLoading]);
+
   const handleStartGame = (vocabulary: VocabularyItem[], mode: GameMode) => {
     setGameVocabulary(shuffleArray(vocabulary));
     setGameMode(mode);
@@ -101,8 +151,13 @@ const App: React.FC = () => {
       });
       return updatedAnswers;
     });
+    
+    // 통계 업데이트
+    setTotalGamesPlayed((prev) => prev + 1);
+    setTotalWordsStudied((prev) => prev + gameVocabulary.length);
+    
     setView(AppView.WrongAnswers);
-  }, []);
+  }, [gameVocabulary.length]);
 
   const handleExitGame = () => {
     setGameVocabulary([]);
@@ -117,6 +172,11 @@ const App: React.FC = () => {
 
   const handleClearAllWrongAnswers = useCallback(() => {
     setWrongAnswers([]);
+  }, []);
+
+  const handleResetStatistics = useCallback(() => {
+    setTotalWordsStudied(0);
+    setTotalGamesPlayed(0);
   }, []);
 
   const renderContent = () => {
@@ -137,6 +197,15 @@ const App: React.FC = () => {
             onReview={handleReviewWrongAnswers}
             onDeleteItem={handleDeleteWrongAnswer}
             onClearAll={handleClearAllWrongAnswers}
+          />
+        );
+      case AppView.Statistics:
+        return (
+          <Statistics
+            wrongAnswers={wrongAnswers}
+            totalWordsStudied={totalWordsStudied}
+            totalGamesPlayed={totalGamesPlayed}
+            onResetStatistics={handleResetStatistics}
           />
         );
       case AppView.Home:

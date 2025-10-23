@@ -17,4 +17,5 @@ export enum AppView {
   Home = "home",
   Game = "game",
   WrongAnswers = "wrong-answers",
+  Statistics = "statistics",
 }
