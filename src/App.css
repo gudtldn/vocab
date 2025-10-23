@@ -183,7 +183,7 @@ body {
 .book-item {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 12px;
   padding: 1rem;
   background-color: #f8f9fa;
   border-radius: 8px;
@@ -201,9 +201,19 @@ body {
   background-color: #e7f3ff;
 }
 
+.book-checkbox {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: #007bff;
+  flex-shrink: 0;
+}
+
 .book-info {
   flex: 1;
   text-align: left;
+  cursor: pointer;
+  min-width: 0;
 }
 
 .book-name {

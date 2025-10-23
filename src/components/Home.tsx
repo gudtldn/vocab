@@ -18,7 +18,7 @@ const Home: React.FC<HomeProps> = ({ onStartGame }) => {
   const [error, setError] = useState<string>("");
   const [fileName, setFileName] = useState<string>("");
   const [savedBooks, setSavedBooks] = useState<VocabularyBook[]>([]);
-  const [selectedBookId, setSelectedBookId] = useState<string>("");
+  const [selectedBookIds, setSelectedBookIds] = useState<string[]>([]);
 
   // 저장된 단어장 목록 불러오기
   useEffect(() => {
@@ -62,10 +62,9 @@ const Home: React.FC<HomeProps> = ({ onStartGame }) => {
     setVocabulary([]); // 단어 목록 초기화
 
     try {
-      // Tauri 파일 열기 다이얼로그 호출
-      // https://v2.tauri.app/plugin/dialog/#open-a-file-selector-dialog
-      const selectedPath = await open({
-        multiple: false,
+      // Tauri 파일 열기 다이얼로그 호출 (다중 선택)
+      const selectedPaths = await open({
+        multiple: true,
         filters: [
           {
             name: "Vocabulary Files",
@@ -74,63 +73,84 @@ const Home: React.FC<HomeProps> = ({ onStartGame }) => {
         ],
       });
 
-      if (!selectedPath) {
+      if (!selectedPaths || selectedPaths.length === 0) {
         // 사용자가 파일 선택을 취소했을 때
         setFileName("");
         return;
       }
 
-      const pathParts = selectedPath.split(/[/\\]/); // OS에 따라 / 또는 \로 분리
-      const name = pathParts[pathParts.length - 1];
-      setFileName(name);
+      const paths = Array.isArray(selectedPaths) ? selectedPaths : [selectedPaths];
+      let allVocabulary: VocabularyItem[] = [];
+      const newBooks: VocabularyBook[] = [];
 
-      // Rust 백엔드의 parse_vocab_file 커맨드 호출
-      const parsedData: VocabularyItem[] = await invoke("parse_vocab_file", {
-        filePath: selectedPath,
-      });
+      // 각 파일을 파싱
+      for (const selectedPath of paths) {
+        const pathParts = selectedPath.split(/[/\\]/);
+        const name = pathParts[pathParts.length - 1];
 
-      // 결과 처리
-      if (parsedData.length === 0) {
-        throw new Error(
-          "The file is empty or does not contain valid data (Rust parsing result)."
-        );
-      }
+        // Rust 백엔드의 parse_vocab_file 커맨드 호출
+        const parsedData: VocabularyItem[] = await invoke("parse_vocab_file", {
+          filePath: selectedPath,
+        });
 
-      setVocabulary(parsedData);
-      setError("");
+        if (parsedData.length === 0) {
+          console.warn(`${name} is empty or invalid`);
+          continue;
+        }
 
-      // 새 단어장을 목록에 추가
-      const newBook: VocabularyBook = {
-        id: Date.now().toString(),
-        name: name,
-        filePath: selectedPath,
-        lastUsed: Date.now(),
-        wordCount: parsedData.length,
-      };
+        allVocabulary = [...allVocabulary, ...parsedData];
 
-      const existingBookIndex = savedBooks.findIndex(
-        (book) => book.filePath === selectedPath
-      );
-
-      let updatedBooks: VocabularyBook[];
-      if (existingBookIndex !== -1) {
-        // 기존 단어장 업데이트
-        updatedBooks = [...savedBooks];
-        updatedBooks[existingBookIndex] = {
-          ...updatedBooks[existingBookIndex],
+        // 새 단어장 생성
+        const newBook: VocabularyBook = {
+          id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+          name: name,
+          filePath: selectedPath,
           lastUsed: Date.now(),
           wordCount: parsedData.length,
         };
-      } else {
-        // 새 단어장 추가
-        updatedBooks = [newBook, ...savedBooks];
+
+        newBooks.push(newBook);
+      }
+
+      if (allVocabulary.length === 0) {
+        throw new Error("有効なファイルがありません。");
+      }
+
+      setVocabulary(allVocabulary);
+      setFileName(
+        paths.length === 1
+          ? newBooks[0].name
+          : `${paths.length}個のファイル`
+      );
+      setError("");
+
+      // 단어장 목록 업데이트
+      let updatedBooks = [...savedBooks];
+
+      for (const newBook of newBooks) {
+        const existingBookIndex = updatedBooks.findIndex(
+          (book) => book.filePath === newBook.filePath
+        );
+
+        if (existingBookIndex !== -1) {
+          // 기존 단어장 업데이트
+          updatedBooks[existingBookIndex] = {
+            ...updatedBooks[existingBookIndex],
+            lastUsed: Date.now(),
+            wordCount: newBook.wordCount,
+          };
+        } else {
+          // 새 단어장 추가
+          updatedBooks = [newBook, ...updatedBooks];
+        }
       }
 
       setSavedBooks(updatedBooks);
-      setSelectedBookId(
-        existingBookIndex !== -1
-          ? savedBooks[existingBookIndex].id
-          : newBook.id
+      setSelectedBookIds(
+        newBooks.map((book) => {
+          const existing = updatedBooks.find((b) => b.filePath === book.filePath);
+          return existing?.id || book.id;
+        })
       );
       await saveBooksToFile(updatedBooks);
     } catch (err) {
@@ -142,24 +162,43 @@ const Home: React.FC<HomeProps> = ({ onStartGame }) => {
     }
   };
 
-  const handleSelectBook = async (book: VocabularyBook) => {
-    try {
-      setError("");
-      const parsedData: VocabularyItem[] = await invoke("parse_vocab_file", {
-        filePath: book.filePath,
-      });
+  const handleToggleBook = async (bookId: string) => {
+    const newSelectedIds = selectedBookIds.includes(bookId)
+      ? selectedBookIds.filter((id) => id !== bookId)
+      : [...selectedBookIds, bookId];
 
-      if (parsedData.length === 0) {
-        throw new Error("ファイルが空か、有効なデータがありません。");
+    setSelectedBookIds(newSelectedIds);
+
+    // 선택된 모든 단어장의 단어를 합치기
+    if (newSelectedIds.length === 0) {
+      setVocabulary([]);
+      setFileName("");
+      return;
+    }
+
+    try {
+      let allVocabulary: VocabularyItem[] = [];
+      const selectedBooks = savedBooks.filter((book) =>
+        newSelectedIds.includes(book.id)
+      );
+
+      for (const book of selectedBooks) {
+        const parsedData: VocabularyItem[] = await invoke("parse_vocab_file", {
+          filePath: book.filePath,
+        });
+        allVocabulary = [...allVocabulary, ...parsedData];
       }
 
-      setVocabulary(parsedData);
-      setFileName(book.name);
-      setSelectedBookId(book.id);
+      setVocabulary(allVocabulary);
+      setFileName(
+        selectedBooks.length === 1
+          ? selectedBooks[0].name
+          : `${selectedBooks.length}個の単語帳`
+      );
 
       // 마지막 사용 시간 업데이트
       const updatedBooks = savedBooks.map((b) =>
-        b.id === book.id ? { ...b, lastUsed: Date.now() } : b
+        newSelectedIds.includes(b.id) ? { ...b, lastUsed: Date.now() } : b
       );
       setSavedBooks(updatedBooks.sort((a, b) => b.lastUsed - a.lastUsed));
       await saveBooksToFile(updatedBooks);
@@ -174,10 +213,17 @@ const Home: React.FC<HomeProps> = ({ onStartGame }) => {
     setSavedBooks(updatedBooks);
     await saveBooksToFile(updatedBooks);
 
-    if (selectedBookId === bookId) {
-      setVocabulary([]);
-      setFileName("");
-      setSelectedBookId("");
+    if (selectedBookIds.includes(bookId)) {
+      const newSelectedIds = selectedBookIds.filter((id) => id !== bookId);
+      setSelectedBookIds(newSelectedIds);
+
+      if (newSelectedIds.length === 0) {
+        setVocabulary([]);
+        setFileName("");
+      } else {
+        // 남은 선택된 단어장들의 단어를 다시 로드
+        handleToggleBook(bookId); // 이미 제거되었으므로 재계산 트리거
+      }
     }
   };
 
@@ -212,12 +258,18 @@ const Home: React.FC<HomeProps> = ({ onStartGame }) => {
               <div
                 key={book.id}
                 className={`book-item ${
-                  selectedBookId === book.id ? "selected" : ""
+                  selectedBookIds.includes(book.id) ? "selected" : ""
                 }`}
               >
+                <input
+                  type="checkbox"
+                  className="book-checkbox"
+                  checked={selectedBookIds.includes(book.id)}
+                  onChange={() => handleToggleBook(book.id)}
+                />
                 <div
                   className="book-info"
-                  onClick={() => handleSelectBook(book)}
+                  onClick={() => handleToggleBook(book.id)}
                 >
                   <div className="book-name">{book.name}</div>
                   <div className="book-details">
