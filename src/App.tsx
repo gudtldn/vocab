@@ -5,7 +5,13 @@ import WrongAnswerNote from "./components/WrongAnswerNote";
 import Statistics from "./components/Statistics";
 import VocabEditor from "./components/VocabEditor";
 import Header from "./components/Header";
-import { AppView, GameMode, VocabularyItem, WrongAnswerItem, VocabularyBook } from "./types";
+import {
+  AppView,
+  GameMode,
+  VocabularyItem,
+  WrongAnswerItem,
+  VocabularyBook,
+} from "./types";
 import { shuffleArray } from "./utils";
 import {
   writeTextFile,
@@ -16,7 +22,6 @@ import {
 } from "@tauri-apps/plugin-fs";
 import { appDataDir } from "@tauri-apps/api/path";
 import { save } from "@tauri-apps/plugin-dialog";
-import { invoke } from "@tauri-apps/api/core";
 
 const App: React.FC = () => {
   const [view, setView] = useState<AppView>(AppView.Home);
@@ -27,10 +32,72 @@ const App: React.FC = () => {
   const [totalWordsStudied, setTotalWordsStudied] = useState(0);
   const [totalGamesPlayed, setTotalGamesPlayed] = useState(0);
   const [darkMode, setDarkMode] = useState(false);
-  
+
   // 단어장 편집을 위한 상태
-  const [currentVocabulary, setCurrentVocabulary] = useState<VocabularyItem[]>([]);
+  const [currentVocabulary, setCurrentVocabulary] = useState<VocabularyItem[]>(
+    []
+  );
   const [currentBooks, setCurrentBooks] = useState<VocabularyBook[]>([]);
+  const [showShortcutHelp, setShowShortcutHelp] = useState(false);
+
+  // 키보드 단축키 처리
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ctrl/Cmd 키 조합
+      const modifier = e.ctrlKey || e.metaKey;
+
+      // 입력 필드에서는 단축키 비활성화
+      const target = e.target as HTMLElement;
+      if (target.tagName === "INPUT" || target.tagName === "TEXTAREA") {
+        // Esc 키는 예외
+        if (e.key === "Escape") {
+          target.blur();
+        }
+        return;
+      }
+
+      // 단축키 처리
+      if (modifier) {
+        switch (e.key.toLowerCase()) {
+          case "h":
+            e.preventDefault();
+            setView(AppView.Home);
+            break;
+          case "w":
+            e.preventDefault();
+            if (wrongAnswers.length > 0) {
+              setView(AppView.WrongAnswers);
+            }
+            break;
+          case "s":
+            e.preventDefault();
+            setView(AppView.Statistics);
+            break;
+          case "d":
+            e.preventDefault();
+            setDarkMode((prev) => !prev);
+            break;
+          case "/":
+          case "?":
+            e.preventDefault();
+            setShowShortcutHelp((prev) => !prev);
+            break;
+        }
+      } else if (e.key === "Escape") {
+        // Esc: 단축키 도움말 닫기
+        if (showShortcutHelp) {
+          setShowShortcutHelp(false);
+        }
+      } else if (e.key === "?") {
+        // ?: 단축키 도움말 표시
+        e.preventDefault();
+        setShowShortcutHelp((prev) => !prev);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [wrongAnswers.length, showShortcutHelp]);
 
   // 다크모드 설정 불러오기
   useEffect(() => {
@@ -330,8 +397,9 @@ const App: React.FC = () => {
 
   const handleExportCSV = useCallback(async () => {
     // 현재 편집 중인 단어장이 있으면 그것을, 없으면 오답노트를 출력
-    const dataToExport = currentVocabulary.length > 0 ? currentVocabulary : wrongAnswers;
-    
+    const dataToExport =
+      currentVocabulary.length > 0 ? currentVocabulary : wrongAnswers;
+
     if (dataToExport.length === 0) {
       alert("出力するデータがありません。");
       return;
@@ -367,16 +435,22 @@ const App: React.FC = () => {
     }
   }, [currentVocabulary, wrongAnswers]);
 
-  const handleUpdateCurrentBooks = useCallback((books: VocabularyBook[], vocabulary: VocabularyItem[]) => {
-    setCurrentBooks(books);
-    setCurrentVocabulary(vocabulary);
-  }, []);
+  const handleUpdateCurrentBooks = useCallback(
+    (books: VocabularyBook[], vocabulary: VocabularyItem[]) => {
+      setCurrentBooks(books);
+      setCurrentVocabulary(vocabulary);
+    },
+    []
+  );
 
-  const handleEditBook = useCallback((book: VocabularyBook, vocabulary: VocabularyItem[]) => {
-    setCurrentBooks([book]);
-    setCurrentVocabulary(vocabulary);
-    setView(AppView.VocabEditor);
-  }, []);
+  const handleEditBook = useCallback(
+    (book: VocabularyBook, vocabulary: VocabularyItem[]) => {
+      setCurrentBooks([book]);
+      setCurrentVocabulary(vocabulary);
+      setView(AppView.VocabEditor);
+    },
+    []
+  );
 
   const renderContent = () => {
     switch (view) {
@@ -418,7 +492,13 @@ const App: React.FC = () => {
         );
       case AppView.Home:
       default:
-        return <Home onStartGame={handleStartGame} onUpdateCurrentBooks={handleUpdateCurrentBooks} onEditBook={handleEditBook} />;
+        return (
+          <Home
+            onStartGame={handleStartGame}
+            onUpdateCurrentBooks={handleUpdateCurrentBooks}
+            onEditBook={handleEditBook}
+          />
+        );
     }
   };
 
@@ -451,6 +531,96 @@ const App: React.FC = () => {
         toggleDarkMode={() => setDarkMode(!darkMode)}
       />
       <main className="main-content">{renderContent()}</main>
+
+      {/* 단축키 도움말 */}
+      {showShortcutHelp && (
+        <div
+          className="shortcut-overlay"
+          onClick={() => setShowShortcutHelp(false)}
+        >
+          <div className="shortcut-dialog" onClick={(e) => e.stopPropagation()}>
+            <div className="shortcut-header">
+              <h2 className="shortcut-title">⌨️ キーボードショートカット</h2>
+              <button
+                onClick={() => setShowShortcutHelp(false)}
+                className="shortcut-close"
+                aria-label="閉じる"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="shortcut-body">
+              <div className="shortcut-section">
+                <h3 className="shortcut-section-title">ナビゲーション</h3>
+                <div className="shortcut-list">
+                  <div className="shortcut-item">
+                    <kbd className="shortcut-key">Ctrl/⌘</kbd>
+                    <kbd className="shortcut-key">H</kbd>
+                    <span className="shortcut-desc">ホーム画面</span>
+                  </div>
+                  <div className="shortcut-item">
+                    <kbd className="shortcut-key">Ctrl/⌘</kbd>
+                    <kbd className="shortcut-key">W</kbd>
+                    <span className="shortcut-desc">誤答ノート</span>
+                  </div>
+                  <div className="shortcut-item">
+                    <kbd className="shortcut-key">Ctrl/⌘</kbd>
+                    <kbd className="shortcut-key">S</kbd>
+                    <span className="shortcut-desc">統計画面</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="shortcut-section">
+                <h3 className="shortcut-section-title">アクション</h3>
+                <div className="shortcut-list">
+                  <div className="shortcut-item">
+                    <kbd className="shortcut-key">Ctrl/⌘</kbd>
+                    <kbd className="shortcut-key">D</kbd>
+                    <span className="shortcut-desc">ダークモード切り替え</span>
+                  </div>
+                  <div className="shortcut-item">
+                    <kbd className="shortcut-key">Enter</kbd>
+                    <span className="shortcut-desc">
+                      決定 / 次へ (ゲーム中)
+                    </span>
+                  </div>
+                  <div className="shortcut-item">
+                    <kbd className="shortcut-key">Esc</kbd>
+                    <span className="shortcut-desc">
+                      キャンセル / フォーカス解除
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="shortcut-section">
+                <h3 className="shortcut-section-title">ヘルプ</h3>
+                <div className="shortcut-list">
+                  <div className="shortcut-item">
+                    <kbd className="shortcut-key">?</kbd>
+                    <span className="shortcut-desc">このヘルプを表示</span>
+                  </div>
+                  <div className="shortcut-item">
+                    <kbd className="shortcut-key">Ctrl/⌘</kbd>
+                    <kbd className="shortcut-key">?</kbd>
+                    <span className="shortcut-desc">このヘルプを表示</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 단축키 힌트 버튼 */}
+      <button
+        onClick={() => setShowShortcutHelp(true)}
+        className="shortcut-hint-button"
+        title="キーボードショートカット (?) を表示"
+      >
+        ⌨️
+      </button>
     </div>
   );
 };

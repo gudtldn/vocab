@@ -2174,3 +2174,226 @@ body.dark-mode .empty-hint {
     background-color: #2d2d2d;
   }
 }
+
+/* Keyboard Shortcuts */
+.shortcut-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.shortcut-dialog {
+  background: white;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease-out;
+}
+
+.shortcut-header {
+  padding: 1.5rem;
+  border-bottom: 2px solid #e9ecef;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 1;
+}
+
+.shortcut-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1c1e21;
+}
+
+.shortcut-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #6c757d;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.shortcut-close:hover {
+  background-color: #f8f9fa;
+  color: #1c1e21;
+}
+
+.shortcut-body {
+  padding: 1.5rem;
+}
+
+.shortcut-section {
+  margin-bottom: 2rem;
+}
+
+.shortcut-section:last-child {
+  margin-bottom: 0;
+}
+
+.shortcut-section-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #495057;
+  margin: 0 0 1rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.shortcut-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.shortcut-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.shortcut-key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  padding: 0.25rem 0.5rem;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #495057;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.shortcut-desc {
+  flex: 1;
+  font-size: 0.95rem;
+  color: #6c757d;
+}
+
+.shortcut-hint-button {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background-color: #1877f2;
+  color: white;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(24, 119, 242, 0.4);
+  transition: transform 0.2s, box-shadow 0.2s;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.shortcut-hint-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(24, 119, 242, 0.5);
+}
+
+.shortcut-hint-button:active {
+  transform: scale(0.95);
+}
+
+/* Dark Mode - Shortcuts */
+body.dark-mode .shortcut-dialog {
+  background: #2d2d2d;
+}
+
+body.dark-mode .shortcut-header {
+  background: #2d2d2d;
+  border-bottom-color: #444;
+}
+
+body.dark-mode .shortcut-title {
+  color: #e4e4e4;
+}
+
+body.dark-mode .shortcut-close {
+  color: #999;
+}
+
+body.dark-mode .shortcut-close:hover {
+  background-color: #3d3d3d;
+  color: #e4e4e4;
+}
+
+body.dark-mode .shortcut-section-title {
+  color: #b8b8b8;
+  border-bottom-color: #444;
+}
+
+body.dark-mode .shortcut-key {
+  background-color: #3d3d3d;
+  border-color: #555;
+  color: #e4e4e4;
+}
+
+body.dark-mode .shortcut-desc {
+  color: #999;
+}
+
+body.dark-mode .shortcut-hint-button {
+  background-color: #0066cc;
+}
+
+body.dark-mode .shortcut-hint-button:hover {
+  box-shadow: 0 6px 16px rgba(0, 102, 204, 0.5);
+}
+
+/* Responsive - Shortcuts */
+@media (max-width: 640px) {
+  .shortcut-dialog {
+    width: 95%;
+    max-height: 85vh;
+  }
+
+  .shortcut-header {
+    padding: 1rem;
+  }
+
+  .shortcut-title {
+    font-size: 1.25rem;
+  }
+
+  .shortcut-body {
+    padding: 1rem;
+  }
+
+  .shortcut-hint-button {
+    bottom: 1rem;
+    right: 1rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1.25rem;
+  }
+
+  .shortcut-item {
+    flex-wrap: wrap;
+  }
+}
