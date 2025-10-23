@@ -1,10 +1,10 @@
-import React, { useState, useCallback } from 'react';
-import Home from './components/Home';
-import GameScreen from './components/GameScreen';
-import WrongAnswerNote from './components/WrongAnswerNote';
-import Header from './components/Header';
-import { AppView, GameMode, VocabularyItem, WrongAnswerItem } from './types';
-import { shuffleArray } from './utils';
+import React, { useState, useCallback } from "react";
+import Home from "./components/Home";
+import GameScreen from "./components/GameScreen";
+import WrongAnswerNote from "./components/WrongAnswerNote";
+import Header from "./components/Header";
+import { AppView, GameMode, VocabularyItem, WrongAnswerItem } from "./types";
+import { shuffleArray } from "./utils";
 
 const App: React.FC = () => {
   const [view, setView] = useState<AppView>(AppView.Home);
@@ -17,17 +17,19 @@ const App: React.FC = () => {
     setGameMode(mode);
     setView(AppView.Game);
   };
-  
+
   const handleReviewWrongAnswers = (reviewList: VocabularyItem[]) => {
-      // For simplicity, let's reuse the multiple choice mode for review.
-      handleStartGame(reviewList, GameMode.MultipleChoice);
-  }
+    // For simplicity, let's reuse the multiple choice mode for review.
+    handleStartGame(reviewList, GameMode.MultipleChoice);
+  };
 
   const handleGameEnd = useCallback((sessionWrongAnswers: VocabularyItem[]) => {
-    setWrongAnswers(prevWrongAnswers => {
+    setWrongAnswers((prevWrongAnswers) => {
       const updatedAnswers = [...prevWrongAnswers];
-      sessionWrongAnswers.forEach(wrongItem => {
-        const existing = updatedAnswers.find(item => item.id === wrongItem.id);
+      sessionWrongAnswers.forEach((wrongItem) => {
+        const existing = updatedAnswers.find(
+          (item) => item.id === wrongItem.id
+        );
         if (existing) {
           existing.missCount += 1;
         } else {
@@ -56,7 +58,12 @@ const App: React.FC = () => {
           />
         );
       case AppView.WrongAnswers:
-        return <WrongAnswerNote wrongAnswers={wrongAnswers} onReview={handleReviewWrongAnswers} />;
+        return (
+          <WrongAnswerNote
+            wrongAnswers={wrongAnswers}
+            onReview={handleReviewWrongAnswers}
+          />
+        );
       case AppView.Home:
       default:
         return <Home onStartGame={handleStartGame} />;
@@ -65,13 +72,14 @@ const App: React.FC = () => {
 
   return (
     <div className="app-container">
-      <Header currentView={view} setView={setView} hasWrongAnswers={wrongAnswers.length > 0} />
-      <main className="main-content">
-        {renderContent()}
-      </main>
+      <Header
+        currentView={view}
+        setView={setView}
+        hasWrongAnswers={wrongAnswers.length > 0}
+      />
+      <main className="main-content">{renderContent()}</main>
     </div>
   );
 };
 
 export default App;
-

@@ -10,12 +10,12 @@ export interface WrongAnswerItem extends VocabularyItem {
 }
 
 export enum GameMode {
-  MultipleChoice = 'multiple-choice',
-  DirectInput = 'direct-input',
+  MultipleChoice = "multiple-choice",
+  DirectInput = "direct-input",
 }
 
 export enum AppView {
-  Home = 'home',
-  Game = 'game',
-  WrongAnswers = 'wrong-answers',
+  Home = "home",
+  Game = "game",
+  WrongAnswers = "wrong-answers",
 }

@@ -118,28 +118,46 @@ const GameScreen: React.FC<GameScreenProps> = ({ vocabulary, mode, onGameEnd, on
   return (
     <div className="game-screen">
       <div className="progress-bar-container">
-          <div className="progress-bar-info">
-              <span>進捗</span>
-              <span>{currentIndex + 1} / {vocabulary.length}</span>
-          </div>
+        <div className="progress-bar-info">
+          <span>進捗</span>
+          <span>
+            {currentIndex + 1} / {vocabulary.length}
+          </span>
+        </div>
         <div className="progress-bar-track">
-          <div className="progress-bar-fill" style={{ width: `${progressPercentage}%` }}></div>
+          <div
+            className="progress-bar-fill"
+            style={{ width: `${progressPercentage}%` }}
+          ></div>
         </div>
       </div>
-      
+
       <div className="furigana-toggle-container">
-          <label htmlFor="furigana-toggle" className="furigana-toggle-label">
-              <span className="toggle-text">フリガナ表示</span>
-              <div className="toggle-switch">
-                  <input type="checkbox" id="furigana-toggle" className="sr-only" checked={showFurigana} onChange={() => setShowFurigana(!showFurigana)} />
-                  <div className={`toggle-track ${showFurigana ? 'active' : ''}`}></div>
-                  <div className={`toggle-dot ${showFurigana ? 'active' : ''}`}></div>
-              </div>
-          </label>
+        <label htmlFor="furigana-toggle" className="furigana-toggle-label">
+          <span className="toggle-text">フリガナ表示</span>
+          <div className="toggle-switch">
+            <input
+              type="checkbox"
+              id="furigana-toggle"
+              className="sr-only"
+              checked={showFurigana}
+              onChange={() => setShowFurigana(!showFurigana)}
+            />
+            <div
+              className={`toggle-track ${showFurigana ? "active" : ""}`}
+            ></div>
+            <div className={`toggle-dot ${showFurigana ? "active" : ""}`}></div>
+          </div>
+        </label>
       </div>
 
       <div className="word-display-container">
-        <Furigana word={currentWord.word} reading={currentWord.reading} className="word-text" show={showFurigana} />
+        <Furigana
+          word={currentWord.word}
+          reading={currentWord.reading}
+          className="word-text"
+          show={showFurigana}
+        />
       </div>
 
       <div className="answer-section">
@@ -151,10 +169,20 @@ const GameScreen: React.FC<GameScreenProps> = ({ vocabulary, mode, onGameEnd, on
                 onClick={() => setUserInput(option)}
                 disabled={!!feedback}
                 className={`choice-button
-                  ${userInput === option ? 'selected' : ''}
-                  ${feedback && currentWord.meanings.includes(option) ? 'correct' : ''}
-                  ${feedback && !currentWord.meanings.includes(option) && userInput === option ? 'incorrect' : ''}
-                  ${feedback ? 'disabled' : ''}
+                  ${userInput === option ? "selected" : ""}
+                  ${
+                    feedback && currentWord.meanings.includes(option)
+                      ? "correct"
+                      : ""
+                  }
+                  ${
+                    feedback &&
+                    !currentWord.meanings.includes(option) &&
+                    userInput === option
+                      ? "incorrect"
+                      : ""
+                  }
+                  ${feedback ? "disabled" : ""}
                 `}
               >
                 {option}
@@ -166,7 +194,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ vocabulary, mode, onGameEnd, on
             type="text"
             value={userInput}
             onChange={(e) => setUserInput(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && !feedback && handleAnswer()}
+            onKeyDown={(e) => e.key === "Enter" && !feedback && handleAnswer()}
             placeholder="意味を入力してください"
             disabled={!!feedback}
             className="input-field"
@@ -176,16 +204,15 @@ const GameScreen: React.FC<GameScreenProps> = ({ vocabulary, mode, onGameEnd, on
 
       {feedback && (
         <div className={`feedback-message ${feedback}`}>
-          {feedback === 'correct' ? '正解！' : `不正解... 正解は: ${currentWord.meanings.join(', ')}`}
+          {feedback === "correct"
+            ? "正解！"
+            : `不正解... 正解は: ${currentWord.meanings.join(", ")}`}
         </div>
       )}
 
       <div className="action-buttons">
         {feedback ? (
-          <button
-            onClick={handleNext}
-            className="button button-primary"
-          >
+          <button onClick={handleNext} className="button button-primary">
             次へ
           </button>
         ) : (
@@ -197,10 +224,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ vocabulary, mode, onGameEnd, on
             >
               確認
             </button>
-            <button
-              onClick={handleSkip}
-              className="button button-skip"
-            >
+            <button onClick={handleSkip} className="button button-skip">
               スキップ
             </button>
           </div>

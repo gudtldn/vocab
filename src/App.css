@@ -187,6 +187,7 @@ body {
   background-color: #28a745;
   color: white;
 }
+
 .button-choice:hover {
   background-color: #218838;
 }
@@ -195,6 +196,7 @@ body {
   background-color: #6f42c1;
   color: white;
 }
+
 .button-input:hover {
   background-color: #5a32a3;
 }
@@ -284,6 +286,7 @@ body {
   transition: background-color 0.2s;
   background-color: #ccc;
 }
+
 .toggle-track.active {
   background-color: #007bff;
 }
@@ -298,6 +301,7 @@ body {
   border-radius: 50%;
   transition: transform 0.2s;
 }
+
 .toggle-dot.active {
   transform: translateX(1.5rem);
 }
@@ -373,11 +377,13 @@ body {
   text-align: center;
   box-sizing: border-box;
 }
+
 .input-field:focus {
   outline: none;
   border-color: #007bff;
   box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
 }
+
 .input-field:disabled {
   background-color: #e9ecef;
 }
@@ -413,9 +419,11 @@ body {
   background-color: #343a40;
   color: white;
 }
+
 .button-confirm:hover {
   background-color: #23272b;
 }
+
 .button-confirm:disabled {
   background-color: #6c757d;
 }
@@ -426,6 +434,7 @@ body {
   color: #555;
   border: 1px solid #ccc;
 }
+
 .button-skip:hover {
   background-color: #f8f9fa;
 }
@@ -487,6 +496,7 @@ body {
   background-color: #28a745;
   color: white;
 }
+
 .button-review:hover {
   background-color: #218838;
 }
@@ -536,4 +546,3 @@ body {
   background-color: #ffc107;
   color: #212529;
 }
-

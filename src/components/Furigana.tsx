@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface FuriganaProps {
   word: string;
@@ -7,7 +7,12 @@ interface FuriganaProps {
   show: boolean;
 }
 
-const Furigana: React.FC<FuriganaProps> = ({ word, reading, className, show }) => {
+const Furigana: React.FC<FuriganaProps> = ({
+  word,
+  reading,
+  className,
+  show,
+}) => {
   return (
     <ruby className={`select-none ${className}`}>
       {word}
