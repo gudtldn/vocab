@@ -15,7 +15,10 @@
         "title": "vocab",
         "width": 950,
         "height": 850,
-        "center": true
+        "minWidth": 375,
+        "minHeight": 500,
+        "center": true,
+        "resizable": true
       }
     ],
     "security": {

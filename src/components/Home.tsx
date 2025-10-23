@@ -82,7 +82,9 @@ const Home: React.FC<HomeProps> = ({ onStartGame }) => {
         return;
       }
 
-      const paths = Array.isArray(selectedPaths) ? selectedPaths : [selectedPaths];
+      const paths = Array.isArray(selectedPaths)
+        ? selectedPaths
+        : [selectedPaths];
       let allVocabulary: VocabularyItem[] = [];
       const newBooks: VocabularyBook[] = [];
 
@@ -122,9 +124,7 @@ const Home: React.FC<HomeProps> = ({ onStartGame }) => {
 
       setVocabulary(allVocabulary);
       setFileName(
-        paths.length === 1
-          ? newBooks[0].name
-          : `${paths.length}個のファイル`
+        paths.length === 1 ? newBooks[0].name : `${paths.length}個のファイル`
       );
       setError("");
 
@@ -152,7 +152,9 @@ const Home: React.FC<HomeProps> = ({ onStartGame }) => {
       setSavedBooks(updatedBooks);
       setSelectedBookIds(
         newBooks.map((book) => {
-          const existing = updatedBooks.find((b) => b.filePath === book.filePath);
+          const existing = updatedBooks.find(
+            (b) => b.filePath === book.filePath
+          );
           return existing?.id || book.id;
         })
       );
