@@ -8,6 +8,14 @@ export interface WrongAnswerItem extends VocabularyItem {
   missCount: number;
 }
 
+export interface VocabularyBook {
+  id: string;
+  name: string;
+  filePath: string;
+  lastUsed: number;
+  wordCount: number;
+}
+
 export enum GameMode {
   MultipleChoice = "multiple-choice",
   DirectInput = "direct-input",
