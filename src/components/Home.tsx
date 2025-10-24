@@ -11,12 +11,20 @@ import {
 
 interface HomeProps {
   onStartGame: (vocabulary: VocabularyItem[], mode: GameMode) => void;
-  onUpdateCurrentBooks: (books: VocabularyBook[], vocabulary: VocabularyItem[]) => void;
+  onUpdateCurrentBooks: (
+    books: VocabularyBook[],
+    vocabulary: VocabularyItem[]
+  ) => void;
   onEditBook: (book: VocabularyBook, vocabulary: VocabularyItem[]) => void;
   onCreateVocabBook: () => void;
 }
 
-const Home: React.FC<HomeProps> = ({ onStartGame, onUpdateCurrentBooks, onEditBook, onCreateVocabBook }) => {
+const Home: React.FC<HomeProps> = ({
+  onStartGame,
+  onUpdateCurrentBooks,
+  onEditBook,
+  onCreateVocabBook,
+}) => {
   const [vocabulary, setVocabulary] = useState<VocabularyItem[]>([]);
   const [error, setError] = useState<string>("");
   const [fileName, setFileName] = useState<string>("");
@@ -211,7 +219,7 @@ const Home: React.FC<HomeProps> = ({ onStartGame, onUpdateCurrentBooks, onEditBo
       );
       setSavedBooks(updatedBooks.sort((a, b) => b.lastUsed - a.lastUsed));
       await saveBooksToFile(updatedBooks);
-      
+
       // 부모 컴포넌트에 현재 선택된 단어장 정보 전달
       onUpdateCurrentBooks(selectedBooks, allVocabulary);
     } catch (err) {
@@ -281,7 +289,7 @@ const Home: React.FC<HomeProps> = ({ onStartGame, onUpdateCurrentBooks, onEditBo
       const parsedData: VocabularyItem[] = await invoke("parse_vocab_file", {
         filePath: book.filePath,
       });
-      
+
       // 편집 화면으로 전환
       onEditBook(book, parsedData);
     } catch (err) {
@@ -311,7 +319,7 @@ const Home: React.FC<HomeProps> = ({ onStartGame, onUpdateCurrentBooks, onEditBo
     // 모든 단어장의 단어를 합치기
     try {
       let allVocabulary: VocabularyItem[] = [];
-      
+
       for (const book of filteredBooks) {
         const parsedData: VocabularyItem[] = await invoke("parse_vocab_file", {
           filePath: book.filePath,
@@ -407,7 +415,9 @@ const Home: React.FC<HomeProps> = ({ onStartGame, onUpdateCurrentBooks, onEditBo
                     type="checkbox"
                     className="select-all-checkbox"
                     checked={allFilteredSelected}
-                    onChange={allFilteredSelected ? handleDeselectAll : handleSelectAll}
+                    onChange={
+                      allFilteredSelected ? handleDeselectAll : handleSelectAll
+                    }
                   />
                   <span>全選択</span>
                 </label>
@@ -416,7 +426,9 @@ const Home: React.FC<HomeProps> = ({ onStartGame, onUpdateCurrentBooks, onEditBo
                 <button
                   onClick={() => {
                     if (selectedBookIds.length === 1) {
-                      const book = savedBooks.find(b => b.id === selectedBookIds[0]);
+                      const book = savedBooks.find(
+                        (b) => b.id === selectedBookIds[0]
+                      );
                       if (book) handleEditBook(book);
                     }
                   }}
@@ -434,8 +446,13 @@ const Home: React.FC<HomeProps> = ({ onStartGame, onUpdateCurrentBooks, onEditBo
                 </button>
                 <button
                   onClick={() => {
-                    if (selectedBookIds.length > 0 && window.confirm(`選択した${selectedBookIds.length}個の単語帳を削除しますか？`)) {
-                      selectedBookIds.forEach(id => handleDeleteBook(id));
+                    if (
+                      selectedBookIds.length > 0 &&
+                      window.confirm(
+                        `選択した${selectedBookIds.length}個の単語帳を削除しますか？`
+                      )
+                    ) {
+                      selectedBookIds.forEach((id) => handleDeleteBook(id));
                     }
                   }}
                   className="button button-bulk-delete"

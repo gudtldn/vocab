@@ -436,7 +436,8 @@ const App: React.FC = () => {
         setDialog({
           isOpen: true,
           title: "警告",
-          message: "複数の単語帳が選択されています。\n変更を保存するには、単一の単語帳を選択してください。",
+          message:
+            "複数の単語帳が選択されています。\n変更を保存するには、単一の単語帳を選択してください。",
           onConfirm: () => setDialog({ ...dialog, isOpen: false }),
         });
       } else {
@@ -444,7 +445,8 @@ const App: React.FC = () => {
         setDialog({
           isOpen: true,
           title: "警告",
-          message: "単語帳が選択されていません。\nホーム画面で単語帳を選択してください。",
+          message:
+            "単語帳が選択されていません。\nホーム画面で単語帳を選択してください。",
           onConfirm: () => setDialog({ ...dialog, isOpen: false }),
         });
       }
@@ -486,7 +488,8 @@ const App: React.FC = () => {
 
         // 단어장 목록에 추가
         const timestamp = Date.now();
-        const fileName = filePath.split(/[\\/]/).pop() || `${sanitizedName}.csv`;
+        const fileName =
+          filePath.split(/[\\/]/).pop() || `${sanitizedName}.csv`;
         const newBook: VocabularyBook = {
           id: timestamp.toString(),
           name: fileName,

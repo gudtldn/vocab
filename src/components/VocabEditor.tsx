@@ -122,9 +122,7 @@ const VocabEditor: React.FC<VocabEditorProps> = ({
         <div className="editor-title-section">
           <h2 className="section-title">単語帳編集</h2>
           {currentBook && (
-            <div className="current-book-name">
-              📚 {currentBook.name}
-            </div>
+            <div className="current-book-name">📚 {currentBook.name}</div>
           )}
         </div>
         <div className="editor-actions">
@@ -218,9 +216,7 @@ const VocabEditor: React.FC<VocabEditorProps> = ({
       )}
 
       <div className="vocab-list">
-        <div className="vocab-count">
-          {filteredVocab.length}個の単語
-        </div>
+        <div className="vocab-count">{filteredVocab.length}個の単語</div>
         {filteredVocab.map((item, index) => (
           <VocabItem
             key={index}

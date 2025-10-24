@@ -445,7 +445,8 @@ body.dark-mode .home-subtitle {
   cursor: pointer;
   transition: all 0.2s ease-in-out;
   text-align: center;
-  min-height: 44px; /* 모바일 터치 최소 사이즈 */
+  min-height: 44px;
+  /* 모바일 터치 최소 사이즈 */
 }
 
 @media (max-width: 767px) {
@@ -682,6 +683,7 @@ body.dark-mode .home-subtitle {
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -904,7 +906,8 @@ body.dark-mode .button-bulk-delete:hover {
 }
 
 .book-item:has(.tag-input-section) {
-  z-index: 100; /* 태그 입력이 활성화된 항목을 최상위로 */
+  z-index: 100;
+  /* 태그 입력이 활성화된 항목을 최상위로 */
 }
 
 @media (min-width: 768px) {
@@ -946,8 +949,10 @@ body.dark-mode .button-bulk-delete:hover {
   text-align: left;
   cursor: pointer;
   min-width: 0;
-  overflow: visible; /* 오버레이를 위해 변경 */
-  position: relative; /* 자식 절대 위치를 위한 기준점 */
+  overflow: visible;
+  /* 오버레이를 위해 변경 */
+  position: relative;
+  /* 자식 절대 위치를 위한 기준점 */
 }
 
 .book-name {
@@ -1019,15 +1024,18 @@ body.dark-mode .button-bulk-delete:hover {
   /* 절대 위치로 오버레이하여 레이아웃 시프트 방지 */
   position: absolute;
   top: 100%;
-  left: -2px; /* border 보정 */
-  right: -2px; /* border 보정 */
+  left: -2px;
+  /* border 보정 */
+  right: -2px;
+  /* border 보정 */
   background-color: white;
   z-index: 10;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   border-radius: 0 0 8px 8px;
   border: 2px solid #007bff;
   border-top: 1px solid #dee2e6;
-  margin-top: -2px; /* border 겹침 방지 */
+  margin-top: -2px;
+  /* border 겹침 방지 */
 }
 
 .tag-input {
@@ -1610,6 +1618,7 @@ body.dark-mode .button-bulk-delete:hover {
 }
 
 @media (min-width: 768px) {
+
   .wrong-answer-table th,
   .wrong-answer-table td {
     padding: 1rem;
@@ -1678,9 +1687,12 @@ body.dark-mode .button-bulk-delete:hover {
 }
 
 @keyframes pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.7;
   }
@@ -1897,6 +1909,7 @@ body.dark-mode .button-bulk-delete:hover {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -1916,6 +1929,7 @@ body.dark-mode .button-bulk-delete:hover {
     transform: translateY(20px);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;
@@ -2360,7 +2374,7 @@ body.dark-mode .button-bulk-delete:hover {
   .upload-buttons {
     flex-direction: column;
   }
-  
+
   .upload-buttons .button {
     width: 100%;
   }

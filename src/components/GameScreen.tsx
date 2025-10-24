@@ -47,9 +47,10 @@ const GameScreen: React.FC<GameScreenProps> = ({
     if (mode === GameMode.MultipleChoice) {
       const correctAnswers = word.meanings;
       // 선택지 생성에는 전체 어휘 사용 (allVocabulary가 있으면 사용, 없으면 vocabulary 사용)
-      const vocabularyForChoices = allVocabulary && allVocabulary.length > vocabulary.length 
-        ? allVocabulary 
-        : vocabulary;
+      const vocabularyForChoices =
+        allVocabulary && allVocabulary.length > vocabulary.length
+          ? allVocabulary
+          : vocabulary;
       const allMeanings = vocabularyForChoices.flatMap((v) => v.meanings);
       const uniqueMeanings = [...new Set(allMeanings)];
 
@@ -90,11 +91,11 @@ const GameScreen: React.FC<GameScreenProps> = ({
     let isCorrect = false;
     // 띄어쓰기를 제거한 정답 목록
     const normalizedMeanings = currentWord.meanings.map((m) =>
-      m.toLowerCase().trim().replace(/\s+/g, '')
+      m.toLowerCase().trim().replace(/\s+/g, "")
     );
     // 사용자 입력도 띄어쓰기 제거
-    const normalizedInput = userInput.toLowerCase().trim().replace(/\s+/g, '');
-    
+    const normalizedInput = userInput.toLowerCase().trim().replace(/\s+/g, "");
+
     if (mode === GameMode.MultipleChoice) {
       isCorrect = normalizedMeanings.includes(normalizedInput);
     } else {
@@ -318,7 +319,7 @@ const GameScreen: React.FC<GameScreenProps> = ({
             )}
           </div>
         )}
-        
+
         <div className="confirm-skip-container">
           {feedback ? (
             <button

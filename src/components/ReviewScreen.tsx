@@ -20,7 +20,8 @@ const ReviewScreen: React.FC<ReviewScreenProps> = ({
   const [filter, setFilter] = useState<"all" | "correct" | "wrong">("all");
 
   const wrongCount = totalQuestions - correctCount;
-  const accuracy = totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0;
+  const accuracy =
+    totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0;
 
   const filteredItems = reviewItems.filter((item) => {
     if (filter === "correct") return item.isCorrect;
@@ -75,23 +76,38 @@ const ReviewScreen: React.FC<ReviewScreenProps> = ({
           return (
             <div
               key={index}
-              className={`review-item ${item.isCorrect ? "correct" : "wrong"} ${isSkipped ? "skipped" : ""}`}
+              className={`review-item ${item.isCorrect ? "correct" : "wrong"} ${
+                isSkipped ? "skipped" : ""
+              }`}
             >
               <div className="review-item-header">
-                <span className={`review-badge ${item.isCorrect ? "correct" : "wrong"}`}>
-                  {item.isCorrect ? "✓ 正解" : isSkipped ? "⊘ スキップ" : "✗ 不正解"}
+                <span
+                  className={`review-badge ${
+                    item.isCorrect ? "correct" : "wrong"
+                  }`}
+                >
+                  {item.isCorrect
+                    ? "✓ 正解"
+                    : isSkipped
+                    ? "⊘ スキップ"
+                    : "✗ 不正解"}
                 </span>
               </div>
               <div className="review-item-content">
                 <div className="review-word">
-                  <Furigana word={item.word} reading={item.reading} show={true} />
+                  <Furigana
+                    word={item.word}
+                    reading={item.reading}
+                    show={true}
+                  />
                 </div>
                 <div className="review-meanings">
                   <strong>意味:</strong> {item.meanings.join(", ")}
                 </div>
                 {!item.isCorrect && item.userAnswer && (
                   <div className="review-user-answer">
-                    <strong>{isSkipped ? "状態:" : "あなたの回答:"}</strong> {item.userAnswer}
+                    <strong>{isSkipped ? "状態:" : "あなたの回答:"}</strong>{" "}
+                    {item.userAnswer}
                   </div>
                 )}
                 {item.note && (
