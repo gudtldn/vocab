@@ -75,16 +75,43 @@ body.dark-mode .button-choice {
   background-color: #1f8838;
 }
 
-body.dark-mode .button-choice:hover {
+body.dark-mode .button-choice:hover:not(:disabled) {
   background-color: #196d2e;
+}
+
+body.dark-mode .button-choice:disabled {
+  background-color: #2d4a35;
+  color: #808080;
 }
 
 body.dark-mode .button-input {
   background-color: #5a32a3;
 }
 
-body.dark-mode .button-input:hover {
+body.dark-mode .button-input:hover:not(:disabled) {
   background-color: #4a2883;
+}
+
+body.dark-mode .button-input:disabled {
+  background-color: #3d2d54;
+  color: #808080;
+}
+
+body.dark-mode .floating-action-bar {
+  background: linear-gradient(to top, rgba(28, 30, 33, 0.98) 0%, rgba(28, 30, 33, 0.95) 100%);
+  border-top-color: #3d3d3d;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .floating-count {
+  color: #e4e4e4;
+}
+
+body.dark-mode .floating-label {
+  background: linear-gradient(135deg, #8b9aee 0%, #9d7bc2 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 body.dark-mode .word-display-container {
@@ -691,9 +718,9 @@ body.dark-mode .home-subtitle {
 }
 
 .saved-books-section {
-  margin-top: 2rem;
+  margin-top: 1rem;
   border-top: 1px solid #eee;
-  padding-top: 2rem;
+  padding-top: 1rem;
 }
 
 .section-header {
@@ -1154,8 +1181,15 @@ body.dark-mode .button-bulk-delete:hover {
   color: white;
 }
 
-.button-choice:hover {
+.button-choice:hover:not(:disabled) {
   background-color: #218838;
+}
+
+.button-choice:disabled {
+  background-color: #d4edda;
+  color: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .button-input {
@@ -1163,8 +1197,108 @@ body.dark-mode .button-bulk-delete:hover {
   color: white;
 }
 
-.button-input:hover {
+.button-input:hover:not(:disabled) {
   background-color: #5a32a3;
+}
+
+.button-input:disabled {
+  background-color: #e2d9f3;
+  color: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* 플로팅 액션 바 */
+.floating-action-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.95) 100%);
+  backdrop-filter: blur(10px);
+  border-top: 2px solid #e9ecef;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+  padding: 1rem 1.5rem;
+  z-index: 1000;
+  animation: slideUpIn 0.3s ease-out;
+}
+
+@keyframes slideUpIn {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.floating-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.floating-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.floating-count {
+  font-weight: 600;
+  color: #495057;
+  font-size: 1rem;
+}
+
+.floating-label {
+  color: #495057;
+  font-size: 0.9rem;
+  font-weight: 500;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.floating-buttons {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.button-floating {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+@media (max-width: 640px) {
+  .floating-content {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .floating-info {
+    justify-content: center;
+  }
+  
+  .floating-buttons {
+    width: 100%;
+  }
+  
+  .floating-buttons button {
+    flex: 1;
+  }
 }
 
 /* GameScreen Component */
@@ -3211,11 +3345,15 @@ body.dark-mode .empty-hint {
   font-size: 1.5rem;
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(24, 119, 242, 0.4);
-  transition: transform 0.2s, box-shadow 0.2s;
-  z-index: 1000;
+  transition: bottom 0.3s ease, transform 0.2s, box-shadow 0.2s;
+  z-index: 1001;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.shortcut-hint-button.floating-bar-active {
+  bottom: 6.5rem;
 }
 
 .shortcut-hint-button:hover {

@@ -45,6 +45,7 @@ const App: React.FC = () => {
     []
   );
   const [currentBooks, setCurrentBooks] = useState<VocabularyBook[]>([]);
+  const [selectedVocabularyCount, setSelectedVocabularyCount] = useState(0);
   const [showShortcutHelp, setShowShortcutHelp] = useState(false);
   const [dialog, setDialog] = useState<{
     isOpen: boolean;
@@ -663,6 +664,7 @@ const App: React.FC = () => {
             onUpdateCurrentBooks={handleUpdateCurrentBooks}
             onEditBook={handleEditBook}
             onCreateVocabBook={() => setView(AppView.VocabCreator)}
+            onVocabularyCountChange={setSelectedVocabularyCount}
           />
         );
     }
@@ -782,7 +784,7 @@ const App: React.FC = () => {
       {/* 단축키 힌트 버튼 */}
       <button
         onClick={() => setShowShortcutHelp(true)}
-        className="shortcut-hint-button"
+        className={`shortcut-hint-button ${selectedVocabularyCount > 0 ? 'floating-bar-active' : ''}`}
         title="キーボードショートカット (?) を表示"
       >
         ⌨️

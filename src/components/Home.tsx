@@ -17,6 +17,7 @@ interface HomeProps {
   ) => void;
   onEditBook: (book: VocabularyBook, vocabulary: VocabularyItem[]) => void;
   onCreateVocabBook: () => void;
+  onVocabularyCountChange: (count: number) => void;
 }
 
 const Home: React.FC<HomeProps> = ({
@@ -24,6 +25,7 @@ const Home: React.FC<HomeProps> = ({
   onUpdateCurrentBooks,
   onEditBook,
   onCreateVocabBook,
+  onVocabularyCountChange,
 }) => {
   const [vocabulary, setVocabulary] = useState<VocabularyItem[]>([]);
   const [error, setError] = useState<string>("");
@@ -33,6 +35,11 @@ const Home: React.FC<HomeProps> = ({
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [editingBookId, setEditingBookId] = useState<string>("");
   const [tagInput, setTagInput] = useState<string>("");
+
+  // vocabulary 카운트가 변경될 때마다 부모에게 알림
+  useEffect(() => {
+    onVocabularyCountChange(vocabulary.length);
+  }, [vocabulary.length, onVocabularyCountChange]);
 
   // 저장된 단어장 목록 불러오기
   useEffect(() => {
@@ -376,33 +383,8 @@ const Home: React.FC<HomeProps> = ({
             ➕ 新しく作成
           </button>
         </div>
-        {fileName && (
-          <p className="file-name-display">
-            ファイル: <span className="file-name">{fileName}</span>
-          </p>
-        )}
-        {error && <p className="error-message">{error}</p>}
+        {error && <p className="error-message">エラー: {error}</p>}
       </div>
-
-      {canStartGame && (
-        <div className="mode-selection">
-          <h3 className="mode-title">学習モード選択</h3>
-          <div className="mode-buttons">
-            <button
-              onClick={() => onStartGame(vocabulary, GameMode.MultipleChoice)}
-              className="button button-choice"
-            >
-              客観式
-            </button>
-            <button
-              onClick={() => onStartGame(vocabulary, GameMode.DirectInput)}
-              className="button button-input"
-            >
-              主観式
-            </button>
-          </div>
-        </div>
-      )}
 
       {savedBooks.length > 0 && (
         <div className="saved-books-section">
@@ -572,6 +554,38 @@ const Home: React.FC<HomeProps> = ({
                 )}
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* 플로팅 액션 바 */}
+      {canStartGame && (
+        <div className="floating-action-bar">
+          <div className="floating-content">
+            <div className="floating-info">
+              <span className="floating-count">
+                📚 {vocabulary.length}個の単語
+              </span>
+              <span className="floating-label">
+                {selectedBookIds.length === 1
+                  ? `ファイル: ${savedBooks.find(b => b.id === selectedBookIds[0])?.name || ''}`
+                  : `ファイル: ${selectedBookIds.length}個の単語帳`}
+              </span>
+            </div>
+            <div className="floating-buttons">
+              <button
+                onClick={() => onStartGame(vocabulary, GameMode.MultipleChoice)}
+                className="button button-choice button-floating"
+              >
+                客観式
+              </button>
+              <button
+                onClick={() => onStartGame(vocabulary, GameMode.DirectInput)}
+                className="button button-input button-floating"
+              >
+                主観式
+              </button>
+            </div>
           </div>
         </div>
       )}
