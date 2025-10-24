@@ -24,7 +24,11 @@ export const STORAGE_KEYS = {
 // 오답 학습 관련 상수
 export const MASTERY_CONFIG = {
   CORRECT_STREAK_REQUIRED: 3, // 마스터하기 위해 필요한 연속 정답 수
+  RELEARN_THRESHOLD: 3, // 오답 재학습 임계값 (deprecated, CORRECT_STREAK_REQUIRED 사용)
 } as const;
+
+// 레거시 호환성을 위한 별도 export
+export const WRONG_ANSWER_RELEARN_THRESHOLD = MASTERY_CONFIG.RELEARN_THRESHOLD;
 
 // 애니메이션 시간 (ms)
 export const ANIMATION_DURATION = {

@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { ReviewItem, GameMode } from "../types";
 import Furigana from "./Furigana";
 import { useI18n } from "../i18n/I18nContext";
+import { formatTime } from "../utils";
 
 interface ReviewScreenProps {
   reviewItems: ReviewItem[];
@@ -24,22 +25,18 @@ const ReviewScreen: React.FC<ReviewScreenProps> = ({
   const [filter, setFilter] = useState<"all" | "correct" | "wrong">("all");
   const [showModeSelect, setShowModeSelect] = useState(false);
 
+  // 통계 계산
   const wrongCount = totalQuestions - correctCount;
-  const accuracy =
-    totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0;
-  
-  // 시간 포맷 함수 (초 -> MM:SS)
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  };
+  const accuracy = totalQuestions > 0 
+    ? Math.round((correctCount / totalQuestions) * 100) 
+    : 0;
 
-  const filteredItems = reviewItems.filter((item) => {
-    if (filter === "correct") return item.isCorrect;
-    if (filter === "wrong") return !item.isCorrect;
-    return true;
-  });
+  // 필터링된 아이템 (useMemo로 최적화)
+  const filteredItems = useMemo(() => {
+    if (filter === "correct") return reviewItems.filter(item => item.isCorrect);
+    if (filter === "wrong") return reviewItems.filter(item => !item.isCorrect);
+    return reviewItems;
+  }, [reviewItems, filter]);
 
   return (
     <div className="review-screen">

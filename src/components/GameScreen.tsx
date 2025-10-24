@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { GameMode, VocabularyItem, ReviewItem } from "../types";
 import Furigana from "./Furigana";
-import { shuffleArray, removeWhitespace } from "../utils";
+import { formatTime, matchesAny } from "../utils";
+import { generateChoices } from "../utils/vocabHelpers";
 import { useI18n } from "../i18n/I18nContext";
+import { useTimer } from "../hooks/useTimer";
 
 interface GameScreenProps {
   vocabulary: VocabularyItem[];
@@ -29,71 +31,83 @@ const GameScreen: React.FC<GameScreenProps> = ({
   const [currentWord, setCurrentWord] = useState<VocabularyItem | null>(null);
   const [options, setOptions] = useState<string[]>([]);
   const [userInput, setUserInput] = useState("");
-  const [feedback, setFeedback] = useState<"correct" | "incorrect" | null>(
-    null
-  );
+  const [feedback, setFeedback] = useState<"correct" | "incorrect" | null>(null);
   const [isFinished, setIsFinished] = useState(false);
-  const [sessionWrongAnswers, setSessionWrongAnswers] = useState<
-    VocabularyItem[]
-  >([]);
-  const [sessionCorrectAnswers, setSessionCorrectAnswers] = useState<
-    VocabularyItem[]
-  >([]);
+  const [sessionWrongAnswers, setSessionWrongAnswers] = useState<VocabularyItem[]>([]);
+  const [sessionCorrectAnswers, setSessionCorrectAnswers] = useState<VocabularyItem[]>([]);
   const [reviewItems, setReviewItems] = useState<ReviewItem[]>([]);
   const [showFurigana, setShowFurigana] = useState(false);
   const [showTimer, setShowTimer] = useState(true);
-  const [elapsedTime, setElapsedTime] = useState(0); // 전체 경과 시간
-  const [questionStartTime, setQuestionStartTime] = useState(Date.now()); // 현재 문제 시작 시간
+  const [questionStartTime, setQuestionStartTime] = useState(Date.now());
   const inputRef = useRef<HTMLInputElement>(null);
-  const timerRef = useRef<number | null>(null);
+  
+  // 타이머 훅 사용 - 피드백 표시 중이거나 게임 종료 시 일시정지
+  const { elapsedTime } = useTimer(feedback !== null || isFinished);
+
+  // 현재 문제의 소요 시간 계산
+  const getQuestionTimeSpent = useCallback(() => {
+    return Math.floor((Date.now() - questionStartTime) / 1000);
+  }, [questionStartTime]);
+
+  // 중복 단어 체크 헬퍼
+  const isDuplicate = useCallback((list: VocabularyItem[], word: VocabularyItem) => {
+    return list.some(item => 
+      item.word === word.word && item.reading === word.reading
+    );
+  }, []);
+
+  // 세션 목록에 단어 추가
+  const addToSession = useCallback((
+    isCorrect: boolean,
+    word: VocabularyItem
+  ) => {
+    if (isCorrect) {
+      setSessionCorrectAnswers(prev => 
+        isDuplicate(prev, word) ? prev : [...prev, word]
+      );
+    } else {
+      setSessionWrongAnswers(prev => 
+        isDuplicate(prev, word) ? prev : [...prev, word]
+      );
+    }
+  }, [isDuplicate]);
+
+  // 리뷰 아이템 추가
+  const addReviewItem = useCallback((
+    word: VocabularyItem,
+    isCorrect: boolean,
+    userAnswer?: string
+  ) => {
+    setReviewItems(prev => [
+      ...prev,
+      {
+        ...word,
+        isCorrect,
+        userAnswer: !isCorrect ? userAnswer : undefined,
+        timeSpent: getQuestionTimeSpent(),
+      },
+    ]);
+  }, [getQuestionTimeSpent]);
 
   const setupQuestion = useCallback(() => {
     const word = vocabulary[currentIndex];
     setCurrentWord(word);
-    setQuestionStartTime(Date.now()); // 문제 시작 시간 기록
+    setQuestionStartTime(Date.now());
 
     if (mode === GameMode.MultipleChoice) {
-      const correctAnswers = word.meanings;
-      // 선택지 생성에는 전체 어휘 사용 (allVocabulary가 있으면 사용, 없으면 vocabulary 사용)
+      // 선택지 생성
       const vocabularyForChoices =
         allVocabulary && allVocabulary.length > vocabulary.length
           ? allVocabulary
           : vocabulary;
-      const allMeanings = vocabularyForChoices.flatMap((v) => v.meanings);
-      const uniqueMeanings = [...new Set(allMeanings)];
-
-      const distractors = uniqueMeanings
-        .filter((m) => !correctAnswers.includes(m))
-        .sort(() => 0.5 - Math.random())
-        .slice(0, 3);
-
-      const choiceOptions = shuffleArray([
-        ...correctAnswers.slice(0, 1),
-        ...distractors,
-      ]);
-      setOptions(choiceOptions);
+      
+      const choices = generateChoices(word, vocabularyForChoices);
+      setOptions(choices);
     }
 
     setUserInput("");
     setFeedback(null);
   }, [currentIndex, vocabulary, mode, allVocabulary]);
-
-  // 타이머 효과 - 피드백 표시 중이거나 게임이 끝났을 때는 멈춤
-  useEffect(() => {
-    // 피드백이 없고 게임이 진행 중일 때만 타이머 동작
-    if (!feedback && !isFinished) {
-      timerRef.current = window.setInterval(() => {
-        setElapsedTime((prev) => prev + 1);
-      }, 1000);
-    }
-
-    return () => {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
-    };
-  }, [feedback, isFinished]);
 
   useEffect(() => {
     if (vocabulary.length > 0 && currentIndex < vocabulary.length) {
@@ -113,65 +127,14 @@ const GameScreen: React.FC<GameScreenProps> = ({
   const handleAnswer = useCallback(() => {
     if (!currentWord) return;
 
-    let isCorrect = false;
-    // 띄어쓰기를 제거한 정답 목록
-    const normalizedMeanings = currentWord.meanings.map((m) =>
-      removeWhitespace(m.toLowerCase().trim())
-    );
-    // 사용자 입력도 띄어쓰기 제거
-    const normalizedInput = removeWhitespace(userInput.toLowerCase().trim());
+    // 정답 체크 - 정규화된 문자열 비교
+    const isCorrect = matchesAny(userInput, currentWord.meanings);
 
-    if (mode === GameMode.MultipleChoice) {
-      isCorrect = normalizedMeanings.includes(normalizedInput);
-    } else {
-      isCorrect = normalizedMeanings.includes(normalizedInput);
-    }
-
-    // 소요 시간 계산 (초)
-    const timeSpent = Math.floor((Date.now() - questionStartTime) / 1000);
-
-    // Review 아이템 추가
-    setReviewItems((prev) => [
-      ...prev,
-      {
-        ...currentWord,
-        isCorrect,
-        userAnswer: !isCorrect ? userInput : undefined,
-        timeSpent,
-      },
-    ]);
-
-    if (isCorrect) {
-      setFeedback("correct");
-      // 정답인 경우 정답 목록에 추가
-      setSessionCorrectAnswers((prev) => {
-        if (
-          prev.find(
-            (item) =>
-              item.word === currentWord.word &&
-              item.reading === currentWord.reading
-          )
-        ) {
-          return prev;
-        }
-        return [...prev, currentWord];
-      });
-    } else {
-      setFeedback("incorrect");
-      setSessionWrongAnswers((prev) => {
-        if (
-          prev.find(
-            (item) =>
-              item.word === currentWord.word &&
-              item.reading === currentWord.reading
-          )
-        ) {
-          return prev;
-        }
-        return [...prev, currentWord];
-      });
-    }
-  }, [currentWord, userInput, mode]);
+    // 결과 기록
+    setFeedback(isCorrect ? "correct" : "incorrect");
+    addToSession(isCorrect, currentWord);
+    addReviewItem(currentWord, isCorrect, userInput);
+  }, [currentWord, userInput, addToSession, addReviewItem]);
 
   const handleNext = useCallback(() => {
     setCurrentIndex((prev) => prev + 1);
@@ -195,53 +158,21 @@ const GameScreen: React.FC<GameScreenProps> = ({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [feedback, handleNext, handleAnswer, mode, userInput]);
 
-  const handleSkip = () => {
+  const handleSkip = useCallback(() => {
     if (!currentWord) return;
 
-    // 소요 시간 계산 (초)
-    const timeSpent = Math.floor((Date.now() - questionStartTime) / 1000);
-
-    // 오답 처리
+    // 스킵은 오답 처리
     setFeedback("incorrect");
-    setUserInput(""); // 입력값 비우기
-    
-    setSessionWrongAnswers((prev) => {
-      if (
-        prev.find(
-          (item) =>
-            item.word === currentWord.word &&
-            item.reading === currentWord.reading
-        )
-      ) {
-        return prev;
-      }
-      return [...prev, currentWord];
-    });
-
-    // Review 아이템에 스킵된 문제 추가
-    setReviewItems((prev) => [
-      ...prev,
-      {
-        ...currentWord,
-        isCorrect: false,
-        userAnswer: t.game.skipped, // 스킵 표시
-        timeSpent,
-      },
-    ]);
-  };
+    setUserInput("");
+    addToSession(false, currentWord);
+    addReviewItem(currentWord, false, t.game.skipped);
+  }, [currentWord, t.game.skipped, addToSession, addReviewItem]);
 
   useEffect(() => {
     if (isFinished) {
       onGameEnd(sessionWrongAnswers, sessionCorrectAnswers, reviewItems, elapsedTime);
     }
   }, [isFinished]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // 시간 포맷 함수 (초 -> MM:SS)
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  };
 
   if (isFinished) {
     return (
