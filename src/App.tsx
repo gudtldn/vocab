@@ -294,6 +294,18 @@ const App: React.FC = () => {
     setView(AppView.Game);
   };
 
+  const handleShowDialog = useCallback(
+    (title: string, message: string, onConfirm: () => void) => {
+      setDialog({
+        isOpen: true,
+        title,
+        message,
+        onConfirm,
+      });
+    },
+    []
+  );
+
   const handleReviewWrongAnswers = (reviewList: VocabularyItem[]) => {
     // For simplicity, let's reuse the multiple choice mode for review.
     handleStartGame(reviewList, GameMode.MultipleChoice);
@@ -670,6 +682,7 @@ const App: React.FC = () => {
             onEditBook={handleEditBook}
             onCreateVocabBook={() => setView(AppView.VocabCreator)}
             onVocabularyCountChange={setSelectedVocabularyCount}
+            onShowDialog={handleShowDialog}
           />
         );
     }

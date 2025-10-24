@@ -20,6 +20,11 @@ interface HomeProps {
   onEditBook: (book: VocabularyBook, vocabulary: VocabularyItem[]) => void;
   onCreateVocabBook: () => void;
   onVocabularyCountChange: (count: number) => void;
+  onShowDialog: (
+    title: string,
+    message: string,
+    onConfirm: () => void
+  ) => void;
 }
 
 const Home: React.FC<HomeProps> = ({
@@ -28,6 +33,7 @@ const Home: React.FC<HomeProps> = ({
   onEditBook,
   onCreateVocabBook,
   onVocabularyCountChange,
+  onShowDialog,
 }) => {
   const { t } = useI18n();
   const [vocabulary, setVocabulary] = useState<VocabularyItem[]>([]);
@@ -406,13 +412,14 @@ const Home: React.FC<HomeProps> = ({
                 </button>
                 <button
                   onClick={() => {
-                    if (
-                      selectedBookIds.length > 0 &&
-                      window.confirm(
-                        t.wrongAnswers.confirmDelete(selectedBookIds.length)
-                      )
-                    ) {
-                      selectedBookIds.forEach((id) => handleDeleteBook(id));
+                    if (selectedBookIds.length > 0) {
+                      onShowDialog(
+                        t.home.deleteBook,
+                        t.wrongAnswers.confirmDelete(selectedBookIds.length),
+                        () => {
+                          selectedBookIds.forEach((id) => handleDeleteBook(id));
+                        }
+                      );
                     }
                   }}
                   className="button button-bulk-delete"
