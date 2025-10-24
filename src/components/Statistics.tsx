@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { WrongAnswerItem } from "../types";
 import ConfirmDialog from "./ConfirmDialog";
+import { useI18n } from "../i18n/I18nContext";
 
 interface StatisticsProps {
   wrongAnswers: WrongAnswerItem[];
@@ -15,6 +16,7 @@ const Statistics: React.FC<StatisticsProps> = ({
   totalGamesPlayed,
   onResetStatistics,
 }) => {
+  const { t } = useI18n();
   const [showResetDialog, setShowResetDialog] = useState(false);
 
   const totalMistakes = wrongAnswers.reduce(
@@ -43,10 +45,10 @@ const Statistics: React.FC<StatisticsProps> = ({
     <>
       <ConfirmDialog
         isOpen={showResetDialog}
-        title="統計初期化"
-        message="本当に統計データをすべて初期化しますか？この操作は取り消せません。"
-        confirmText="初期化"
-        cancelText="キャンセル"
+        title={t.statistics.resetStats}
+        message={t.statistics.confirmResetDesc}
+        confirmText={t.common.confirm}
+        cancelText={t.common.cancel}
         onConfirm={handleResetConfirm}
         onCancel={() => setShowResetDialog(false)}
         danger={true}
@@ -54,45 +56,45 @@ const Statistics: React.FC<StatisticsProps> = ({
 
       <div className="statistics-container">
         <div className="statistics-header">
-          <h2 className="section-title">統計</h2>
+          <h2 className="section-title">{t.statistics.title}</h2>
           <button
             onClick={() => setShowResetDialog(true)}
             className="button button-danger"
           >
-            統計初期化
+            {t.statistics.resetStats}
           </button>
         </div>
 
         <div className="stats-grid">
           <div className="stat-card">
             <div className="stat-value">{totalGamesPlayed}</div>
-            <div className="stat-label">学習回数</div>
+            <div className="stat-label">{t.statistics.totalGames}</div>
           </div>
 
           <div className="stat-card">
             <div className="stat-value">{totalWordsStudied}</div>
-            <div className="stat-label">総学習単語数</div>
+            <div className="stat-label">{t.statistics.totalStudied}</div>
           </div>
 
           <div className="stat-card">
             <div className="stat-value">{accuracyRate}%</div>
-            <div className="stat-label">正答率</div>
+            <div className="stat-label">{t.review.accuracy}</div>
           </div>
 
           <div className="stat-card">
             <div className="stat-value">{uniqueWrongWords}</div>
-            <div className="stat-label">誤答単語数</div>
+            <div className="stat-label">{t.statistics.wrongAnswerCount}</div>
           </div>
 
           <div className="stat-card">
             <div className="stat-value">{totalMistakes}</div>
-            <div className="stat-label">総誤答回数</div>
+            <div className="stat-label">{t.wrongAnswers.missCountHeader}</div>
           </div>
         </div>
 
         {mostMissedWords.length > 0 && (
           <div className="most-missed-section">
-            <h3 className="subsection-title">最も間違えた単語 Top 5</h3>
+            <h3 className="subsection-title">{t.statistics.topMissedWords}</h3>
             <div className="most-missed-list">
               {mostMissedWords.map((item, index) => (
                 <div key={`${item.word}-${index}`} className="most-missed-item">
@@ -104,7 +106,7 @@ const Statistics: React.FC<StatisticsProps> = ({
                       {item.meanings.join(", ")}
                     </div>
                   </div>
-                  <div className="miss-count">{item.missCount}回</div>
+                  <div className="miss-count">{item.missCount}{t.statistics.times}</div>
                 </div>
               ))}
             </div>

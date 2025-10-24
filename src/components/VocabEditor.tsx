@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { VocabularyItem, VocabularyBook } from "../types";
 import Furigana from "./Furigana";
 import ConfirmDialog from "./ConfirmDialog";
+import { useI18n } from "../i18n/I18nContext";
 
 interface VocabEditorProps {
   vocabulary: VocabularyItem[];
@@ -16,6 +17,7 @@ const VocabEditor: React.FC<VocabEditorProps> = ({
   onSave,
   onExportCSV,
 }) => {
+  const { t } = useI18n();
   const [vocabList, setVocabList] = useState<VocabularyItem[]>([]);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -64,8 +66,8 @@ const VocabEditor: React.FC<VocabEditorProps> = ({
     if (!newWord.word || !newWord.reading || !newWord.meanings[0]) {
       setDialog({
         isOpen: true,
-        title: "入力エラー",
-        message: "単語、読み、意味を入力してください。",
+        title: t.vocabEditor.inputError,
+        message: t.vocabEditor.inputErrorMessage,
         onConfirm: () => setDialog({ ...dialog, isOpen: false }),
       });
       return;
@@ -90,26 +92,24 @@ const VocabEditor: React.FC<VocabEditorProps> = ({
     return (
       <div className="vocab-editor-container">
         <div className="editor-header">
-          <h2 className="section-title">単語帳編集</h2>
+          <h2 className="section-title">{t.vocabEditor.title}</h2>
           <div className="editor-actions">
             <button
               onClick={() => setShowAddForm(true)}
               className="button button-primary"
             >
-              ➕ 単語追加
+              ➕ {t.vocabEditor.addWord}
             </button>
           </div>
         </div>
         <div className="empty-state">
           <div className="empty-icon">📚</div>
-          <h3 className="empty-title">編集する単語帳がありません</h3>
+          <h3 className="empty-title">{t.vocabEditor.emptyTitle}</h3>
           <p className="empty-description">
-            ホーム画面で単語帳を選択してから、
-            <br />
-            こちらで編集できます。
+            {t.vocabEditor.emptyDescription}
           </p>
           <p className="empty-hint">
-            または、下のボタンで新しい単語を追加できます。
+            {t.vocabEditor.emptyHint}
           </p>
         </div>
       </div>
@@ -120,20 +120,20 @@ const VocabEditor: React.FC<VocabEditorProps> = ({
     <div className="vocab-editor-container">
       <div className="editor-header">
         <div className="editor-title-section">
-          <h2 className="section-title">単語帳編集</h2>
+          <h2 className="section-title">{t.vocabEditor.title}</h2>
           {currentBook && (
-            <div className="current-book-name">📚 {currentBook.name}</div>
+            <div className="current-book-name">{t.vocabEditor.currentBook(currentBook.name)}</div>
           )}
         </div>
         <div className="editor-actions">
           <button onClick={onExportCSV} className="button button-export">
-            📤 CSV出力
+            📤 {t.vocabEditor.exportCSV}
           </button>
           <button
             onClick={() => setShowAddForm(!showAddForm)}
             className="button button-primary"
           >
-            {showAddForm ? "キャンセル" : "➕ 単語追加"}
+            {showAddForm ? t.vocabEditor.cancel : `➕ ${t.vocabEditor.addWord}`}
           </button>
         </div>
       </div>
@@ -143,59 +143,59 @@ const VocabEditor: React.FC<VocabEditorProps> = ({
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="🔍 単語を検索..."
+          placeholder={`🔍 ${t.vocabEditor.search}`}
           className="search-input"
         />
       </div>
 
       {showAddForm && (
         <div className="add-form">
-          <h3 className="form-title">新しい単語を追加</h3>
+          <h3 className="form-title">{t.vocabEditor.addNewWord}</h3>
           <div className="form-grid">
             <div className="form-group">
-              <label>単語</label>
+              <label>{t.vocabEditor.wordLabel}</label>
               <input
                 type="text"
                 value={newWord.word}
                 onChange={(e) =>
                   setNewWord({ ...newWord, word: e.target.value })
                 }
-                placeholder="例: 食べる"
+                placeholder={t.vocabEditor.wordPlaceholder}
                 className="form-input"
               />
             </div>
             <div className="form-group">
-              <label>読み</label>
+              <label>{t.vocabEditor.readingLabel}</label>
               <input
                 type="text"
                 value={newWord.reading}
                 onChange={(e) =>
                   setNewWord({ ...newWord, reading: e.target.value })
                 }
-                placeholder="例: たべる"
+                placeholder={t.vocabEditor.readingPlaceholder}
                 className="form-input"
               />
             </div>
             <div className="form-group full-width">
-              <label>意味</label>
+              <label>{t.vocabEditor.meaningLabel}</label>
               <input
                 type="text"
                 value={newWord.meanings[0]}
                 onChange={(e) =>
                   setNewWord({ ...newWord, meanings: [e.target.value] })
                 }
-                placeholder="例: 먹다"
+                placeholder={t.vocabEditor.meaningPlaceholder}
                 className="form-input"
               />
             </div>
             <div className="form-group full-width">
-              <label>メモ (任意)</label>
+              <label>{t.vocabEditor.noteLabel}</label>
               <textarea
                 value={newWord.note || ""}
                 onChange={(e) =>
                   setNewWord({ ...newWord, note: e.target.value })
                 }
-                placeholder="例: よく使う動詞"
+                placeholder={t.vocabEditor.notePlaceholder}
                 className="form-textarea"
                 rows={2}
               />
@@ -203,20 +203,20 @@ const VocabEditor: React.FC<VocabEditorProps> = ({
           </div>
           <div className="form-actions">
             <button onClick={handleAdd} className="button button-primary">
-              追加
+              {t.vocabEditor.add}
             </button>
             <button
               onClick={() => setShowAddForm(false)}
               className="button button-secondary"
             >
-              キャンセル
+              {t.vocabEditor.cancel}
             </button>
           </div>
         </div>
       )}
 
       <div className="vocab-list">
-        <div className="vocab-count">{filteredVocab.length}個の単語</div>
+        <div className="vocab-count">{t.vocabEditor.wordCount(filteredVocab.length)}</div>
         {filteredVocab.map((item, index) => (
           <VocabItem
             key={index}
@@ -227,6 +227,7 @@ const VocabEditor: React.FC<VocabEditorProps> = ({
             onSave={(updated) => handleSave(index, updated)}
             onDelete={() => handleDelete(index)}
             onCancel={() => setEditingId(null)}
+            t={t}
           />
         ))}
       </div>
@@ -250,6 +251,7 @@ interface VocabItemProps {
   onSave: (item: VocabularyItem) => void;
   onDelete: () => void;
   onCancel: () => void;
+  t: any;
 }
 
 const VocabItem: React.FC<VocabItemProps> = ({
@@ -259,6 +261,7 @@ const VocabItem: React.FC<VocabItemProps> = ({
   onSave,
   onDelete,
   onCancel,
+  t,
 }) => {
   const [editedItem, setEditedItem] = useState(item);
 
@@ -271,7 +274,7 @@ const VocabItem: React.FC<VocabItemProps> = ({
       <div className="vocab-item editing">
         <div className="form-grid">
           <div className="form-group">
-            <label>単語</label>
+            <label>{t.vocabEditor.wordLabel}</label>
             <input
               type="text"
               value={editedItem.word}
@@ -282,7 +285,7 @@ const VocabItem: React.FC<VocabItemProps> = ({
             />
           </div>
           <div className="form-group">
-            <label>読み</label>
+            <label>{t.vocabEditor.readingLabel}</label>
             <input
               type="text"
               value={editedItem.reading}
@@ -293,7 +296,7 @@ const VocabItem: React.FC<VocabItemProps> = ({
             />
           </div>
           <div className="form-group full-width">
-            <label>意味</label>
+            <label>{t.vocabEditor.meaningLabel}</label>
             <input
               type="text"
               value={editedItem.meanings.join(", ")}
@@ -307,7 +310,7 @@ const VocabItem: React.FC<VocabItemProps> = ({
             />
           </div>
           <div className="form-group full-width">
-            <label>メモ</label>
+            <label>{t.vocabEditor.noteLabel}</label>
             <textarea
               value={editedItem.note || ""}
               onChange={(e) =>
@@ -323,10 +326,10 @@ const VocabItem: React.FC<VocabItemProps> = ({
             onClick={() => onSave(editedItem)}
             className="button button-save"
           >
-            保存
+            {t.vocabEditor.save}
           </button>
           <button onClick={onCancel} className="button button-secondary">
-            キャンセル
+            {t.vocabEditor.cancel}
           </button>
         </div>
       </div>
@@ -343,13 +346,13 @@ const VocabItem: React.FC<VocabItemProps> = ({
         {item.note && <div className="item-note">📝 {item.note}</div>}
       </div>
       <div className="item-actions">
-        <button onClick={onEdit} className="button button-edit" title="編集">
+        <button onClick={onEdit} className="button button-edit" title={t.vocabEditor.edit}>
           ✏️
         </button>
         <button
           onClick={onDelete}
           className="button button-delete-small"
-          title="削除"
+          title={t.vocabEditor.delete}
         >
           ✕
         </button>

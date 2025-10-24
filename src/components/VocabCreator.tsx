@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import { VocabularyItem } from "../types";
 import ConfirmDialog from "./ConfirmDialog";
 import { useDialog } from "../hooks/useDialog";
+import { useI18n } from "../i18n/I18nContext";
 
 interface VocabCreatorProps {
   onSave: (name: string, vocabulary: VocabularyItem[]) => void;
@@ -9,6 +10,7 @@ interface VocabCreatorProps {
 }
 
 const VocabCreator: React.FC<VocabCreatorProps> = ({ onSave, onCancel }) => {
+  const { t } = useI18n();
   const [bookName, setBookName] = useState("");
   const [vocabulary, setVocabulary] = useState<VocabularyItem[]>([]);
   const [currentWord, setCurrentWord] = useState("");
@@ -84,8 +86,8 @@ const VocabCreator: React.FC<VocabCreatorProps> = ({ onSave, onCancel }) => {
   const handleDelete = (index: number) => {
     const word = vocabulary[index];
     showDialog(
-      "単語を削除",
-      `「${word.word}」を削除しますか？`,
+      t.vocabCreator.deleteWord,
+      t.vocabCreator.deleteWordConfirm(word.word),
       () => {
         setVocabulary(vocabulary.filter((_, i) => i !== index));
         hideDialog();
@@ -110,8 +112,8 @@ const VocabCreator: React.FC<VocabCreatorProps> = ({ onSave, onCancel }) => {
   const handleSave = () => {
     if (!bookName.trim()) {
       showDialog(
-        "入力エラー",
-        "単語帳の名前を入力してください。",
+        t.vocabCreator.inputError,
+        t.vocabCreator.bookNameError,
         hideDialog
       );
       return;
@@ -119,8 +121,8 @@ const VocabCreator: React.FC<VocabCreatorProps> = ({ onSave, onCancel }) => {
 
     if (vocabulary.length === 0) {
       showDialog(
-        "入力エラー",
-        "単語を少なくとも1つ追加してください。",
+        t.vocabCreator.inputError,
+        t.vocabCreator.noWordsError,
         hideDialog
       );
       return;
@@ -169,20 +171,20 @@ const VocabCreator: React.FC<VocabCreatorProps> = ({ onSave, onCancel }) => {
   return (
     <div className="vocab-creator-container">
       <div className="creator-header">
-        <h2 className="creator-title">新しい単語帳を作成</h2>
+        <h2 className="creator-title">{t.vocabCreator.title}</h2>
         <button onClick={onCancel} className="button button-secondary">
-          キャンセル
+          {t.vocabCreator.cancel}
         </button>
       </div>
 
       <div className="word-form-section">
         <h3 className="section-title">
-          {editingIndex !== null ? "単語を編集" : "単語を追加"}
+          {editingIndex !== null ? t.vocabCreator.editWordTitle : t.vocabCreator.addWordTitle}
         </h3>
         <div className="form-grid">
           <div className="form-group">
             <label htmlFor="word" className="form-label">
-              単語 *
+              {t.vocabCreator.wordLabel}
             </label>
             <input
               id="word"
@@ -194,7 +196,7 @@ const VocabCreator: React.FC<VocabCreatorProps> = ({ onSave, onCancel }) => {
               onFocus={() => {
                 lastFocusedInputRef.current = wordInputRef.current;
               }}
-              placeholder="例: 食べる"
+              placeholder={t.vocabCreator.wordPlaceholder}
               className="form-input"
               lang="ja"
             />
@@ -202,7 +204,7 @@ const VocabCreator: React.FC<VocabCreatorProps> = ({ onSave, onCancel }) => {
 
           <div className="form-group">
             <label htmlFor="reading" className="form-label">
-              読み *
+              {t.vocabCreator.readingLabel}
             </label>
             <input
               id="reading"
@@ -214,7 +216,7 @@ const VocabCreator: React.FC<VocabCreatorProps> = ({ onSave, onCancel }) => {
               onFocus={() => {
                 lastFocusedInputRef.current = readingInputRef.current;
               }}
-              placeholder="例: たべる"
+              placeholder={t.vocabCreator.readingPlaceholder}
               className="form-input"
               lang="ja"
             />
@@ -222,7 +224,7 @@ const VocabCreator: React.FC<VocabCreatorProps> = ({ onSave, onCancel }) => {
 
           <div className="form-group full-width">
             <label htmlFor="meanings" className="form-label">
-              意味 * (カンマ区切り)
+              {t.vocabCreator.meaningLabel}
             </label>
             <input
               id="meanings"
@@ -234,7 +236,7 @@ const VocabCreator: React.FC<VocabCreatorProps> = ({ onSave, onCancel }) => {
               onFocus={() => {
                 lastFocusedInputRef.current = meaningsInputRef.current;
               }}
-              placeholder="例: 먹다, 食べる, eat"
+              placeholder={t.vocabCreator.meaningPlaceholder}
               className="form-input"
               lang="ko"
             />
@@ -242,7 +244,7 @@ const VocabCreator: React.FC<VocabCreatorProps> = ({ onSave, onCancel }) => {
 
           <div className="form-group full-width">
             <label htmlFor="note" className="form-label">
-              メモ (任意)
+              {t.vocabCreator.noteLabel}
             </label>
             <input
               id="note"
@@ -253,7 +255,7 @@ const VocabCreator: React.FC<VocabCreatorProps> = ({ onSave, onCancel }) => {
               onFocus={() => {
                 lastFocusedInputRef.current = noteInputRef.current;
               }}
-              placeholder="例: 五段動詞"
+              placeholder={t.vocabCreator.notePlaceholder}
               className="form-input"
             />
           </div>
@@ -265,11 +267,11 @@ const VocabCreator: React.FC<VocabCreatorProps> = ({ onSave, onCancel }) => {
               onClick={handleCancelEdit}
               className="button button-secondary"
             >
-              編集をキャンセル
+              {t.vocabCreator.cancelEdit}
             </button>
           )}
           <button onClick={handleAddWord} className="button button-primary">
-            {editingIndex !== null ? "更新" : "追加"}
+            {editingIndex !== null ? t.vocabCreator.update : t.vocabCreator.add}
           </button>
         </div>
       </div>
@@ -277,7 +279,7 @@ const VocabCreator: React.FC<VocabCreatorProps> = ({ onSave, onCancel }) => {
       <div className="vocabulary-list-section">
         <div className="list-header">
           <h3 className="section-title">
-            追加された単語 ({vocabulary.length})
+            {t.vocabCreator.addedWordsTitle(vocabulary.length)}
           </h3>
           {vocabulary.length > 0 && (
             <div className="save-section">
@@ -286,18 +288,18 @@ const VocabCreator: React.FC<VocabCreatorProps> = ({ onSave, onCancel }) => {
                 type="text"
                 value={bookName}
                 onChange={(e) => setBookName(e.target.value)}
-                placeholder="単語帳の名前を入力 *"
+                placeholder={t.vocabCreator.bookNamePlaceholder}
                 className="form-input book-name-inline"
               />
               <button onClick={handleSave} className="button button-success">
-                💾 保存
+                {t.vocabCreator.saveButton}
               </button>
             </div>
           )}
         </div>
 
         {vocabulary.length === 0 ? (
-          <p className="empty-message">まだ単語が追加されていません。</p>
+          <p className="empty-message">{t.vocabCreator.emptyMessage}</p>
         ) : (
           <div className="vocab-list">
             {vocabulary.map((word, index) => (
@@ -318,14 +320,14 @@ const VocabCreator: React.FC<VocabCreatorProps> = ({ onSave, onCancel }) => {
                   <button
                     onClick={() => handleEdit(index)}
                     className="button-icon button-icon-edit"
-                    title="編集"
+                    title={t.vocabCreator.editTooltip}
                   >
                     ✏️
                   </button>
                   <button
                     onClick={() => handleDelete(index)}
                     className="button-icon button-icon-delete"
-                    title="削除"
+                    title={t.vocabCreator.deleteTooltip}
                   >
                     🗑️
                   </button>

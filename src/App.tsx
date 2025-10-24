@@ -8,6 +8,7 @@ import ReviewScreen from "./components/ReviewScreen";
 import VocabCreator from "./components/VocabCreator";
 import Header from "./components/Header";
 import ConfirmDialog from "./components/ConfirmDialog";
+import { useI18n } from "./i18n/I18nContext";
 import {
   AppView,
   GameMode,
@@ -31,6 +32,7 @@ import { appDataDir } from "@tauri-apps/api/path";
 import { save } from "@tauri-apps/plugin-dialog";
 
 const App: React.FC = () => {
+  const { t } = useI18n();
   const [view, setView] = useState<AppView>(AppView.Home);
   const [gameVocabulary, setGameVocabulary] = useState<VocabularyItem[]>([]);
   const [allVocabulary, setAllVocabulary] = useState<VocabularyItem[]>([]); // 선택지 생성용 전체 어휘
@@ -711,71 +713,67 @@ const App: React.FC = () => {
         >
           <div className="shortcut-dialog" onClick={(e) => e.stopPropagation()}>
             <div className="shortcut-header">
-              <h2 className="shortcut-title">⌨️ キーボードショートカット</h2>
+              <h2 className="shortcut-title">{t.shortcuts.title}</h2>
               <button
                 onClick={() => setShowShortcutHelp(false)}
                 className="shortcut-close"
-                aria-label="閉じる"
+                aria-label={t.shortcuts.close}
               >
                 ✕
               </button>
             </div>
             <div className="shortcut-body">
               <div className="shortcut-section">
-                <h3 className="shortcut-section-title">ナビゲーション</h3>
+                <h3 className="shortcut-section-title">{t.shortcuts.navigation}</h3>
                 <div className="shortcut-list">
                   <div className="shortcut-item">
                     <kbd className="shortcut-key">Ctrl/⌘</kbd>
                     <kbd className="shortcut-key">H</kbd>
-                    <span className="shortcut-desc">ホーム画面</span>
+                    <span className="shortcut-desc">{t.shortcuts.home}</span>
                   </div>
                   <div className="shortcut-item">
                     <kbd className="shortcut-key">Ctrl/⌘</kbd>
                     <kbd className="shortcut-key">W</kbd>
-                    <span className="shortcut-desc">誤答ノート</span>
+                    <span className="shortcut-desc">{t.shortcuts.wrongAnswers}</span>
                   </div>
                   <div className="shortcut-item">
                     <kbd className="shortcut-key">Ctrl/⌘</kbd>
                     <kbd className="shortcut-key">S</kbd>
-                    <span className="shortcut-desc">統計画面</span>
+                    <span className="shortcut-desc">{t.shortcuts.statistics}</span>
                   </div>
                 </div>
               </div>
 
               <div className="shortcut-section">
-                <h3 className="shortcut-section-title">アクション</h3>
+                <h3 className="shortcut-section-title">{t.shortcuts.actions}</h3>
                 <div className="shortcut-list">
                   <div className="shortcut-item">
                     <kbd className="shortcut-key">Ctrl/⌘</kbd>
                     <kbd className="shortcut-key">D</kbd>
-                    <span className="shortcut-desc">ダークモード切り替え</span>
+                    <span className="shortcut-desc">{t.shortcuts.darkMode}</span>
                   </div>
                   <div className="shortcut-item">
                     <kbd className="shortcut-key">Enter</kbd>
-                    <span className="shortcut-desc">
-                      決定 / 次へ (ゲーム中)
-                    </span>
+                    <span className="shortcut-desc">{t.shortcuts.confirmNext}</span>
                   </div>
                   <div className="shortcut-item">
                     <kbd className="shortcut-key">Esc</kbd>
-                    <span className="shortcut-desc">
-                      キャンセル / フォーカス解除
-                    </span>
+                    <span className="shortcut-desc">{t.shortcuts.cancelBlur}</span>
                   </div>
                 </div>
               </div>
 
               <div className="shortcut-section">
-                <h3 className="shortcut-section-title">ヘルプ</h3>
+                <h3 className="shortcut-section-title">{t.shortcuts.helpSection}</h3>
                 <div className="shortcut-list">
                   <div className="shortcut-item">
                     <kbd className="shortcut-key">?</kbd>
-                    <span className="shortcut-desc">このヘルプを表示</span>
+                    <span className="shortcut-desc">{t.shortcuts.help}</span>
                   </div>
                   <div className="shortcut-item">
                     <kbd className="shortcut-key">Ctrl/⌘</kbd>
                     <kbd className="shortcut-key">?</kbd>
-                    <span className="shortcut-desc">このヘルプを表示</span>
+                    <span className="shortcut-desc">{t.shortcuts.help}</span>
                   </div>
                 </div>
               </div>
