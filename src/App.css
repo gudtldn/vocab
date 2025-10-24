@@ -2364,6 +2364,21 @@ body.dark-mode .button-bulk-delete:hover {
   .upload-buttons .button {
     width: 100%;
   }
+
+  .save-section {
+    flex-direction: column;
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .book-name-inline {
+    width: 100%;
+  }
+
+  .list-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
 }
 
 .vocabulary-list-section {
@@ -2377,6 +2392,19 @@ body.dark-mode .button-bulk-delete:hover {
   margin-bottom: 1rem;
   flex-wrap: wrap;
   gap: 1rem;
+}
+
+.save-section {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex: 1;
+  max-width: 500px;
+}
+
+.book-name-inline {
+  flex: 1;
+  min-width: 200px;
 }
 
 .empty-message {

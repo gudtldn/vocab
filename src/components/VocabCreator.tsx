@@ -190,20 +190,6 @@ const VocabCreator: React.FC<VocabCreatorProps> = ({ onSave, onCancel }) => {
         </button>
       </div>
 
-      <div className="book-name-section">
-        <label htmlFor="bookName" className="form-label">
-          単語帳の名前 *
-        </label>
-        <input
-          id="bookName"
-          type="text"
-          value={bookName}
-          onChange={(e) => setBookName(e.target.value)}
-          placeholder="例: JLPT N5 単語"
-          className="form-input"
-        />
-      </div>
-
       <div className="word-form-section">
         <h3 className="section-title">
           {editingIndex !== null ? "単語を編集" : "単語を追加"}
@@ -299,9 +285,19 @@ const VocabCreator: React.FC<VocabCreatorProps> = ({ onSave, onCancel }) => {
         <div className="list-header">
           <h3 className="section-title">追加された単語 ({vocabulary.length})</h3>
           {vocabulary.length > 0 && (
-            <button onClick={handleSave} className="button button-success">
-              💾 単語帳を保存
-            </button>
+            <div className="save-section">
+              <input
+                id="bookName"
+                type="text"
+                value={bookName}
+                onChange={(e) => setBookName(e.target.value)}
+                placeholder="単語帳の名前を入力 *"
+                className="form-input book-name-inline"
+              />
+              <button onClick={handleSave} className="button button-success">
+                💾 保存
+              </button>
+            </div>
           )}
         </div>
 
