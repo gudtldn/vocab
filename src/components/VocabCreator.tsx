@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { VocabularyItem } from "../types";
 import ConfirmDialog from "./ConfirmDialog";
 
@@ -30,13 +30,25 @@ const VocabCreator: React.FC<VocabCreatorProps> = ({ onSave, onCancel }) => {
     onConfirm: () => {},
   });
 
+  const wordInputRef = useRef<HTMLInputElement>(null);
+  const readingInputRef = useRef<HTMLInputElement>(null);
+  const meaningsInputRef = useRef<HTMLInputElement>(null);
+  const noteInputRef = useRef<HTMLInputElement>(null);
+  const lastFocusedInputRef = useRef<HTMLInputElement | null>(null);
+
   const handleAddWord = () => {
     if (!currentWord.trim() || !currentReading.trim() || !currentMeanings.trim()) {
       setDialog({
         isOpen: true,
         title: "入力エラー",
         message: "単語、読み、意味は必須です。",
-        onConfirm: () => setDialog({ ...dialog, isOpen: false }),
+        onConfirm: () => {
+          setDialog({ ...dialog, isOpen: false });
+          // 元のフォーカス位置に戻る
+          setTimeout(() => {
+            lastFocusedInputRef.current?.focus();
+          }, 0);
+        },
       });
       return;
     }
@@ -67,6 +79,11 @@ const VocabCreator: React.FC<VocabCreatorProps> = ({ onSave, onCancel }) => {
     setCurrentReading("");
     setCurrentMeanings("");
     setCurrentNote("");
+
+    // 単語入力欄にフォーカス
+    setTimeout(() => {
+      wordInputRef.current?.focus();
+    }, 0);
   };
 
   const handleEdit = (index: number) => {
@@ -76,6 +93,11 @@ const VocabCreator: React.FC<VocabCreatorProps> = ({ onSave, onCancel }) => {
     setCurrentMeanings(word.meanings.join(", "));
     setCurrentNote(word.note || "");
     setEditingIndex(index);
+    
+    // 単語入力欄にフォーカス
+    setTimeout(() => {
+      wordInputRef.current?.focus();
+    }, 0);
   };
 
   const handleDelete = (index: number) => {
@@ -98,6 +120,11 @@ const VocabCreator: React.FC<VocabCreatorProps> = ({ onSave, onCancel }) => {
     setCurrentReading("");
     setCurrentMeanings("");
     setCurrentNote("");
+    
+    // 単語入力欄にフォーカス
+    setTimeout(() => {
+      wordInputRef.current?.focus();
+    }, 0);
   };
 
   const handleSave = () => {
@@ -122,6 +149,29 @@ const VocabCreator: React.FC<VocabCreatorProps> = ({ onSave, onCancel }) => {
     }
 
     onSave(bookName.trim(), vocabulary);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent, currentField: 'word' | 'reading' | 'meanings') => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      
+      // 現在のフィールドが空の場合、次のフィールドに移動
+      if (currentField === 'word' && !currentWord.trim()) {
+        readingInputRef.current?.focus();
+        return;
+      }
+      if (currentField === 'reading' && !currentReading.trim()) {
+        meaningsInputRef.current?.focus();
+        return;
+      }
+      if (currentField === 'meanings' && !currentMeanings.trim()) {
+        // 意味フィールドが空の場合は何もしない（フォーカスを維持）
+        return;
+      }
+      
+      // すべて入力されている場合は単語を追加
+      handleAddWord();
+    }
   };
 
   return (
@@ -159,10 +209,14 @@ const VocabCreator: React.FC<VocabCreatorProps> = ({ onSave, onCancel }) => {
             <input
               id="word"
               type="text"
+              ref={wordInputRef}
               value={currentWord}
               onChange={(e) => setCurrentWord(e.target.value)}
+              onKeyDown={(e) => handleKeyDown(e, 'word')}
+              onFocus={() => { lastFocusedInputRef.current = wordInputRef.current; }}
               placeholder="例: 食べる"
               className="form-input"
+              lang="ja"
             />
           </div>
 
@@ -173,10 +227,14 @@ const VocabCreator: React.FC<VocabCreatorProps> = ({ onSave, onCancel }) => {
             <input
               id="reading"
               type="text"
+              ref={readingInputRef}
               value={currentReading}
               onChange={(e) => setCurrentReading(e.target.value)}
+              onKeyDown={(e) => handleKeyDown(e, 'reading')}
+              onFocus={() => { lastFocusedInputRef.current = readingInputRef.current; }}
               placeholder="例: たべる"
               className="form-input"
+              lang="ja"
             />
           </div>
 
@@ -187,10 +245,14 @@ const VocabCreator: React.FC<VocabCreatorProps> = ({ onSave, onCancel }) => {
             <input
               id="meanings"
               type="text"
+              ref={meaningsInputRef}
               value={currentMeanings}
               onChange={(e) => setCurrentMeanings(e.target.value)}
+              onKeyDown={(e) => handleKeyDown(e, 'meanings')}
+              onFocus={() => { lastFocusedInputRef.current = meaningsInputRef.current; }}
               placeholder="例: 먹다, 食べる, eat"
               className="form-input"
+              lang="ko"
             />
           </div>
 
@@ -201,8 +263,10 @@ const VocabCreator: React.FC<VocabCreatorProps> = ({ onSave, onCancel }) => {
             <input
               id="note"
               type="text"
+              ref={noteInputRef}
               value={currentNote}
               onChange={(e) => setCurrentNote(e.target.value)}
+              onFocus={() => { lastFocusedInputRef.current = noteInputRef.current; }}
               placeholder="例: 五段動詞"
               className="form-input"
             />
