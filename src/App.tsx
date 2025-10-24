@@ -416,12 +416,7 @@ const App: React.FC = () => {
 
           await writeTextFile(book.filePath, csvContent);
           console.log("단어장 파일 저장 성공:", book.filePath);
-          setDialog({
-            isOpen: true,
-            title: "保存完了",
-            message: "単語帳を保存しました！",
-            onConfirm: () => setDialog({ ...dialog, isOpen: false }),
-          });
+          // 저장 성공 - 자동 저장이므로 다이얼로그 불필요
         } catch (error) {
           console.error("단어장 파일 저장 실패:", error);
           setDialog({
@@ -519,16 +514,9 @@ const App: React.FC = () => {
           { baseDir: BaseDirectory.AppData }
         );
 
-        setDialog({
-          isOpen: true,
-          title: "作成完了",
-          message: `単語帳「${name}」を作成しました！`,
-          onConfirm: () => {
-            setDialog({ ...dialog, isOpen: false });
-            setView(AppView.Home);
-            window.location.reload();
-          },
-        });
+        // 생성 성공 - 파일 저장 다이얼로그로 이미 확인했으므로 바로 홈으로 이동
+        setView(AppView.Home);
+        window.location.reload();
       } catch (error) {
         console.error("단어장 생성 실패:", error);
         setDialog({
@@ -579,12 +567,7 @@ const App: React.FC = () => {
           .join("\n");
 
         await writeTextFile(filePath, csvContent);
-        setDialog({
-          isOpen: true,
-          title: "出力完了",
-          message: "CSV ファイルに出力しました！",
-          onConfirm: () => setDialog({ ...dialog, isOpen: false }),
-        });
+        // 출력 성공 - 파일 저장 다이얼로그로 이미 확인했으므로 다이얼로그 불필요
       }
     } catch (error) {
       console.error("CSV 출력 실패:", error);

@@ -37,23 +37,12 @@ const VocabCreator: React.FC<VocabCreatorProps> = ({ onSave, onCancel }) => {
   const lastFocusedInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleAddWord = () => {
+    // 필수 입력 확인 - 비어있으면 무시 (Enter로 다음 칸 이동 기능이 있음)
     if (
       !currentWord.trim() ||
       !currentReading.trim() ||
       !currentMeanings.trim()
     ) {
-      setDialog({
-        isOpen: true,
-        title: "入力エラー",
-        message: "単語、読み、意味は必須です。",
-        onConfirm: () => {
-          setDialog({ ...dialog, isOpen: false });
-          // 元のフォーカス位置に戻る
-          setTimeout(() => {
-            lastFocusedInputRef.current?.focus();
-          }, 0);
-        },
-      });
       return;
     }
 
