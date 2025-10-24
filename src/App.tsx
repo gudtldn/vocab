@@ -455,20 +455,22 @@ const App: React.FC = () => {
   const handleCreateVocabBook = useCallback(
     async (name: string, vocabulary: VocabularyItem[]) => {
       try {
-        const appDataDirPath = await appDataDir();
-        const vocabDirPath = `${appDataDirPath}vocabularies`;
-
-        // vocabularies 디렉토리가 없으면 생성
-        const vocabDirExists = await exists(vocabDirPath);
-        if (!vocabDirExists) {
-          await mkdir(vocabDirPath, { recursive: true });
-        }
-
-        // 파일명 생성 (공백을 언더스코어로 변경, 타임스탬프 추가)
+        // 사용자가 저장 경로 선택
         const sanitizedName = name.replace(/\s+/g, "_");
-        const timestamp = Date.now();
-        const fileName = `${sanitizedName}_${timestamp}.csv`;
-        const filePath = `${vocabDirPath}/${fileName}`;
+        const filePath = await save({
+          defaultPath: `${sanitizedName}.csv`,
+          filters: [
+            {
+              name: "CSV",
+              extensions: ["csv"],
+            },
+          ],
+        });
+
+        // 사용자가 취소한 경우
+        if (!filePath) {
+          return;
+        }
 
         // CSV 형식으로 변환
         const csvContent = vocabulary
@@ -483,9 +485,11 @@ const App: React.FC = () => {
         await writeTextFile(filePath, csvContent);
 
         // 단어장 목록에 추가
+        const timestamp = Date.now();
+        const fileName = filePath.split(/[\\/]/).pop() || `${sanitizedName}.csv`;
         const newBook: VocabularyBook = {
           id: timestamp.toString(),
-          name: `${name}.csv`,
+          name: fileName,
           filePath: filePath,
           lastUsed: timestamp,
           wordCount: vocabulary.length,
