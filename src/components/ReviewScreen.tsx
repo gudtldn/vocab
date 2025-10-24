@@ -7,6 +7,7 @@ interface ReviewScreenProps {
   reviewItems: ReviewItem[];
   totalQuestions: number;
   correctCount: number;
+  totalTimeSpent: number;
   onReturnHome: () => void;
   onReviewWrong: (mode: GameMode) => void;
 }
@@ -15,6 +16,7 @@ const ReviewScreen: React.FC<ReviewScreenProps> = ({
   reviewItems,
   totalQuestions,
   correctCount,
+  totalTimeSpent,
   onReturnHome,
   onReviewWrong,
 }) => {
@@ -25,9 +27,6 @@ const ReviewScreen: React.FC<ReviewScreenProps> = ({
   const wrongCount = totalQuestions - correctCount;
   const accuracy =
     totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0;
-
-  // 총 소요 시간 계산
-  const totalTime = reviewItems.reduce((sum, item) => sum + (item.timeSpent || 0), 0);
   
   // 시간 포맷 함수 (초 -> MM:SS)
   const formatTime = (seconds: number) => {
@@ -61,7 +60,7 @@ const ReviewScreen: React.FC<ReviewScreenProps> = ({
           </div>
           <div className="stat-card time">
             <div className="stat-label">{t.game.totalTime}</div>
-            <div className="stat-value">⏱️ {formatTime(totalTime)}</div>
+            <div className="stat-value">⏱️ {formatTime(totalTimeSpent)}</div>
           </div>
         </div>
       </div>

@@ -40,6 +40,7 @@ const App: React.FC = () => {
   const [wrongAnswers, setWrongAnswers] = useState<WrongAnswerItem[]>([]);
   const [reviewItems, setReviewItems] = useState<ReviewItem[]>([]);
   const [lastGameStats, setLastGameStats] = useState({ correct: 0, total: 0 });
+  const [totalTimeSpent, setTotalTimeSpent] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [totalWordsStudied, setTotalWordsStudied] = useState(0);
   const [totalGamesPlayed, setTotalGamesPlayed] = useState(0);
@@ -314,10 +315,12 @@ const App: React.FC = () => {
     (
       sessionWrongAnswers: VocabularyItem[],
       sessionCorrectAnswers: VocabularyItem[],
-      reviewItems: ReviewItem[]
+      reviewItems: ReviewItem[],
+      totalTime: number
     ) => {
       // Review 데이터 저장
       setReviewItems(reviewItems);
+      setTotalTimeSpent(totalTime);
       setLastGameStats({
         correct: sessionCorrectAnswers.length,
         total: gameVocabulary.length,
@@ -661,6 +664,7 @@ const App: React.FC = () => {
             reviewItems={reviewItems}
             totalQuestions={lastGameStats.total}
             correctCount={lastGameStats.correct}
+            totalTimeSpent={totalTimeSpent}
             onReturnHome={handleReturnFromReview}
             onReviewWrong={handleReviewWrongFromReview}
           />

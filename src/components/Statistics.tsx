@@ -24,12 +24,13 @@ const Statistics: React.FC<StatisticsProps> = ({
     0
   );
   const uniqueWrongWords = wrongAnswers.length;
+  
+  // 정확도 계산: (공부한 단어 수 - 틀린 횟수) / 공부한 단어 수
+  // 단, 틀린 횟수가 더 많으면 0%로 표시
+  const correctCount = Math.max(0, totalWordsStudied - totalMistakes);
   const accuracyRate =
     totalWordsStudied > 0
-      ? (
-          ((totalWordsStudied - totalMistakes) / totalWordsStudied) *
-          100
-        ).toFixed(1)
+      ? ((correctCount / totalWordsStudied) * 100).toFixed(1)
       : "0.0";
 
   const mostMissedWords = [...wrongAnswers]

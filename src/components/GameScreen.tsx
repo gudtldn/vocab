@@ -10,7 +10,8 @@ interface GameScreenProps {
   onGameEnd: (
     wrongAnswers: VocabularyItem[],
     correctAnswers: VocabularyItem[],
-    reviewItems: ReviewItem[]
+    reviewItems: ReviewItem[],
+    totalTimeSpent: number
   ) => void;
   onExit: () => void;
   allVocabulary?: VocabularyItem[]; // 선택지 생성용 전체 어휘
@@ -77,18 +78,22 @@ const GameScreen: React.FC<GameScreenProps> = ({
     setFeedback(null);
   }, [currentIndex, vocabulary, mode, allVocabulary]);
 
-  // 타이머 효과
+  // 타이머 효과 - 피드백 표시 중이거나 게임이 끝났을 때는 멈춤
   useEffect(() => {
-    timerRef.current = window.setInterval(() => {
-      setElapsedTime((prev) => prev + 1);
-    }, 1000);
+    // 피드백이 없고 게임이 진행 중일 때만 타이머 동작
+    if (!feedback && !isFinished) {
+      timerRef.current = window.setInterval(() => {
+        setElapsedTime((prev) => prev + 1);
+      }, 1000);
+    }
 
     return () => {
       if (timerRef.current) {
         clearInterval(timerRef.current);
+        timerRef.current = null;
       }
     };
-  }, []);
+  }, [feedback, isFinished]);
 
   useEffect(() => {
     if (vocabulary.length > 0 && currentIndex < vocabulary.length) {
@@ -227,7 +232,7 @@ const GameScreen: React.FC<GameScreenProps> = ({
 
   useEffect(() => {
     if (isFinished) {
-      onGameEnd(sessionWrongAnswers, sessionCorrectAnswers, reviewItems);
+      onGameEnd(sessionWrongAnswers, sessionCorrectAnswers, reviewItems, elapsedTime);
     }
   }, [isFinished]); // eslint-disable-line react-hooks/exhaustive-deps
 
