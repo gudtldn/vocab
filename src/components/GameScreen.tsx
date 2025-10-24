@@ -88,13 +88,17 @@ const GameScreen: React.FC<GameScreenProps> = ({
     if (!currentWord) return;
 
     let isCorrect = false;
-    const lowerCaseMeanings = currentWord.meanings.map((m) =>
-      m.toLowerCase().trim()
+    // 띄어쓰기를 제거한 정답 목록
+    const normalizedMeanings = currentWord.meanings.map((m) =>
+      m.toLowerCase().trim().replace(/\s+/g, '')
     );
+    // 사용자 입력도 띄어쓰기 제거
+    const normalizedInput = userInput.toLowerCase().trim().replace(/\s+/g, '');
+    
     if (mode === GameMode.MultipleChoice) {
-      isCorrect = lowerCaseMeanings.includes(userInput.toLowerCase().trim());
+      isCorrect = normalizedMeanings.includes(normalizedInput);
     } else {
-      isCorrect = lowerCaseMeanings.includes(userInput.toLowerCase().trim());
+      isCorrect = normalizedMeanings.includes(normalizedInput);
     }
 
     // Review 아이템 추가
