@@ -7,6 +7,7 @@ import VocabEditor from "./components/VocabEditor";
 import ReviewScreen from "./components/ReviewScreen";
 import VocabCreator from "./components/VocabCreator";
 import Header from "./components/Header";
+import ConfirmDialog from "./components/ConfirmDialog";
 import {
   AppView,
   GameMode,
@@ -45,6 +46,17 @@ const App: React.FC = () => {
   );
   const [currentBooks, setCurrentBooks] = useState<VocabularyBook[]>([]);
   const [showShortcutHelp, setShowShortcutHelp] = useState(false);
+  const [dialog, setDialog] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    onConfirm: () => void;
+  }>({
+    isOpen: false,
+    title: "",
+    message: "",
+    onConfirm: () => {},
+  });
 
   // 키보드 단축키 처리
   useEffect(() => {
@@ -404,21 +416,37 @@ const App: React.FC = () => {
 
           await writeTextFile(book.filePath, csvContent);
           console.log("단어장 파일 저장 성공:", book.filePath);
-          alert("単語帳を保存しました！");
+          setDialog({
+            isOpen: true,
+            title: "保存完了",
+            message: "単語帳を保存しました！",
+            onConfirm: () => setDialog({ ...dialog, isOpen: false }),
+          });
         } catch (error) {
           console.error("단어장 파일 저장 실패:", error);
-          alert("単語帳の保存に失敗しました。");
+          setDialog({
+            isOpen: true,
+            title: "エラー",
+            message: "単語帳の保存に失敗しました。",
+            onConfirm: () => setDialog({ ...dialog, isOpen: false }),
+          });
         }
       } else if (currentBooks.length > 1) {
         // 여러 단어장이 선택된 경우, 새 파일로 저장 안내
-        alert(
-          "複数の単語帳が選択されています。\n変更を保存するには、単一の単語帳を選択してください。"
-        );
+        setDialog({
+          isOpen: true,
+          title: "警告",
+          message: "複数の単語帳が選択されています。\n変更を保存するには、単一の単語帳を選択してください。",
+          onConfirm: () => setDialog({ ...dialog, isOpen: false }),
+        });
       } else {
         // 단어장이 선택되지 않은 경우
-        alert(
-          "単語帳が選択されていません。\nホーム画面で単語帳を選択してください。"
-        );
+        setDialog({
+          isOpen: true,
+          title: "警告",
+          message: "単語帳が選択されていません。\nホーム画面で単語帳を選択してください。",
+          onConfirm: () => setDialog({ ...dialog, isOpen: false }),
+        });
       }
     },
     [currentBooks]
@@ -484,14 +512,24 @@ const App: React.FC = () => {
           { baseDir: BaseDirectory.AppData }
         );
 
-        alert(`単語帳「${name}」を作成しました！`);
-        setView(AppView.Home);
-        
-        // 홈 화면을 새로고침하기 위해 페이지 리로드는 하지 않고 상태만 업데이트
-        window.location.reload();
+        setDialog({
+          isOpen: true,
+          title: "作成完了",
+          message: `単語帳「${name}」を作成しました！`,
+          onConfirm: () => {
+            setDialog({ ...dialog, isOpen: false });
+            setView(AppView.Home);
+            window.location.reload();
+          },
+        });
       } catch (error) {
         console.error("단어장 생성 실패:", error);
-        alert("単語帳の作成に失敗しました。");
+        setDialog({
+          isOpen: true,
+          title: "エラー",
+          message: "単語帳の作成に失敗しました。",
+          onConfirm: () => setDialog({ ...dialog, isOpen: false }),
+        });
       }
     },
     []
@@ -503,7 +541,12 @@ const App: React.FC = () => {
       currentVocabulary.length > 0 ? currentVocabulary : wrongAnswers;
 
     if (dataToExport.length === 0) {
-      alert("出力するデータがありません。");
+      setDialog({
+        isOpen: true,
+        title: "警告",
+        message: "出力するデータがありません。",
+        onConfirm: () => setDialog({ ...dialog, isOpen: false }),
+      });
       return;
     }
 
@@ -529,11 +572,21 @@ const App: React.FC = () => {
           .join("\n");
 
         await writeTextFile(filePath, csvContent);
-        alert("CSV ファイルに出力しました！");
+        setDialog({
+          isOpen: true,
+          title: "出力完了",
+          message: "CSV ファイルに出力しました！",
+          onConfirm: () => setDialog({ ...dialog, isOpen: false }),
+        });
       }
     } catch (error) {
       console.error("CSV 출력 실패:", error);
-      alert("CSV出力に失敗しました。");
+      setDialog({
+        isOpen: true,
+        title: "エラー",
+        message: "CSV出力に失敗しました。",
+        onConfirm: () => setDialog({ ...dialog, isOpen: false }),
+      });
     }
   }, [currentVocabulary, wrongAnswers]);
 
@@ -744,6 +797,14 @@ const App: React.FC = () => {
       >
         ⌨️
       </button>
+
+      <ConfirmDialog
+        isOpen={dialog.isOpen}
+        title={dialog.title}
+        message={dialog.message}
+        onConfirm={dialog.onConfirm}
+        onCancel={() => setDialog({ ...dialog, isOpen: false })}
+      />
     </div>
   );
 };

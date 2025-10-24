@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { VocabularyItem, VocabularyBook } from "../types";
 import Furigana from "./Furigana";
+import ConfirmDialog from "./ConfirmDialog";
 
 interface VocabEditorProps {
   vocabulary: VocabularyItem[];
@@ -24,6 +25,17 @@ const VocabEditor: React.FC<VocabEditorProps> = ({
     reading: "",
     meanings: [""],
     note: "",
+  });
+  const [dialog, setDialog] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    onConfirm: () => void;
+  }>({
+    isOpen: false,
+    title: "",
+    message: "",
+    onConfirm: () => {},
   });
 
   useEffect(() => {
@@ -50,7 +62,12 @@ const VocabEditor: React.FC<VocabEditorProps> = ({
 
   const handleAdd = () => {
     if (!newWord.word || !newWord.reading || !newWord.meanings[0]) {
-      alert("単語、読み、意味を入力してください。");
+      setDialog({
+        isOpen: true,
+        title: "入力エラー",
+        message: "単語、読み、意味を入力してください。",
+        onConfirm: () => setDialog({ ...dialog, isOpen: false }),
+      });
       return;
     }
 
@@ -217,6 +234,14 @@ const VocabEditor: React.FC<VocabEditorProps> = ({
           />
         ))}
       </div>
+
+      <ConfirmDialog
+        isOpen={dialog.isOpen}
+        title={dialog.title}
+        message={dialog.message}
+        onConfirm={dialog.onConfirm}
+        onCancel={() => setDialog({ ...dialog, isOpen: false })}
+      />
     </div>
   );
 };
