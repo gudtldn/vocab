@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { GameMode, VocabularyItem, ReviewItem } from "../types";
 import Furigana from "./Furigana";
 import { shuffleArray, removeWhitespace } from "../utils";
+import { useI18n } from "../i18n/I18nContext";
 
 interface GameScreenProps {
   vocabulary: VocabularyItem[];
@@ -22,6 +23,7 @@ const GameScreen: React.FC<GameScreenProps> = ({
   onExit,
   allVocabulary,
 }) => {
+  const { t } = useI18n();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentWord, setCurrentWord] = useState<VocabularyItem | null>(null);
   const [options, setOptions] = useState<string[]>([]);
@@ -204,20 +206,22 @@ const GameScreen: React.FC<GameScreenProps> = ({
   if (isFinished) {
     return (
       <div className="game-finished-container">
-        <h2 className="game-finished-title">お疲れ様でした！</h2>
+        <h2 className="game-finished-title">{t.game.finished}</h2>
         <p className="game-finished-summary">
-          {vocabulary.length}問中、
-          {vocabulary.length - sessionWrongAnswers.length}問正解しました。
+          {t.game.result(
+            vocabulary.length - sessionWrongAnswers.length,
+            vocabulary.length
+          )}
         </p>
         <button onClick={onExit} className="button button-primary">
-          ホームに戻る
+          {t.game.returnHome}
         </button>
       </div>
     );
   }
 
   if (!currentWord) {
-    return <div className="loading">Loading...</div>;
+    return <div className="loading">{t.common.loading}</div>;
   }
 
   const progressPercentage = ((currentIndex + 1) / vocabulary.length) * 100;
@@ -226,7 +230,7 @@ const GameScreen: React.FC<GameScreenProps> = ({
     <div className="game-screen">
       <div className="progress-bar-container">
         <div className="progress-bar-info">
-          <span>進捗</span>
+          <span>{t.game.progress}</span>
           <span>
             {currentIndex + 1} / {vocabulary.length}
           </span>
@@ -241,7 +245,7 @@ const GameScreen: React.FC<GameScreenProps> = ({
 
       <div className="furigana-toggle-container">
         <label htmlFor="furigana-toggle" className="furigana-toggle-label">
-          <span className="toggle-text">フリガナ表示</span>
+          <span className="toggle-text">{t.game.toggleFurigana}</span>
           <div className="toggle-switch">
             <input
               type="checkbox"
@@ -302,7 +306,7 @@ const GameScreen: React.FC<GameScreenProps> = ({
             type="text"
             value={userInput}
             onChange={(e) => setUserInput(e.target.value)}
-            placeholder="意味を入力してください"
+            placeholder={t.game.answerPlaceholder}
             disabled={!!feedback}
             className="input-field"
           />
@@ -313,9 +317,9 @@ const GameScreen: React.FC<GameScreenProps> = ({
         {feedback && (
           <div className={`feedback-badge ${feedback}`}>
             {feedback === "correct" ? (
-              <span>✓ 正解！</span>
+              <span>{t.game.correct}</span>
             ) : (
-              <span>✗ 不正解 → {currentWord.meanings.join(", ")}</span>
+              <span>{t.game.incorrect(currentWord.meanings.join(", "))}</span>
             )}
           </div>
         )}
@@ -326,7 +330,7 @@ const GameScreen: React.FC<GameScreenProps> = ({
               onClick={handleNext}
               className="button button-primary button-next"
             >
-              次へ →
+              {t.common.next}
             </button>
           ) : (
             <>
@@ -335,10 +339,10 @@ const GameScreen: React.FC<GameScreenProps> = ({
                 disabled={!userInput}
                 className="button button-confirm"
               >
-                確認
+                {t.game.checkAnswer}
               </button>
               <button onClick={handleSkip} className="button button-skip">
-                スキップ
+                {t.game.skip}
               </button>
             </>
           )}

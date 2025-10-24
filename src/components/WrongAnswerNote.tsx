@@ -3,6 +3,7 @@ import Furigana from "./Furigana";
 import ConfirmDialog from "./ConfirmDialog";
 import { WrongAnswerItem, VocabularyItem } from "../types";
 import { WRONG_ANSWER_RELEARN_THRESHOLD } from "../constants";
+import { useI18n } from "../i18n/I18nContext";
 
 interface WrongAnswerNoteProps {
   wrongAnswers: WrongAnswerItem[];
@@ -17,14 +18,15 @@ const WrongAnswerNote: React.FC<WrongAnswerNoteProps> = ({
   onDeleteItem,
   onClearAll,
 }) => {
+  const { t } = useI18n();
   const [showClearDialog, setShowClearDialog] = useState(false);
 
   if (wrongAnswers.length === 0) {
     return (
       <div className="wrong-answer-note-container">
-        <h2 className="section-title">誤答ノート</h2>
+        <h2 className="section-title">{t.wrongAnswers.title}</h2>
         <p className="no-wrong-answers-message">
-          素晴らしい！まだ間違えた単語はありません。
+          {t.wrongAnswers.emptyDesc}
         </p>
       </div>
     );
@@ -43,10 +45,10 @@ const WrongAnswerNote: React.FC<WrongAnswerNoteProps> = ({
     <>
       <ConfirmDialog
         isOpen={showClearDialog}
-        title="確認"
-        message="本当にすべての誤答を削除しますか？この操作は取り消せません。"
-        confirmText="削除"
-        cancelText="キャンセル"
+        title={t.common.confirm}
+        message={t.wrongAnswers.confirmClearDesc}
+        confirmText={t.common.delete}
+        cancelText={t.common.cancel}
         onConfirm={handleClearConfirm}
         onCancel={() => setShowClearDialog(false)}
         danger={true}
@@ -54,19 +56,19 @@ const WrongAnswerNote: React.FC<WrongAnswerNoteProps> = ({
 
       <div className="wrong-answer-note-container">
         <div className="section-header">
-          <h2 className="section-title">誤答ノート</h2>
+          <h2 className="section-title">{t.wrongAnswers.title}</h2>
           <div className="button-group">
             <button
               onClick={() => onReview(wrongAnswers)}
               className="button button-review"
             >
-              間違えた単語を復習
+              {t.wrongAnswers.reviewAll}
             </button>
             <button
               onClick={() => setShowClearDialog(true)}
               className="button button-danger"
             >
-              全て削除
+              {t.wrongAnswers.clearAll}
             </button>
           </div>
         </div>
@@ -75,11 +77,11 @@ const WrongAnswerNote: React.FC<WrongAnswerNoteProps> = ({
           <table className="wrong-answer-table">
             <thead>
               <tr>
-                <th>単語</th>
-                <th>意味</th>
-                <th className="text-center">間違い回数</th>
-                <th className="text-center">連続正解</th>
-                <th className="text-center">削除</th>
+                <th>{t.wrongAnswers.word}</th>
+                <th>{t.wrongAnswers.meaning}</th>
+                <th className="text-center">{t.wrongAnswers.missCountHeader}</th>
+                <th className="text-center">{t.wrongAnswers.correctStreakHeader}</th>
+                <th className="text-center">{t.common.delete}</th>
               </tr>
             </thead>
             <tbody>
@@ -118,7 +120,7 @@ const WrongAnswerNote: React.FC<WrongAnswerNoteProps> = ({
                     <button
                       onClick={() => onDeleteItem(item.word, item.reading)}
                       className="button button-delete-small"
-                      title="削除"
+                      title={t.common.delete}
                     >
                       ✕
                     </button>

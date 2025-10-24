@@ -1,0 +1,215 @@
+/**
+ * 日本語 (Japanese) ロケール
+ */
+export const ja = {
+  // 共通
+  common: {
+    appName: "日本語クイズ",
+    loading: "読み込み中...",
+    error: "エラー",
+    success: "成功",
+    cancel: "キャンセル",
+    confirm: "確認",
+    delete: "削除",
+    edit: "編集",
+    save: "保存",
+    close: "閉じる",
+    back: "戻る",
+    next: "次へ",
+    skip: "スキップ",
+    retry: "リトライ",
+  },
+
+  // ヘッダー
+  header: {
+    home: "ホーム",
+    wrongAnswers: "誤答ノート",
+    statistics: "統計",
+    darkMode: "ダークモード",
+    lightMode: "ライトモード",
+  },
+
+  // ホーム画面
+  home: {
+    title: "学習を始めましょう",
+    subtitle: "単語帳ファイルをアップロードして、学習モードを選択してください。",
+    uploadButton: "📂 単語帳をアップロード",
+    createButton: "➕ 新しく作成",
+    savedBooks: "保存された単語帳",
+    selectAll: "全選択",
+    deselectAll: "選択解除",
+    noBooks: "保存された単語帳がありません",
+    noBooksDesc: "上のボタンから単語帳をアップロードまたは作成してください。",
+    multipleChoice: "客観式",
+    directInput: "主観式",
+    vocabularyCount: (count: number) => `📚 ${count}個の単語`,
+    selectedFile: (name: string) => `ファイル: ${name}`,
+    selectedFiles: (count: number) => `ファイル: ${count}個の単語帳`,
+    filterByTag: "タグでフィルター",
+    allTags: "すべて",
+    editBook: "編集",
+    deleteBook: "削除",
+    addTag: "タグを追加",
+    tagPlaceholder: "新しいタグ",
+    wordCount: (count: number) => `${count}個の単語`,
+    lastUsed: (date: string) => `最終使用: ${date}`,
+  },
+
+  // ゲーム画面
+  game: {
+    progress: "進捗",
+    toggleFurigana: "ふりがな",
+    checkAnswer: "確認",
+    skip: "スキップ",
+    correct: "✓ 正解！",
+    incorrect: (answer: string) => `✗ 不正解 → ${answer}`,
+    skipped: "(スキップ)",
+    finished: "お疲れ様でした！",
+    result: (correct: number, total: number) => `${total}問中、${correct}問正解しました。`,
+    returnHome: "ホームに戻る",
+    answerPlaceholder: "意味を入力してください",
+  },
+
+  // 復習画面
+  review: {
+    title: "📊 学習結果",
+    correct: "正解",
+    incorrect: "不正解",
+    accuracy: "正解率",
+    all: (count: number) => `全て (${count})`,
+    correctOnly: (count: number) => `✓ 正解 (${count})`,
+    incorrectOnly: (count: number) => `✗ 不正解 (${count})`,
+    returnHome: "ホームに戻る",
+    reviewIncorrect: "不正解の単語を復習",
+    word: "単語",
+    reading: "読み",
+    meaning: "意味",
+    yourAnswer: "あなたの答え",
+    correctAnswer: "正解",
+  },
+
+  // 誤答ノート
+  wrongAnswers: {
+    title: "📖 誤答ノート",
+    subtitle: "間違えた単語を復習して、マスターしましょう。",
+    empty: "誤答ノートは空です",
+    emptyDesc: "素晴らしい！間違えた単語はありません。",
+    emptyHint: "学習を始めると、間違えた単語がここに記録されます。",
+    reviewAll: "すべて復習",
+    clearAll: "すべてクリア",
+    reviewSelected: (count: number) => `選択した単語を復習 (${count})`,
+    deleteSelected: (count: number) => `選択した単語を削除 (${count})`,
+    word: "単語",
+    reading: "読み",
+    meaning: "意味",
+    missCount: (count: number) => `${count}回ミス`,
+    correctStreak: (count: number) => `連続${count}回正解`,
+    missCountHeader: "間違い回数",
+    correctStreakHeader: "連続正解",
+    nearMastery: "マスター間近！",
+    confirmClear: "すべての誤答データをクリアしますか？",
+    confirmClearDesc: "この操作は取り消せません。",
+    confirmDelete: (count: number) => `選択した${count}個の単語を削除しますか？`,
+  },
+
+  // 통계
+  statistics: {
+    title: "📊 学習統計",
+    overview: "概要",
+    totalStudied: "学習した単語数",
+    totalGames: "プレイ回数",
+    wrongAnswerCount: "誤答数",
+    masteryProgress: "マスター進捗",
+    resetStats: "統計をリセット",
+    confirmReset: "すべての統計データをリセットしますか？",
+    confirmResetDesc: "この操作は取り消せません。誤答ノートのデータも削除されます。",
+    words: "語",
+    times: "回",
+    topMissedWords: "最も間違えた単語 Top 5",
+  },
+
+  // 単語帳エディター
+  editor: {
+    title: "📝 単語帳編集",
+    addWord: "単語を追加",
+    editWord: "単語を編集",
+    word: "単語",
+    reading: "読み",
+    meaning: "意味",
+    note: "メモ",
+    wordPlaceholder: "例: 食べる",
+    readingPlaceholder: "例: たべる",
+    meaningPlaceholder: "例: 먹다, 食べる, eat",
+    notePlaceholder: "例: 五段動詞",
+    save: "保存",
+    cancel: "キャンセル",
+    confirmDelete: (word: string) => `「${word}」を削除しますか？`,
+    exportCSV: "CSVにエクスポート",
+    inputError: "入力エラー",
+    emptyFields: "単語、読み、意味は必須項目です。",
+  },
+
+  // 単語帳作成
+  creator: {
+    title: "📚 単語帳作成",
+    bookName: "単語帳の名前",
+    bookNamePlaceholder: "例: JLPT N5 動詞",
+    addWord: "単語を追加",
+    updateWord: "単語を更新",
+    cancelEdit: "編集をキャンセル",
+    save: "保存して完了",
+    cancel: "キャンセル",
+    wordList: "単語リスト",
+    emptyList: "まだ単語が追加されていません",
+    emptyListDesc: "上のフォームから単語を追加してください。",
+    word: "単語",
+    reading: "読み",
+    meaning: "意味",
+    note: "メモ",
+    wordRequired: "単語 *",
+    readingRequired: "読み *",
+    meaningRequired: "意味 *",
+    noteOptional: "メモ (任意)",
+    confirmDelete: (word: string) => `「${word}」を削除しますか？`,
+    inputError: "入力エラー",
+    bookNameRequired: "単語帳の名前を入力してください。",
+    minWords: "単語を少なくとも1つ追加してください。",
+  },
+
+  // キーボードショートカット
+  shortcuts: {
+    title: "⌨️ キーボードショートカット",
+    navigation: "ナビゲーション",
+    home: "ホーム画面",
+    wrongAnswers: "誤答ノート",
+    statistics: "統計画面",
+    darkMode: "ダークモード切替",
+    help: "ショートカット表示",
+    game: "ゲーム中",
+    submit: "答えを送信 / 次へ",
+    skipQuestion: "問題をスキップ",
+    general: "全般",
+    closeDialog: "ダイアログを閉じる",
+  },
+
+  // エラーメッセージ
+  errors: {
+    fileLoadError: "ファイルの読み込みに失敗しました",
+    fileSaveError: "ファイルの保存に失敗しました",
+    parseError: "ファイルの解析に失敗しました",
+    noValidFile: "有効なファイルがありません。",
+    networkError: "ネットワークエラーが発生しました",
+    unknownError: "不明なエラーが発生しました",
+  },
+
+  // 成功メッセージ
+  success: {
+    saved: "保存しました",
+    deleted: "削除しました",
+    exported: "エクスポートしました",
+    cleared: "クリアしました",
+    updated: "更新しました",
+  },
+};
+
+export type Translation = typeof ja;

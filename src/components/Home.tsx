@@ -3,6 +3,7 @@ import { GameMode, VocabularyItem, VocabularyBook } from "../types";
 import { invoke } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
 import { STORAGE_KEYS } from "../constants/index";
+import { useI18n } from "../i18n/I18nContext";
 import {
   writeTextFile,
   readTextFile,
@@ -28,6 +29,7 @@ const Home: React.FC<HomeProps> = ({
   onCreateVocabBook,
   onVocabularyCountChange,
 }) => {
+  const { t } = useI18n();
   const [vocabulary, setVocabulary] = useState<VocabularyItem[]>([]);
   const [error, setError] = useState<string>("");
   const [savedBooks, setSavedBooks] = useState<VocabularyBook[]>([]);
@@ -348,36 +350,36 @@ const Home: React.FC<HomeProps> = ({
   return (
     <div className="home-container">
       <div>
-        <h2 className="home-title">学習を始めましょう</h2>
+        <h2 className="home-title">{t.home.title}</h2>
         <p className="home-subtitle">
-          単語帳ファイルをアップロードして、学習モードを選択してください。
+          {t.home.subtitle}
         </p>
       </div>
 
       <div className="upload-section">
         <div className="upload-buttons">
           <button onClick={handleButtonClick} className="button button-primary">
-            📂 単語帳をアップロード
+            {t.home.uploadButton}
           </button>
           <button onClick={onCreateVocabBook} className="button button-success">
-            ➕ 新しく作成
+            {t.home.createButton}
           </button>
         </div>
-        {error && <p className="error-message">エラー: {error}</p>}
+        {error && <p className="error-message">{t.common.error}: {error}</p>}
       </div>
 
       {savedBooks.length > 0 && (
         <div className="saved-books-section">
           <div className="section-header">
-            <h3 className="section-subtitle">保存された単語帳</h3>
+            <h3 className="section-subtitle">{t.home.savedBooks}</h3>
             <div className="header-actions">
               {filteredBooks.length > 0 && (
                 <button
                   onClick={allFilteredSelected ? handleDeselectAll : handleSelectAll}
                   className={`button ${allFilteredSelected ? 'button-secondary' : 'button-select-all'}`}
-                  title={allFilteredSelected ? "すべての選択を解除" : "すべて選択"}
+                  title={allFilteredSelected ? t.home.deselectAll : t.home.selectAll}
                 >
-                  {allFilteredSelected ? "☑ 選択解除" : "☐ 全選択"}
+                  {allFilteredSelected ? `☑ ${t.home.deselectAll}` : `☐ ${t.home.selectAll}`}
                 </button>
               )}
               <div className="bulk-actions">
@@ -394,20 +396,20 @@ const Home: React.FC<HomeProps> = ({
                   disabled={selectedBookIds.length !== 1}
                   title={
                     selectedBookIds.length === 0
-                      ? "編集する単語帳を選択してください"
+                      ? t.home.editBook
                       : selectedBookIds.length === 1
-                      ? "選択した単語帳を編集"
-                      : "編集するには単語帳を1つだけ選択してください"
+                      ? t.home.editBook
+                      : t.home.editBook
                   }
                 >
-                  ✏️ 編集
+                  ✏️ {t.home.editBook}
                 </button>
                 <button
                   onClick={() => {
                     if (
                       selectedBookIds.length > 0 &&
                       window.confirm(
-                        `選択した${selectedBookIds.length}個の単語帳を削除しますか？`
+                        t.wrongAnswers.confirmDelete(selectedBookIds.length)
                       )
                     ) {
                       selectedBookIds.forEach((id) => handleDeleteBook(id));
@@ -417,18 +419,18 @@ const Home: React.FC<HomeProps> = ({
                   disabled={selectedBookIds.length === 0}
                   title={
                     selectedBookIds.length === 0
-                      ? "削除する単語帳を選択してください"
-                      : `選択した${selectedBookIds.length}個の単語帳を削除`
+                      ? t.home.deleteBook
+                      : t.wrongAnswers.deleteSelected(selectedBookIds.length)
                   }
                 >
-                  🗑️ 削除
+                  🗑️ {t.home.deleteBook}
                 </button>
               </div>
             </div>
           </div>
           {allTags.length > 0 && (
             <div className="tag-filters">
-              <span className="filter-label">タグでフィルター:</span>
+              <span className="filter-label">{t.home.filterByTag}:</span>
               {allTags.map((tag) => (
                 <button
                   key={tag}
@@ -445,7 +447,7 @@ const Home: React.FC<HomeProps> = ({
                   onClick={() => setSelectedTags([])}
                   className="clear-filter"
                 >
-                  クリア
+                  {t.common.cancel}
                 </button>
               )}
             </div>
@@ -470,8 +472,9 @@ const Home: React.FC<HomeProps> = ({
                 >
                   <div className="book-name">{book.name}</div>
                   <div className="book-details">
-                    {book.wordCount}個の単語 • 最終使用:{" "}
-                    {new Date(book.lastUsed).toLocaleDateString("ja-JP")}
+                    {t.home.wordCount(book.wordCount)} • {t.home.lastUsed(
+                    new Date(book.lastUsed).toLocaleDateString("ja-JP")
+                    )}
                   </div>
                   {book.tags && book.tags.length > 0 && (
                     <div className="book-tags">
@@ -499,7 +502,7 @@ const Home: React.FC<HomeProps> = ({
                     setTagInput("");
                   }}
                   className="button button-tag"
-                  title="タグ編集"
+                  title={t.home.addTag}
                 >
                   🏷️
                 </button>
@@ -520,7 +523,7 @@ const Home: React.FC<HomeProps> = ({
                           setTagInput("");
                         }
                       }}
-                      placeholder="新しいタグ..."
+                      placeholder={t.home.tagPlaceholder}
                       className="tag-input"
                       autoFocus
                     />
@@ -528,7 +531,7 @@ const Home: React.FC<HomeProps> = ({
                       onClick={() => handleAddTag(book.id)}
                       className="button-tag-add"
                     >
-                      追加
+                      {t.home.addTag}
                     </button>
                   </div>
                 )}
@@ -544,12 +547,12 @@ const Home: React.FC<HomeProps> = ({
           <div className="floating-content">
             <div className="floating-info">
               <span className="floating-count">
-                📚 {vocabulary.length}個の単語
+                {t.home.vocabularyCount(vocabulary.length)}
               </span>
               <span className="floating-label">
                 {selectedBookIds.length === 1
-                  ? `ファイル: ${savedBooks.find(b => b.id === selectedBookIds[0])?.name || ''}`
-                  : `ファイル: ${selectedBookIds.length}個の単語帳`}
+                  ? t.home.selectedFile(savedBooks.find(b => b.id === selectedBookIds[0])?.name || '')
+                  : t.home.selectedFiles(selectedBookIds.length)}
               </span>
             </div>
             <div className="floating-buttons">
@@ -557,13 +560,13 @@ const Home: React.FC<HomeProps> = ({
                 onClick={() => onStartGame(vocabulary, GameMode.MultipleChoice)}
                 className="button button-choice button-floating"
               >
-                客観式
+                {t.home.multipleChoice}
               </button>
               <button
                 onClick={() => onStartGame(vocabulary, GameMode.DirectInput)}
                 className="button button-input button-floating"
               >
-                主観式
+                {t.home.directInput}
               </button>
             </div>
           </div>
