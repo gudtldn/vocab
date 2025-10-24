@@ -26,6 +26,16 @@ const ReviewScreen: React.FC<ReviewScreenProps> = ({
   const accuracy =
     totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0;
 
+  // 총 소요 시간 계산
+  const totalTime = reviewItems.reduce((sum, item) => sum + (item.timeSpent || 0), 0);
+  
+  // 시간 포맷 함수 (초 -> MM:SS)
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
   const filteredItems = reviewItems.filter((item) => {
     if (filter === "correct") return item.isCorrect;
     if (filter === "wrong") return !item.isCorrect;
@@ -48,6 +58,10 @@ const ReviewScreen: React.FC<ReviewScreenProps> = ({
           <div className="stat-card accuracy">
             <div className="stat-label">{t.review.accuracy}</div>
             <div className="stat-value">{accuracy}%</div>
+          </div>
+          <div className="stat-card time">
+            <div className="stat-label">{t.game.totalTime}</div>
+            <div className="stat-value">⏱️ {formatTime(totalTime)}</div>
           </div>
         </div>
       </div>

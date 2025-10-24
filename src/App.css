@@ -1374,6 +1374,7 @@ body.dark-mode .button-bulk-delete:hover {
   background-color: white;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  position: relative;
 }
 
 @media (min-width: 768px) {
@@ -1410,9 +1411,46 @@ body.dark-mode .button-bulk-delete:hover {
 .progress-bar-info {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   font-size: 0.875rem;
   color: #666;
   margin-bottom: 0.5rem;
+}
+
+.progress-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.progress-count {
+  font-weight: 500;
+}
+
+/* 타이머 인라인 표시 (진행바 옆) */
+.timer-display-inline {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #0066cc;
+  background-color: rgba(0, 102, 204, 0.1);
+  padding: 0.25rem 0.75rem;
+  border-radius: 6px;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+body.dark-mode .timer-display-inline {
+  color: #7ab7ff;
+  background-color: rgba(122, 183, 255, 0.15);
+}
+
+@media (min-width: 768px) {
+  .timer-display-inline {
+    font-size: 1rem;
+    padding: 0.375rem 1rem;
+  }
 }
 
 .progress-bar-track {

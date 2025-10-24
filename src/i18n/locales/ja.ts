@@ -59,15 +59,19 @@ export const ja = {
   game: {
     progress: "進捗",
     toggleFurigana: "ふりがな",
+    toggleTimer: "タイマー",
+    showTimer: "タイマーを表示",
+    hideTimer: "タイマーを非表示",
     checkAnswer: "確認",
     skip: "スキップ",
     correct: "✓ 正解！",
     incorrect: (answer: string) => `✗ 不正解 → ${answer}`,
     skipped: "(スキップ)",
     finished: "お疲れ様でした！",
-    result: (correct: number, total: number) => `${total}問中、${correct}問正解しました。`,
+    result: (correct: number, total: number) => `${total}問中${correct}問正解しました。`,
     returnHome: "ホームに戻る",
     answerPlaceholder: "意味を入力してください",
+    totalTime: "合計時間",
   },
 
   // 復習画面

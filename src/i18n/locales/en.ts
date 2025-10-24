@@ -59,15 +59,19 @@ export const en = {
   game: {
     progress: "Progress",
     toggleFurigana: "Furigana",
+    toggleTimer: "Timer",
+    showTimer: "Show Timer",
+    hideTimer: "Hide Timer",
     checkAnswer: "Check",
     skip: "Skip",
     correct: "✓ Correct!",
     incorrect: (answer: string) => `✗ Incorrect → ${answer}`,
     skipped: "(Skipped)",
-    finished: "Great Job!",
+    finished: "Great work!",
     result: (correct: number, total: number) => `You got ${correct} out of ${total} correct.`,
     returnHome: "Return Home",
-    answerPlaceholder: "Enter the meaning",
+    answerPlaceholder: "Enter meaning",
+    totalTime: "Total Time",
   },
 
   // Review Screen

@@ -37,4 +37,5 @@ export enum AppView {
 export interface ReviewItem extends VocabularyItem {
   isCorrect: boolean;
   userAnswer?: string;
+  timeSpent?: number; // 소요 시간 (초)
 }

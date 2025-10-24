@@ -40,11 +40,16 @@ const GameScreen: React.FC<GameScreenProps> = ({
   >([]);
   const [reviewItems, setReviewItems] = useState<ReviewItem[]>([]);
   const [showFurigana, setShowFurigana] = useState(false);
+  const [showTimer, setShowTimer] = useState(true);
+  const [elapsedTime, setElapsedTime] = useState(0); // 전체 경과 시간
+  const [questionStartTime, setQuestionStartTime] = useState(Date.now()); // 현재 문제 시작 시간
   const inputRef = useRef<HTMLInputElement>(null);
+  const timerRef = useRef<number | null>(null);
 
   const setupQuestion = useCallback(() => {
     const word = vocabulary[currentIndex];
     setCurrentWord(word);
+    setQuestionStartTime(Date.now()); // 문제 시작 시간 기록
 
     if (mode === GameMode.MultipleChoice) {
       const correctAnswers = word.meanings;
@@ -71,6 +76,19 @@ const GameScreen: React.FC<GameScreenProps> = ({
     setUserInput("");
     setFeedback(null);
   }, [currentIndex, vocabulary, mode, allVocabulary]);
+
+  // 타이머 효과
+  useEffect(() => {
+    timerRef.current = window.setInterval(() => {
+      setElapsedTime((prev) => prev + 1);
+    }, 1000);
+
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (vocabulary.length > 0 && currentIndex < vocabulary.length) {
@@ -104,6 +122,9 @@ const GameScreen: React.FC<GameScreenProps> = ({
       isCorrect = normalizedMeanings.includes(normalizedInput);
     }
 
+    // 소요 시간 계산 (초)
+    const timeSpent = Math.floor((Date.now() - questionStartTime) / 1000);
+
     // Review 아이템 추가
     setReviewItems((prev) => [
       ...prev,
@@ -111,6 +132,7 @@ const GameScreen: React.FC<GameScreenProps> = ({
         ...currentWord,
         isCorrect,
         userAnswer: !isCorrect ? userInput : undefined,
+        timeSpent,
       },
     ]);
 
@@ -171,6 +193,9 @@ const GameScreen: React.FC<GameScreenProps> = ({
   const handleSkip = () => {
     if (!currentWord) return;
 
+    // 소요 시간 계산 (초)
+    const timeSpent = Math.floor((Date.now() - questionStartTime) / 1000);
+
     // 오답 처리
     setFeedback("incorrect");
     setUserInput(""); // 입력값 비우기
@@ -195,6 +220,7 @@ const GameScreen: React.FC<GameScreenProps> = ({
         ...currentWord,
         isCorrect: false,
         userAnswer: t.game.skipped, // 스킵 표시
+        timeSpent,
       },
     ]);
   };
@@ -204,6 +230,13 @@ const GameScreen: React.FC<GameScreenProps> = ({
       onGameEnd(sessionWrongAnswers, sessionCorrectAnswers, reviewItems);
     }
   }, [isFinished]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // 시간 포맷 함수 (초 -> MM:SS)
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
 
   if (isFinished) {
     return (
@@ -232,10 +265,25 @@ const GameScreen: React.FC<GameScreenProps> = ({
     <div className="game-screen">
       <div className="progress-bar-container">
         <div className="progress-bar-info">
-          <span>{t.game.progress}</span>
-          <span>
-            {currentIndex + 1} / {vocabulary.length}
-          </span>
+          <div className="progress-left">
+            <span>{t.game.progress}</span>
+            <span className="progress-count">
+              {currentIndex + 1} / {vocabulary.length}
+            </span>
+          </div>
+          {/* 타이머를 진행바 오른쪽에 배치 */}
+          <div 
+            className="timer-display-inline" 
+            onClick={() => setShowTimer(!showTimer)}
+            style={{ 
+              opacity: showTimer ? 1 : 0.3,
+              cursor: 'pointer',
+              transition: 'opacity 0.2s'
+            }}
+            title={showTimer ? t.game.hideTimer : t.game.showTimer}
+          >
+            ⏱️ {showTimer ? formatTime(elapsedTime) : ''}
+          </div>
         </div>
         <div className="progress-bar-track">
           <div

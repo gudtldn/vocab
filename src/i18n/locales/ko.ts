@@ -59,6 +59,9 @@ export const ko = {
   game: {
     progress: "진행률",
     toggleFurigana: "후리가나",
+    toggleTimer: "타이머",
+    showTimer: "타이머 표시",
+    hideTimer: "타이머 숨기기",
     checkAnswer: "확인",
     skip: "건너뛰기",
     correct: "✓ 정답!",
@@ -68,6 +71,7 @@ export const ko = {
     result: (correct: number, total: number) => `${total}문제 중 ${correct}문제를 맞추셨습니다.`,
     returnHome: "홈으로 돌아가기",
     answerPlaceholder: "의미를 입력하세요",
+    totalTime: "총 소요 시간",
   },
 
   // 복습 화면
