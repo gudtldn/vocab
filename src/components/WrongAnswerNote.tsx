@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import Furigana from "./Furigana";
 import ConfirmDialog from "./ConfirmDialog";
-import { WrongAnswerItem, VocabularyItem } from "../types";
+import { WrongAnswerItem, VocabularyItem, GameMode } from "../types";
 import { WRONG_ANSWER_RELEARN_THRESHOLD } from "../constants";
 import { useI18n } from "../i18n/I18nContext";
 
 interface WrongAnswerNoteProps {
   wrongAnswers: WrongAnswerItem[];
-  onReview: (reviewList: VocabularyItem[]) => void;
+  onReview: (reviewList: VocabularyItem[], mode: GameMode) => void;
   onDeleteItem: (word: string, reading: string) => void;
   onClearAll: () => void;
 }
@@ -20,6 +20,7 @@ const WrongAnswerNote: React.FC<WrongAnswerNoteProps> = ({
 }) => {
   const { t } = useI18n();
   const [showClearDialog, setShowClearDialog] = useState(false);
+  const [showModeSelect, setShowModeSelect] = useState(false);
 
   if (wrongAnswers.length === 0) {
     return (
@@ -58,12 +59,41 @@ const WrongAnswerNote: React.FC<WrongAnswerNoteProps> = ({
         <div className="section-header">
           <h2 className="section-title">{t.wrongAnswers.title}</h2>
           <div className="button-group">
-            <button
-              onClick={() => onReview(wrongAnswers)}
-              className="button button-review"
-            >
-              {t.wrongAnswers.reviewAll}
-            </button>
+            {!showModeSelect ? (
+              <button
+                onClick={() => setShowModeSelect(true)}
+                className="button button-review"
+              >
+                {t.wrongAnswers.reviewAll}
+              </button>
+            ) : (
+              <>
+                <button
+                  onClick={() => {
+                    onReview(wrongAnswers, GameMode.MultipleChoice);
+                    setShowModeSelect(false);
+                  }}
+                  className="button button-review"
+                >
+                  {t.wrongAnswers.reviewMultipleChoice}
+                </button>
+                <button
+                  onClick={() => {
+                    onReview(wrongAnswers, GameMode.DirectInput);
+                    setShowModeSelect(false);
+                  }}
+                  className="button button-review"
+                >
+                  {t.wrongAnswers.reviewDirectInput}
+                </button>
+                <button
+                  onClick={() => setShowModeSelect(false)}
+                  className="button button-secondary"
+                >
+                  {t.common.cancel}
+                </button>
+              </>
+            )}
             <button
               onClick={() => setShowClearDialog(true)}
               className="button button-danger"

@@ -72,7 +72,7 @@ export const en = {
 
   // Review Screen
   review: {
-    title: "📊 Learning Results",
+    title: "📊 Review Results",
     correct: "Correct",
     incorrect: "Incorrect",
     accuracy: "Accuracy",
@@ -80,7 +80,9 @@ export const en = {
     correctOnly: (count: number) => `✓ Correct (${count})`,
     incorrectOnly: (count: number) => `✗ Incorrect (${count})`,
     returnHome: "Return Home",
-    reviewIncorrect: "Review Incorrect Words",
+    reviewIncorrect: "Review Incorrect",
+    reviewIncorrectMultipleChoice: "Review Incorrect (Multiple Choice)",
+    reviewIncorrectDirectInput: "Review Incorrect (Direct Input)",
     word: "Word",
     reading: "Reading",
     meaning: "Meaning",
@@ -96,6 +98,8 @@ export const en = {
     emptyDesc: "Excellent! You haven't made any mistakes.",
     emptyHint: "Wrong answers will be recorded here as you study.",
     reviewAll: "Review All",
+    reviewMultipleChoice: "Review (Multiple Choice)",
+    reviewDirectInput: "Review (Direct Input)",
     clearAll: "Clear All",
     reviewSelected: (count: number) => `Review Selected (${count})`,
     deleteSelected: (count: number) => `Delete Selected (${count})`,

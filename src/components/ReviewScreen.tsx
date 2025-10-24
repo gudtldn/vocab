@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ReviewItem } from "../types";
+import { ReviewItem, GameMode } from "../types";
 import Furigana from "./Furigana";
 import { useI18n } from "../i18n/I18nContext";
 
@@ -8,7 +8,7 @@ interface ReviewScreenProps {
   totalQuestions: number;
   correctCount: number;
   onReturnHome: () => void;
-  onReviewWrong: () => void;
+  onReviewWrong: (mode: GameMode) => void;
 }
 
 const ReviewScreen: React.FC<ReviewScreenProps> = ({
@@ -20,6 +20,7 @@ const ReviewScreen: React.FC<ReviewScreenProps> = ({
 }) => {
   const { t } = useI18n();
   const [filter, setFilter] = useState<"all" | "correct" | "wrong">("all");
+  const [showModeSelect, setShowModeSelect] = useState(false);
 
   const wrongCount = totalQuestions - correctCount;
   const accuracy =
@@ -128,9 +129,43 @@ const ReviewScreen: React.FC<ReviewScreenProps> = ({
           {t.review.returnHome}
         </button>
         {wrongCount > 0 && (
-          <button onClick={onReviewWrong} className="button button-primary">
-            {t.review.reviewIncorrect}
-          </button>
+          <>
+            {!showModeSelect ? (
+              <button 
+                onClick={() => setShowModeSelect(true)} 
+                className="button button-primary"
+              >
+                {t.review.reviewIncorrect}
+              </button>
+            ) : (
+              <>
+                <button 
+                  onClick={() => {
+                    onReviewWrong(GameMode.MultipleChoice);
+                    setShowModeSelect(false);
+                  }} 
+                  className="button button-primary"
+                >
+                  {t.review.reviewIncorrectMultipleChoice}
+                </button>
+                <button 
+                  onClick={() => {
+                    onReviewWrong(GameMode.DirectInput);
+                    setShowModeSelect(false);
+                  }} 
+                  className="button button-primary"
+                >
+                  {t.review.reviewIncorrectDirectInput}
+                </button>
+                <button
+                  onClick={() => setShowModeSelect(false)}
+                  className="button button-secondary"
+                >
+                  {t.common.cancel}
+                </button>
+              </>
+            )}
+          </>
         )}
       </div>
     </div>

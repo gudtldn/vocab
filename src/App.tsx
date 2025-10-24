@@ -306,9 +306,8 @@ const App: React.FC = () => {
     []
   );
 
-  const handleReviewWrongAnswers = (reviewList: VocabularyItem[]) => {
-    // For simplicity, let's reuse the multiple choice mode for review.
-    handleStartGame(reviewList, GameMode.MultipleChoice);
+  const handleReviewWrongAnswers = (reviewList: VocabularyItem[], mode: GameMode) => {
+    handleStartGame(reviewList, mode);
   };
 
   const handleGameEnd = useCallback(
@@ -390,10 +389,10 @@ const App: React.FC = () => {
     setView(AppView.Home);
   };
 
-  const handleReviewWrongFromReview = () => {
+  const handleReviewWrongFromReview = (mode: GameMode) => {
     const wrongItems = reviewItems.filter((item) => !item.isCorrect);
     if (wrongItems.length > 0) {
-      handleStartGame(wrongItems, GameMode.MultipleChoice);
+      handleStartGame(wrongItems, mode);
     }
   };
 
