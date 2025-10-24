@@ -282,4 +282,12 @@ export const ko = {
     editTooltip: "편집",
     deleteTooltip: "삭제",
   },
+
+  // 업데이트
+  update: {
+    newVersion: "새 버전 사용 가능",
+    description: "새 버전을 설치할 준비가 되었습니다.",
+    install: "지금 업데이트",
+    later: "나중에",
+  },
 };

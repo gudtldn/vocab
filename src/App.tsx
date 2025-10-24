@@ -8,6 +8,7 @@ import ReviewScreen from "./components/ReviewScreen";
 import VocabCreator from "./components/VocabCreator";
 import Header from "./components/Header";
 import ConfirmDialog from "./components/ConfirmDialog";
+import UpdateChecker from "./components/UpdateChecker";
 import { useI18n } from "./i18n/I18nContext";
 import {
   AppView,
@@ -806,6 +807,8 @@ const App: React.FC = () => {
       >
         ⌨️
       </button>
+
+      <UpdateChecker />
 
       <ConfirmDialog
         isOpen={dialog.isOpen}

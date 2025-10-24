@@ -282,6 +282,14 @@ export const ja = {
     editTooltip: "編集",
     deleteTooltip: "削除",
   },
+
+  // アップデート
+  update: {
+    newVersion: "新しいバージョンがあります",
+    description: "新しいバージョンをインストールする準備ができました。",
+    install: "今すぐ更新",
+    later: "後で",
+  },
 };
 
 export type Translation = typeof ja;

@@ -282,4 +282,12 @@ export const en = {
     editTooltip: "Edit",
     deleteTooltip: "Delete",
   },
+
+  // Update
+  update: {
+    newVersion: "New version available",
+    description: "A new version is ready to install.",
+    install: "Update Now",
+    later: "Later",
+  },
 };
