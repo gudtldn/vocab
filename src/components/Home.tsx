@@ -410,17 +410,13 @@ const Home: React.FC<HomeProps> = ({
             <h3 className="section-subtitle">保存された単語帳</h3>
             <div className="header-actions">
               {filteredBooks.length > 0 && (
-                <label className="select-all-label">
-                  <input
-                    type="checkbox"
-                    className="select-all-checkbox"
-                    checked={allFilteredSelected}
-                    onChange={
-                      allFilteredSelected ? handleDeselectAll : handleSelectAll
-                    }
-                  />
-                  <span>全選択</span>
-                </label>
+                <button
+                  onClick={allFilteredSelected ? handleDeselectAll : handleSelectAll}
+                  className={`button ${allFilteredSelected ? 'button-secondary' : 'button-select-all'}`}
+                  title={allFilteredSelected ? "すべての選択を解除" : "すべて選択"}
+                >
+                  {allFilteredSelected ? "☑ 選択解除" : "☐ 全選択"}
+                </button>
               )}
               <div className="bulk-actions">
                 <button
