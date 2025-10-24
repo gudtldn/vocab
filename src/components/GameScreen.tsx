@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { GameMode, VocabularyItem, ReviewItem } from "../types";
 import Furigana from "./Furigana";
-import { shuffleArray } from "../utils";
+import { shuffleArray, removeWhitespace } from "../utils";
 
 interface GameScreenProps {
   vocabulary: VocabularyItem[];
@@ -91,10 +91,10 @@ const GameScreen: React.FC<GameScreenProps> = ({
     let isCorrect = false;
     // 띄어쓰기를 제거한 정답 목록
     const normalizedMeanings = currentWord.meanings.map((m) =>
-      m.toLowerCase().trim().replace(/\s+/g, "")
+      removeWhitespace(m.toLowerCase().trim())
     );
     // 사용자 입력도 띄어쓰기 제거
-    const normalizedInput = userInput.toLowerCase().trim().replace(/\s+/g, "");
+    const normalizedInput = removeWhitespace(userInput.toLowerCase().trim());
 
     if (mode === GameMode.MultipleChoice) {
       isCorrect = normalizedMeanings.includes(normalizedInput);

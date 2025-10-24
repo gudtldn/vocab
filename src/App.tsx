@@ -17,6 +17,9 @@ import {
   ReviewItem,
 } from "./types";
 import { shuffleArray } from "./utils";
+// import { useLocalStorage } from "./hooks/useLocalStorage";
+// import { useDialog } from "./hooks/useDialog";
+import { KEYBOARD_SHORTCUTS, STORAGE_KEYS, MASTERY_CONFIG } from "./constants/index";
 import {
   writeTextFile,
   readTextFile,
@@ -69,7 +72,7 @@ const App: React.FC = () => {
       const target = e.target as HTMLElement;
       if (target.tagName === "INPUT" || target.tagName === "TEXTAREA") {
         // Esc 키는 예외
-        if (e.key === "Escape") {
+        if (e.key === KEYBOARD_SHORTCUTS.ESCAPE) {
           target.blur();
         }
         return;
@@ -78,36 +81,36 @@ const App: React.FC = () => {
       // 단축키 처리
       if (modifier) {
         switch (e.key.toLowerCase()) {
-          case "h":
+          case KEYBOARD_SHORTCUTS.HOME:
             e.preventDefault();
             setView(AppView.Home);
             break;
-          case "w":
+          case KEYBOARD_SHORTCUTS.WRONG_ANSWERS:
             e.preventDefault();
             if (wrongAnswers.length > 0) {
               setView(AppView.WrongAnswers);
             }
             break;
-          case "s":
+          case KEYBOARD_SHORTCUTS.STATISTICS:
             e.preventDefault();
             setView(AppView.Statistics);
             break;
-          case "d":
+          case KEYBOARD_SHORTCUTS.DARK_MODE:
             e.preventDefault();
             setDarkMode((prev) => !prev);
             break;
           case "/":
-          case "?":
+          case KEYBOARD_SHORTCUTS.HELP:
             e.preventDefault();
             setShowShortcutHelp((prev) => !prev);
             break;
         }
-      } else if (e.key === "Escape") {
+      } else if (e.key === KEYBOARD_SHORTCUTS.ESCAPE) {
         // Esc: 단축키 도움말 닫기
         if (showShortcutHelp) {
           setShowShortcutHelp(false);
         }
-      } else if (e.key === "?") {
+      } else if (e.key === KEYBOARD_SHORTCUTS.HELP) {
         // ?: 단축키 도움말 표시
         e.preventDefault();
         setShowShortcutHelp((prev) => !prev);
@@ -122,12 +125,12 @@ const App: React.FC = () => {
   useEffect(() => {
     const loadDarkMode = async () => {
       try {
-        const fileExists = await exists("settings.json", {
+        const fileExists = await exists(`${STORAGE_KEYS.SETTINGS}.json`, {
           baseDir: BaseDirectory.AppData,
         });
 
         if (fileExists) {
-          const data = await readTextFile("settings.json", {
+          const data = await readTextFile(`${STORAGE_KEYS.SETTINGS}.json`, {
             baseDir: BaseDirectory.AppData,
           });
           const settings = JSON.parse(data);
@@ -150,7 +153,7 @@ const App: React.FC = () => {
           await mkdir(appDataPath, { recursive: true }).catch(() => {});
 
           await writeTextFile(
-            "settings.json",
+            `${STORAGE_KEYS.SETTINGS}.json`,
             JSON.stringify({ darkMode }, null, 2),
             { baseDir: BaseDirectory.AppData }
           );
@@ -176,12 +179,12 @@ const App: React.FC = () => {
   useEffect(() => {
     const loadWrongAnswers = async () => {
       try {
-        const fileExists = await exists("wrongAnswers.json", {
+        const fileExists = await exists(`${STORAGE_KEYS.WRONG_ANSWERS}.json`, {
           baseDir: BaseDirectory.AppData,
         });
 
         if (fileExists) {
-          const data = await readTextFile("wrongAnswers.json", {
+          const data = await readTextFile(`${STORAGE_KEYS.WRONG_ANSWERS}.json`, {
             baseDir: BaseDirectory.AppData,
           });
           const parsed = JSON.parse(data) as WrongAnswerItem[];
@@ -199,12 +202,12 @@ const App: React.FC = () => {
 
       // 통계 데이터 불러오기
       try {
-        const statsExists = await exists("statistics.json", {
+        const statsExists = await exists(`${STORAGE_KEYS.STATISTICS}.json`, {
           baseDir: BaseDirectory.AppData,
         });
 
         if (statsExists) {
-          const statsData = await readTextFile("statistics.json", {
+          const statsData = await readTextFile(`${STORAGE_KEYS.STATISTICS}.json`, {
             baseDir: BaseDirectory.AppData,
           });
           const stats = JSON.parse(statsData);
@@ -235,7 +238,7 @@ const App: React.FC = () => {
           await mkdir(appDataPath, { recursive: true }).catch(() => {});
 
           await writeTextFile(
-            "wrongAnswers.json",
+            `${STORAGE_KEYS.WRONG_ANSWERS}.json`,
             JSON.stringify(wrongAnswers, null, 2),
             { baseDir: BaseDirectory.AppData }
           );
@@ -263,7 +266,7 @@ const App: React.FC = () => {
           };
 
           await writeTextFile(
-            "statistics.json",
+            `${STORAGE_KEYS.STATISTICS}.json`,
             JSON.stringify(stats, null, 2),
             { baseDir: BaseDirectory.AppData }
           );
@@ -342,7 +345,7 @@ const App: React.FC = () => {
 
         // 3회 연속 정답인 단어 제거 (숙달 완료)
         const masteredAnswers = updatedAnswers.filter(
-          (item) => item.correctStreak >= 3
+          (item) => item.correctStreak >= MASTERY_CONFIG.CORRECT_STREAK_REQUIRED
         );
 
         if (masteredAnswers.length > 0) {
@@ -352,7 +355,7 @@ const App: React.FC = () => {
           );
         }
 
-        return updatedAnswers.filter((item) => item.correctStreak < 3);
+        return updatedAnswers.filter((item) => item.correctStreak < MASTERY_CONFIG.CORRECT_STREAK_REQUIRED);
       });
 
       // 통계 업데이트

@@ -1,18 +1,11 @@
 import React, { useState, useRef } from "react";
 import { VocabularyItem } from "../types";
 import ConfirmDialog from "./ConfirmDialog";
+import { useDialog } from "../hooks/useDialog";
 
 interface VocabCreatorProps {
   onSave: (name: string, vocabulary: VocabularyItem[]) => void;
   onCancel: () => void;
-}
-
-interface DialogState {
-  isOpen: boolean;
-  title: string;
-  message: string;
-  onConfirm: () => void;
-  danger?: boolean;
 }
 
 const VocabCreator: React.FC<VocabCreatorProps> = ({ onSave, onCancel }) => {
@@ -23,12 +16,7 @@ const VocabCreator: React.FC<VocabCreatorProps> = ({ onSave, onCancel }) => {
   const [currentMeanings, setCurrentMeanings] = useState("");
   const [currentNote, setCurrentNote] = useState("");
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [dialog, setDialog] = useState<DialogState>({
-    isOpen: false,
-    title: "",
-    message: "",
-    onConfirm: () => {},
-  });
+  const { dialog, showDialog, hideDialog } = useDialog();
 
   const wordInputRef = useRef<HTMLInputElement>(null);
   const readingInputRef = useRef<HTMLInputElement>(null);
@@ -95,16 +83,15 @@ const VocabCreator: React.FC<VocabCreatorProps> = ({ onSave, onCancel }) => {
 
   const handleDelete = (index: number) => {
     const word = vocabulary[index];
-    setDialog({
-      isOpen: true,
-      title: "単語を削除",
-      message: `「${word.word}」を削除しますか？`,
-      onConfirm: () => {
+    showDialog(
+      "単語を削除",
+      `「${word.word}」を削除しますか？`,
+      () => {
         setVocabulary(vocabulary.filter((_, i) => i !== index));
-        setDialog({ ...dialog, isOpen: false });
+        hideDialog();
       },
-      danger: true,
-    });
+      true
+    );
   };
 
   const handleCancelEdit = () => {
@@ -122,22 +109,20 @@ const VocabCreator: React.FC<VocabCreatorProps> = ({ onSave, onCancel }) => {
 
   const handleSave = () => {
     if (!bookName.trim()) {
-      setDialog({
-        isOpen: true,
-        title: "入力エラー",
-        message: "単語帳の名前を入力してください。",
-        onConfirm: () => setDialog({ ...dialog, isOpen: false }),
-      });
+      showDialog(
+        "入力エラー",
+        "単語帳の名前を入力してください。",
+        hideDialog
+      );
       return;
     }
 
     if (vocabulary.length === 0) {
-      setDialog({
-        isOpen: true,
-        title: "入力エラー",
-        message: "単語を少なくとも1つ追加してください。",
-        onConfirm: () => setDialog({ ...dialog, isOpen: false }),
-      });
+      showDialog(
+        "入力エラー",
+        "単語を少なくとも1つ追加してください。",
+        hideDialog
+      );
       return;
     }
 
@@ -356,7 +341,7 @@ const VocabCreator: React.FC<VocabCreatorProps> = ({ onSave, onCancel }) => {
         title={dialog.title}
         message={dialog.message}
         onConfirm={dialog.onConfirm}
-        onCancel={() => setDialog({ ...dialog, isOpen: false })}
+        onCancel={hideDialog}
         danger={dialog.danger}
       />
     </div>

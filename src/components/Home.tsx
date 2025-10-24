@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { GameMode, VocabularyItem, VocabularyBook } from "../types";
 import { invoke } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
+import { STORAGE_KEYS } from "../constants/index";
 import {
   writeTextFile,
   readTextFile,
@@ -29,7 +30,6 @@ const Home: React.FC<HomeProps> = ({
 }) => {
   const [vocabulary, setVocabulary] = useState<VocabularyItem[]>([]);
   const [error, setError] = useState<string>("");
-  const [fileName, setFileName] = useState<string>("");
   const [savedBooks, setSavedBooks] = useState<VocabularyBook[]>([]);
   const [selectedBookIds, setSelectedBookIds] = useState<string[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -45,12 +45,12 @@ const Home: React.FC<HomeProps> = ({
   useEffect(() => {
     const loadSavedBooks = async () => {
       try {
-        const fileExists = await exists("vocabularyBooks.json", {
+        const fileExists = await exists(`${STORAGE_KEYS.VOCABULARY_BOOKS}.json`, {
           baseDir: BaseDirectory.AppData,
         });
 
         if (fileExists) {
-          const data = await readTextFile("vocabularyBooks.json", {
+          const data = await readTextFile(`${STORAGE_KEYS.VOCABULARY_BOOKS}.json`, {
             baseDir: BaseDirectory.AppData,
           });
           const books = JSON.parse(data) as VocabularyBook[];
@@ -68,7 +68,7 @@ const Home: React.FC<HomeProps> = ({
   const saveBooksToFile = async (books: VocabularyBook[]) => {
     try {
       await writeTextFile(
-        "vocabularyBooks.json",
+        `${STORAGE_KEYS.VOCABULARY_BOOKS}.json`,
         JSON.stringify(books, null, 2),
         { baseDir: BaseDirectory.AppData }
       );
@@ -78,9 +78,8 @@ const Home: React.FC<HomeProps> = ({
   };
 
   const handleButtonClick = async () => {
-    setError(""); // 에러 초기화
-    setFileName(""); // 파일 이름 초기화
-    setVocabulary([]); // 단어 목록 초기화
+    setError("");
+    setVocabulary([]);
 
     try {
       // Tauri 파일 열기 다이얼로그 호출 (다중 선택)
@@ -95,8 +94,6 @@ const Home: React.FC<HomeProps> = ({
       });
 
       if (!selectedPaths || selectedPaths.length === 0) {
-        // 사용자가 파일 선택을 취소했을 때
-        setFileName("");
         return;
       }
 
@@ -141,9 +138,6 @@ const Home: React.FC<HomeProps> = ({
       }
 
       setVocabulary(allVocabulary);
-      setFileName(
-        paths.length === 1 ? newBooks[0].name : `${paths.length}個のファイル`
-      );
       setError("");
 
       // 단어장 목록 업데이트
@@ -182,7 +176,6 @@ const Home: React.FC<HomeProps> = ({
       // Rust 커맨드에서 발생한 에러 메시지를 표시
       setError(err instanceof Error ? err.message : String(err));
       setVocabulary([]);
-      setFileName("");
     }
   };
 
@@ -196,7 +189,6 @@ const Home: React.FC<HomeProps> = ({
     // 선택된 모든 단어장의 단어를 합치기
     if (newSelectedIds.length === 0) {
       setVocabulary([]);
-      setFileName("");
       return;
     }
 
@@ -214,11 +206,6 @@ const Home: React.FC<HomeProps> = ({
       }
 
       setVocabulary(allVocabulary);
-      setFileName(
-        selectedBooks.length === 1
-          ? selectedBooks[0].name
-          : `${selectedBooks.length}個の単語帳`
-      );
 
       // 마지막 사용 시간 업데이트
       const updatedBooks = savedBooks.map((b) =>
@@ -246,7 +233,6 @@ const Home: React.FC<HomeProps> = ({
 
       if (newSelectedIds.length === 0) {
         setVocabulary([]);
-        setFileName("");
       } else {
         // 남은 선택된 단어장들의 단어를 다시 로드
         handleToggleBook(bookId); // 이미 제거되었으므로 재계산 트리거
@@ -335,11 +321,6 @@ const Home: React.FC<HomeProps> = ({
       }
 
       setVocabulary(allVocabulary);
-      setFileName(
-        filteredBooks.length === 1
-          ? filteredBooks[0].name
-          : `${filteredBooks.length}個の単語帳`
-      );
 
       // 마지막 사용 시간 업데이트
       const updatedBooks = savedBooks.map((b) =>
@@ -356,7 +337,6 @@ const Home: React.FC<HomeProps> = ({
   const handleDeselectAll = () => {
     setSelectedBookIds([]);
     setVocabulary([]);
-    setFileName("");
   };
 
   const allFilteredSelected =
