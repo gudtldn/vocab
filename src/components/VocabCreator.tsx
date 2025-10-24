@@ -155,22 +155,29 @@ const VocabCreator: React.FC<VocabCreatorProps> = ({ onSave, onCancel }) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       
-      // 現在のフィールドが空の場合、次のフィールドに移動
-      if (currentField === 'word' && !currentWord.trim()) {
-        readingInputRef.current?.focus();
-        return;
-      }
-      if (currentField === 'reading' && !currentReading.trim()) {
-        meaningsInputRef.current?.focus();
-        return;
-      }
-      if (currentField === 'meanings' && !currentMeanings.trim()) {
-        // 意味フィールドが空の場合は何もしない（フォーカスを維持）
+      // 単語フィールド: 入力されていれば読みへ、なければそのまま
+      if (currentField === 'word') {
+        if (currentWord.trim()) {
+          readingInputRef.current?.focus();
+        }
         return;
       }
       
-      // すべて入力されている場合は単語を追加
-      handleAddWord();
+      // 読みフィールド: 入力されていれば意味へ、なければそのまま
+      if (currentField === 'reading') {
+        if (currentReading.trim()) {
+          meaningsInputRef.current?.focus();
+        }
+        return;
+      }
+      
+      // 意味フィールド: すべて入力されていれば追加、そうでなければそのまま
+      if (currentField === 'meanings') {
+        if (currentWord.trim() && currentReading.trim() && currentMeanings.trim()) {
+          handleAddWord();
+        }
+        return;
+      }
     }
   };
 
