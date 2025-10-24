@@ -171,6 +171,10 @@ const GameScreen: React.FC<GameScreenProps> = ({
   const handleSkip = () => {
     if (!currentWord) return;
 
+    // 오답 처리
+    setFeedback("incorrect");
+    setUserInput(""); // 입력값 비우기
+    
     setSessionWrongAnswers((prev) => {
       if (
         prev.find(
@@ -190,11 +194,9 @@ const GameScreen: React.FC<GameScreenProps> = ({
       {
         ...currentWord,
         isCorrect: false,
-        userAnswer: "(スキップ)", // 스킵 표시
+        userAnswer: t.game.skipped, // 스킵 표시
       },
     ]);
-
-    handleNext();
   };
 
   useEffect(() => {
@@ -317,7 +319,13 @@ const GameScreen: React.FC<GameScreenProps> = ({
         {feedback && (
           <div className={`feedback-badge ${feedback}`}>
             {feedback === "correct" ? (
-              <span>{t.game.correct}</span>
+              <span>
+                {t.game.correct}
+                <br />
+                <span className="all-meanings">
+                  {currentWord.meanings.join(", ")}
+                </span>
+              </span>
             ) : (
               <span>{t.game.incorrect(currentWord.meanings.join(", "))}</span>
             )}
