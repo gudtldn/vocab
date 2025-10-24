@@ -13,9 +13,10 @@ interface HomeProps {
   onStartGame: (vocabulary: VocabularyItem[], mode: GameMode) => void;
   onUpdateCurrentBooks: (books: VocabularyBook[], vocabulary: VocabularyItem[]) => void;
   onEditBook: (book: VocabularyBook, vocabulary: VocabularyItem[]) => void;
+  onCreateVocabBook: () => void;
 }
 
-const Home: React.FC<HomeProps> = ({ onStartGame, onUpdateCurrentBooks, onEditBook }) => {
+const Home: React.FC<HomeProps> = ({ onStartGame, onUpdateCurrentBooks, onEditBook, onCreateVocabBook }) => {
   const [vocabulary, setVocabulary] = useState<VocabularyItem[]>([]);
   const [error, setError] = useState<string>("");
   const [fileName, setFileName] = useState<string>("");
@@ -359,9 +360,14 @@ const Home: React.FC<HomeProps> = ({ onStartGame, onUpdateCurrentBooks, onEditBo
       </div>
 
       <div className="upload-section">
-        <button onClick={handleButtonClick} className="button button-primary">
-          単語帳をアップロード
-        </button>
+        <div className="upload-buttons">
+          <button onClick={handleButtonClick} className="button button-primary">
+            📂 単語帳をアップロード
+          </button>
+          <button onClick={onCreateVocabBook} className="button button-success">
+            ➕ 新しく作成
+          </button>
+        </div>
         {fileName && (
           <p className="file-name-display">
             ファイル: <span className="file-name">{fileName}</span>

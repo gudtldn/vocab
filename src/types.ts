@@ -31,6 +31,7 @@ export enum AppView {
   Statistics = "statistics",
   VocabEditor = "vocab-editor",
   Review = "review",
+  VocabCreator = "vocab-creator",
 }
 
 export interface ReviewItem extends VocabularyItem {

@@ -5,6 +5,7 @@ import WrongAnswerNote from "./components/WrongAnswerNote";
 import Statistics from "./components/Statistics";
 import VocabEditor from "./components/VocabEditor";
 import ReviewScreen from "./components/ReviewScreen";
+import VocabCreator from "./components/VocabCreator";
 import Header from "./components/Header";
 import {
   AppView,
@@ -423,6 +424,79 @@ const App: React.FC = () => {
     [currentBooks]
   );
 
+  const handleCreateVocabBook = useCallback(
+    async (name: string, vocabulary: VocabularyItem[]) => {
+      try {
+        const appDataDirPath = await appDataDir();
+        const vocabDirPath = `${appDataDirPath}vocabularies`;
+
+        // vocabularies 디렉토리가 없으면 생성
+        const vocabDirExists = await exists(vocabDirPath);
+        if (!vocabDirExists) {
+          await mkdir(vocabDirPath, { recursive: true });
+        }
+
+        // 파일명 생성 (공백을 언더스코어로 변경, 타임스탬프 추가)
+        const sanitizedName = name.replace(/\s+/g, "_");
+        const timestamp = Date.now();
+        const fileName = `${sanitizedName}_${timestamp}.csv`;
+        const filePath = `${vocabDirPath}/${fileName}`;
+
+        // CSV 형식으로 변환
+        const csvContent = vocabulary
+          .map((item) => {
+            const meanings = item.meanings.join(",");
+            const note = item.note ? `,${item.note}` : "";
+            return `${item.word},${item.reading},${meanings}${note}`;
+          })
+          .join("\n");
+
+        // 파일 저장
+        await writeTextFile(filePath, csvContent);
+
+        // 단어장 목록에 추가
+        const newBook: VocabularyBook = {
+          id: timestamp.toString(),
+          name: `${name}.csv`,
+          filePath: filePath,
+          lastUsed: timestamp,
+          wordCount: vocabulary.length,
+          tags: [],
+        };
+
+        // vocabularyBooks.json 업데이트
+        const booksExists = await exists("vocabularyBooks.json", {
+          baseDir: BaseDirectory.AppData,
+        });
+
+        let books: VocabularyBook[] = [];
+        if (booksExists) {
+          const data = await readTextFile("vocabularyBooks.json", {
+            baseDir: BaseDirectory.AppData,
+          });
+          books = JSON.parse(data);
+        }
+
+        books = [newBook, ...books];
+        await writeTextFile(
+          "vocabularyBooks.json",
+          JSON.stringify(books, null, 2),
+          { baseDir: BaseDirectory.AppData }
+        );
+
+        alert(`単語帳「${name}」を作成しました！`);
+        setView(AppView.Home);
+        
+        // 홈 화면을 새로고침하기 위해 페이지 리로드는 하지 않고 상태만 업데이트
+        window.location.reload();
+      } catch (error) {
+        console.error("단어장 생성 실패:", error);
+        alert("単語帳の作成に失敗しました。");
+      }
+    },
+    []
+  );
+
   const handleExportCSV = useCallback(async () => {
     // 현재 편집 중인 단어장이 있으면 그것을, 없으면 오답노트를 출력
     const dataToExport =
@@ -531,6 +605,13 @@ const App: React.FC = () => {
             onReviewWrong={handleReviewWrongFromReview}
           />
         );
+      case AppView.VocabCreator:
+        return (
+          <VocabCreator
+            onSave={handleCreateVocabBook}
+            onCancel={() => setView(AppView.Home)}
+          />
+        );
       case AppView.Home:
       default:
         return (
@@ -538,6 +619,7 @@ const App: React.FC = () => {
             onStartGame={handleStartGame}
             onUpdateCurrentBooks={handleUpdateCurrentBooks}
             onEditBook={handleEditBook}
+            onCreateVocabBook={() => setView(AppView.VocabCreator)}
           />
         );
     }
