@@ -29,6 +29,7 @@ import {
   BaseDirectory,
   mkdir,
 } from "@tauri-apps/plugin-fs";
+import { invoke } from "@tauri-apps/api/core";
 import { appDataDir } from "@tauri-apps/api/path";
 import { save } from "@tauri-apps/plugin-dialog";
 
@@ -435,7 +436,10 @@ const App: React.FC = () => {
             })
             .join("\n");
 
-          await writeTextFile(book.filePath, csvContent);
+          await invoke("save_text_file", {
+            filePath: book.filePath,
+            content: csvContent,
+          });
           console.log("단어장 파일 저장 성공:", book.filePath);
           // 저장 성공 - 자동 저장이므로 다이얼로그 불필요
         } catch (error) {
@@ -500,7 +504,11 @@ const App: React.FC = () => {
         // 파일 저장
         await writeTextFile(filePath, csvContent);
 
-        // 단어장 목록에 추가
+        
+      // 파일 저장
+      await invoke("save_text_file", { filePath, content: csvContent });
+
+      // 단어장 목록에 추가
         const timestamp = Date.now();
         const fileName =
           filePath.split(/[\\/]/).pop() || `${sanitizedName}.csv`;
@@ -583,10 +591,10 @@ const App: React.FC = () => {
             const note = item.note ? `,${item.note}` : "";
             return `${item.word},${item.reading},${meanings}${note}`;
           })
-          .join("\n");
+        .join("\n");
 
-        await writeTextFile(filePath, csvContent);
-        // 출력 성공 - 파일 저장 다이얼로그로 이미 확인했으므로 다이얼로그 불필요
+      await invoke("save_text_file", { filePath, content: csvContent });
+      // 출력 성공 - 파일 저장 다이얼로그로 이미 확인했으므로 다이얼로그 불필요
       }
     } catch (error) {
       console.error("CSV 출력 실패:", error);
