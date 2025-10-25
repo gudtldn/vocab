@@ -516,6 +516,13 @@ const Home: React.FC<HomeProps> = ({
                   <div
                     className="tag-input-section"
                     onClick={(e) => e.stopPropagation()}
+                    onBlur={(e) => {
+                      // 포커스가 tag-input-section 내부 요소로 이동하는 경우 무시
+                      if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+                        setEditingBookId("");
+                        setTagInput("");
+                      }
+                    }}
                   >
                     <input
                       type="text"
