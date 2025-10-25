@@ -53,6 +53,7 @@ export const ko = {
     deleteBook: "삭제",
     addTag: "태그 추가",
     tagPlaceholder: "새 태그",
+    openFileLocation: "파일 위치 열기",
     wordCount: (count: number) => `${count}개 단어`,
     lastUsed: (date: string) => `최근 사용: ${date}`,
   },
