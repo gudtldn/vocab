@@ -53,6 +53,7 @@ export const en = {
     deleteBook: "Delete",
     addTag: "Add Tag",
     tagPlaceholder: "New tag",
+    openFileLocation: "Open File Location",
     wordCount: (count: number) => `${count} word${count !== 1 ? 's' : ''}`,
     lastUsed: (date: string) => `Last used: ${date}`,
   },

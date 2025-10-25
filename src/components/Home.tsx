@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { GameMode, VocabularyItem, VocabularyBook } from "../types";
 import { invoke } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
+import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import { STORAGE_KEYS } from "../constants/index";
 import { useI18n } from "../i18n/I18nContext";
 import {
@@ -326,20 +327,32 @@ const Home: React.FC<HomeProps> = ({
         filePath: book.filePath,
       });
 
-      // 편집 화면으로 전환
-      onEditBook(book, parsedData);
-    } catch (err) {
-      console.error("단어장 불러오기 실패:", err);
-      setError(err instanceof Error ? err.message : String(err));
-    }
-  };
+    // 편집 화면으로 전환
+    onEditBook(book, parsedData);
+  } catch (err) {
+    console.error("단어장 불러오기 실패:", err);
+    setError(err instanceof Error ? err.message : String(err));
+  }
+};
 
-  // 모든 태그 목록 가져오기
-  const allTags = Array.from(
-    new Set(savedBooks.flatMap((book) => book.tags || []))
-  ).sort();
+// 파일 탐색기에서 파일 위치 열기
+const handleOpenFileLocation = async (filePath: string) => {
+  try {
+    await revealItemInDir(filePath);
+  } catch (err) {
+    console.error("파일 위치 열기 실패:", err);
+    onShowDialog(
+      t.common.error,
+      t.errors.unknownError,
+      () => {}
+    );
+  }
+};
 
-  // 태그 필터링된 단어장 목록
+// 모든 태그 목록 가져오기
+const allTags = Array.from(
+  new Set(savedBooks.flatMap((book) => book.tags || []))
+).sort();  // 태그 필터링된 단어장 목록
   const filteredBooks =
     selectedTags.length === 0
       ? savedBooks
@@ -550,6 +563,16 @@ const Home: React.FC<HomeProps> = ({
                   title={t.home.addTag}
                 >
                   🏷️
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleOpenFileLocation(book.filePath);
+                  }}
+                  className="button button-tag"
+                  title={t.home.openFileLocation}
+                >
+                  📂
                 </button>
                 {editingBookId === book.id && (
                   <div

@@ -53,6 +53,7 @@ export const ja = {
     deleteBook: "削除",
     addTag: "タグを追加",
     tagPlaceholder: "新しいタグ",
+    openFileLocation: "ファイルの場所を開く",
     wordCount: (count: number) => `${count}個の単語`,
     lastUsed: (date: string) => `最終使用: ${date}`,
   },
