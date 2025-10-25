@@ -43,6 +43,7 @@ export const en = {
     multipleChoice: "Multiple Choice",
     directInput: "Direct Input",
     vocabularyCount: (count: number) => `📚 ${count} word${count !== 1 ? 's' : ''}`,
+    vocabularyCountWithDuplicates: (count: number, total: number) => `📚 ${count} word${count !== 1 ? 's' : ''} (${total} total, ${total - count} duplicate${total - count !== 1 ? 's' : ''} excluded)`,
     selectedFile: (name: string) => `File: ${name}`,
     selectedFiles: (count: number) => `File: ${count} vocabulary book${count !== 1 ? 's' : ''}`,
     filterByTag: "Filter by Tag",
