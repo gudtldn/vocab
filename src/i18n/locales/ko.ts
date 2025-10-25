@@ -18,6 +18,7 @@ export const ko = {
     next: "다음",
     skip: "건너뛰기",
     retry: "다시 시도",
+    showKeyboardShortcuts: "키보드 단축키 (?) 표시",
   },
 
   // 헤더
@@ -93,6 +94,7 @@ export const ko = {
     meaning: "의미",
     yourAnswer: "내 답변",
     correctAnswer: "정답",
+    note: "메모",
   },
 
   // 오답노트
@@ -214,6 +216,17 @@ export const ko = {
     noValidFile: "유효한 파일이 없습니다.",
     networkError: "네트워크 오류 발생",
     unknownError: "알 수 없는 오류 발생",
+    vocabSaveFailed: "단어장 저장에 실패했습니다.",
+    vocabCreateFailed: "단어장 생성에 실패했습니다.",
+    csvExportFailed: "CSV 내보내기에 실패했습니다.",
+  },
+
+  // 경고 메시지
+  warnings: {
+    warning: "경고",
+    multipleBooksSaveWarning: "여러 단어장이 선택되어 있습니다.\n새 파일로 저장하려면 '파일 저장' 버튼을 사용하세요.",
+    unsavedChanges: "저장하지 않은 변경사항이 있습니다.\n계속하시겠습니까?",
+    noDataToExport: "내보낼 데이터가 없습니다.",
   },
 
   // 성공 메시지

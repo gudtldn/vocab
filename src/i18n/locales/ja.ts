@@ -18,6 +18,7 @@ export const ja = {
     next: "次へ",
     skip: "スキップ",
     retry: "リトライ",
+    showKeyboardShortcuts: "キーボードショートカット (?) を表示",
   },
 
   // ヘッダー
@@ -93,6 +94,7 @@ export const ja = {
     meaning: "意味",
     yourAnswer: "あなたの答え",
     correctAnswer: "正解",
+    note: "メモ",
   },
 
   // 誤答ノート
@@ -214,6 +216,17 @@ export const ja = {
     noValidFile: "有効なファイルがありません。",
     networkError: "ネットワークエラーが発生しました",
     unknownError: "不明なエラーが発生しました",
+    vocabSaveFailed: "単語帳の保存に失敗しました。",
+    vocabCreateFailed: "単語帳の作成に失敗しました。",
+    csvExportFailed: "CSV出力に失敗しました。",
+  },
+
+  // 警告メッセージ
+  warnings: {
+    warning: "警告",
+    multipleBooksSaveWarning: "複数の単語帳が選択されています。\n新しいファイルとして保存するには、「ファイルを保存」ボタンを使用してください。",
+    unsavedChanges: "保存されていない変更があります。\n続行しますか？",
+    noDataToExport: "出力するデータがありません。",
   },
 
   // 成功メッセージ

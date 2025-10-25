@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { useI18n } from "../i18n/I18nContext";
 
 interface ConfirmDialogProps {
   isOpen: boolean;
@@ -15,12 +16,14 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   isOpen,
   title,
   message,
-  confirmText = "確認",
-  cancelText = "キャンセル",
+  confirmText,
+  cancelText,
   onConfirm,
   onCancel,
   danger = false,
 }) => {
+  const { t } = useI18n();
+
   useEffect(() => {
     if (!isOpen) return;
 
@@ -51,13 +54,13 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
         </div>
         <div className="dialog-footer">
           <button onClick={onCancel} className="button button-secondary">
-            {cancelText}
+            {cancelText || t.common.cancel}
           </button>
           <button
             onClick={onConfirm}
             className={`button ${danger ? "button-danger" : "button-primary"}`}
           >
-            {confirmText}
+            {confirmText || t.common.confirm}
           </button>
         </div>
       </div>
