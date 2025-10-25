@@ -44,20 +44,20 @@ const VocabEditor: React.FC<VocabEditorProps> = ({
     setVocabList(vocabulary);
   }, [vocabulary]);
 
-  const handleEdit = (index: number) => {
-    setEditingId(index);
+  const handleEdit = (originalIndex: number) => {
+    setEditingId(originalIndex);
   };
 
-  const handleSave = (index: number, updatedItem: VocabularyItem) => {
+  const handleSave = (originalIndex: number, updatedItem: VocabularyItem) => {
     const updated = [...vocabList];
-    updated[index] = updatedItem;
+    updated[originalIndex] = updatedItem;
     setVocabList(updated);
     setEditingId(null);
     onSave(updated);
   };
 
-  const handleDelete = (index: number) => {
-    const updated = vocabList.filter((_, i) => i !== index);
+  const handleDelete = (originalIndex: number) => {
+    const updated = vocabList.filter((_, i) => i !== originalIndex);
     setVocabList(updated);
     onSave(updated);
   };
@@ -217,19 +217,25 @@ const VocabEditor: React.FC<VocabEditorProps> = ({
 
       <div className="vocab-list">
         <div className="vocab-count">{t.vocabEditor.wordCount(filteredVocab.length)}</div>
-        {filteredVocab.map((item, index) => (
-          <VocabItem
-            key={index}
-            item={item}
-            index={index}
-            isEditing={editingId === index}
-            onEdit={() => handleEdit(index)}
-            onSave={(updated) => handleSave(index, updated)}
-            onDelete={() => handleDelete(index)}
-            onCancel={() => setEditingId(null)}
-            t={t}
-          />
-        ))}
+        {filteredVocab.map((item) => {
+          // 원본 배열에서의 실제 인덱스 찾기
+          const originalIndex = vocabList.findIndex(
+            (v) => v.word === item.word && v.reading === item.reading
+          );
+          return (
+            <VocabItem
+              key={originalIndex}
+              item={item}
+              index={originalIndex}
+              isEditing={editingId === originalIndex}
+              onEdit={() => handleEdit(originalIndex)}
+              onSave={(updated) => handleSave(originalIndex, updated)}
+              onDelete={() => handleDelete(originalIndex)}
+              onCancel={() => setEditingId(null)}
+              t={t}
+            />
+          );
+        })}
       </div>
 
       <ConfirmDialog
