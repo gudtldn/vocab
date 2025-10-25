@@ -9,9 +9,9 @@
     "preview": "vite preview",
     "tauri": "tauri",
     "version": "node scripts/update-version.js",
-    "version:patch": "npm version patch && npm run version",
-    "version:minor": "npm version minor && npm run version",
-    "version:major": "npm version major && npm run version"
+    "version:patch": "npm version patch --no-git-tag-version && npm run version",
+    "version:minor": "npm version minor --no-git-tag-version && npm run version",
+    "version:major": "npm version major --no-git-tag-version && npm run version"
   },
   "dependencies": {
     "@tauri-apps/api": "2.9.0",
