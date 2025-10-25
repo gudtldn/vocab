@@ -96,21 +96,3 @@ jobs:
           prerelease: false
           includeUpdaterJson: true
           args: --target ${{ matrix.target }}
-
-  update-release-notes:
-    needs: [prepare, build-tauri]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Update Release with Changelog
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: v${{ needs.prepare.outputs.version }}
-          generate_release_notes: true
-          append_body: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
