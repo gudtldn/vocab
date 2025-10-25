@@ -43,6 +43,7 @@ export const ja = {
     multipleChoice: "客観式",
     directInput: "主観式",
     vocabularyCount: (count: number) => `📚 ${count}個の単語`,
+    vocabularyCountWithDuplicates: (count: number, total: number) => `📚 ${count}個の単語 (全体 ${total}個、重複 ${total - count}個除外)`,
     selectedFile: (name: string) => `ファイル: ${name}`,
     selectedFiles: (count: number) => `ファイル: ${count}個の単語帳`,
     filterByTag: "タグでフィルター",

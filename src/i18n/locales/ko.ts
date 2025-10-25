@@ -43,6 +43,7 @@ export const ko = {
     multipleChoice: "객관식",
     directInput: "주관식",
     vocabularyCount: (count: number) => `📚 ${count}개의 단어`,
+    vocabularyCountWithDuplicates: (count: number, total: number) => `📚 ${count}개의 단어 (전체 ${total}개, 중복 ${total - count}개 제외)`,
     selectedFile: (name: string) => `파일: ${name}`,
     selectedFiles: (count: number) => `파일: ${count}개의 단어장`,
     filterByTag: "태그로 필터",

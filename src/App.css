@@ -1569,6 +1569,13 @@ body.dark-mode .button-bulk-delete:hover {
   font-size: 1rem;
 }
 
+.duplicate-info {
+  font-size: 0.85em;
+  opacity: 0.7;
+  font-weight: normal;
+  margin-left: 0.5rem;
+}
+
 .floating-label {
   color: #495057;
   font-size: 0.9rem;

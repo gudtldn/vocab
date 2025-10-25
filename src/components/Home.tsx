@@ -43,6 +43,35 @@ const Home: React.FC<HomeProps> = ({
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [editingBookId, setEditingBookId] = useState<string>("");
   const [tagInput, setTagInput] = useState<string>("");
+  const [totalBeforeMerge, setTotalBeforeMerge] = useState<number>(0);
+
+  // 중복 단어 병합 함수
+  const mergeVocabulary = (items: VocabularyItem[]): VocabularyItem[] => {
+    const map = new Map<string, VocabularyItem>();
+    
+    for (const item of items) {
+      // word와 reading을 조합한 키 생성
+      const key = `${item.word}|${item.reading}`;
+      const existing = map.get(key);
+      
+      if (existing) {
+        // 완전히 같은 단어(한자+후리가나)의 뜻을 합침 (중복 제거)
+        const combinedMeanings = [...new Set([...existing.meanings, ...item.meanings])];
+        existing.meanings = combinedMeanings;
+        
+        // 노트도 합침
+        if (item.note && existing.note && !existing.note.includes(item.note)) {
+          existing.note = existing.note + " | " + item.note;
+        } else if (item.note && !existing.note) {
+          existing.note = item.note;
+        }
+      } else {
+        map.set(key, { ...item });
+      }
+    }
+    
+    return Array.from(map.values());
+  };
 
   // vocabulary 카운트가 변경될 때마다 부모에게 알림
   useEffect(() => {
@@ -145,7 +174,10 @@ const Home: React.FC<HomeProps> = ({
         throw new Error("有効なファイルがありません。");
       }
 
-      setVocabulary(allVocabulary);
+      // 중복 단어 병합
+      const mergedVocabulary = mergeVocabulary(allVocabulary);
+      setTotalBeforeMerge(allVocabulary.length);
+      setVocabulary(mergedVocabulary);
       setError("");
 
       // 단어장 목록 업데이트
@@ -213,7 +245,10 @@ const Home: React.FC<HomeProps> = ({
         allVocabulary = [...allVocabulary, ...parsedData];
       }
 
-      setVocabulary(allVocabulary);
+      // 중복 단어 병합
+      const mergedVocabulary = mergeVocabulary(allVocabulary);
+      setTotalBeforeMerge(allVocabulary.length);
+      setVocabulary(mergedVocabulary);
 
       // 마지막 사용 시간 업데이트
       const updatedBooks = savedBooks.map((b) =>
@@ -223,7 +258,7 @@ const Home: React.FC<HomeProps> = ({
       await saveBooksToFile(updatedBooks);
 
       // 부모 컴포넌트에 현재 선택된 단어장 정보 전달
-      onUpdateCurrentBooks(selectedBooks, allVocabulary);
+      onUpdateCurrentBooks(selectedBooks, mergedVocabulary);
     } catch (err) {
       console.error("단어장 불러오기 실패:", err);
       setError(err instanceof Error ? err.message : String(err));
@@ -328,7 +363,10 @@ const Home: React.FC<HomeProps> = ({
         allVocabulary = [...allVocabulary, ...parsedData];
       }
 
-      setVocabulary(allVocabulary);
+      // 중복 단어 병합
+      const mergedVocabulary = mergeVocabulary(allVocabulary);
+      setTotalBeforeMerge(allVocabulary.length);
+      setVocabulary(mergedVocabulary);
 
       // 마지막 사용 시간 업데이트
       const updatedBooks = savedBooks.map((b) =>
@@ -345,6 +383,7 @@ const Home: React.FC<HomeProps> = ({
   const handleDeselectAll = () => {
     setSelectedBookIds([]);
     setVocabulary([]);
+    setTotalBeforeMerge(0);
   };
 
   const allFilteredSelected =
@@ -561,6 +600,11 @@ const Home: React.FC<HomeProps> = ({
             <div className="floating-info">
               <span className="floating-count">
                 {t.home.vocabularyCount(vocabulary.length)}
+                {totalBeforeMerge > vocabulary.length && (
+                  <span className="duplicate-info">
+                    (전체 {totalBeforeMerge}개, 중복 {totalBeforeMerge - vocabulary.length}개 제외)
+                  </span>
+                )}
               </span>
               <span className="floating-label">
                 {selectedBookIds.length === 1
