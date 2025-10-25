@@ -18,6 +18,7 @@ export const en = {
     next: "Next",
     skip: "Skip",
     retry: "Retry",
+    showKeyboardShortcuts: "Show Keyboard Shortcuts (?)",
   },
 
   // Header
@@ -93,6 +94,7 @@ export const en = {
     meaning: "Meaning",
     yourAnswer: "Your Answer",
     correctAnswer: "Correct Answer",
+    note: "Note",
   },
 
   // Wrong Answers
@@ -214,6 +216,17 @@ export const en = {
     noValidFile: "No valid files found.",
     networkError: "Network error occurred",
     unknownError: "Unknown error occurred",
+    vocabSaveFailed: "Failed to save vocabulary.",
+    vocabCreateFailed: "Failed to create vocabulary.",
+    csvExportFailed: "Failed to export CSV.",
+  },
+
+  // Warning Messages
+  warnings: {
+    warning: "Warning",
+    multipleBooksSaveWarning: "Multiple vocabulary books are selected.\nUse the 'Save File' button to save as a new file.",
+    unsavedChanges: "You have unsaved changes.\nDo you want to continue?",
+    noDataToExport: "No data to export.",
   },
 
   // Success Messages

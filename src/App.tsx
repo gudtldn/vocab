@@ -442,8 +442,8 @@ const App: React.FC = () => {
           console.error("단어장 파일 저장 실패:", error);
           setDialog({
             isOpen: true,
-            title: "エラー",
-            message: "単語帳の保存に失敗しました。",
+            title: t.common.error,
+            message: t.errors.vocabSaveFailed,
             onConfirm: () => setDialog({ ...dialog, isOpen: false }),
           });
         }
@@ -451,23 +451,21 @@ const App: React.FC = () => {
         // 여러 단어장이 선택된 경우, 새 파일로 저장 안내
         setDialog({
           isOpen: true,
-          title: "警告",
-          message:
-            "複数の単語帳が選択されています。\n変更を保存するには、単一の単語帳を選択してください。",
+          title: t.warnings.warning,
+          message: t.warnings.multipleBooksSaveWarning,
           onConfirm: () => setDialog({ ...dialog, isOpen: false }),
         });
       } else {
         // 단어장이 선택되지 않은 경우
         setDialog({
           isOpen: true,
-          title: "警告",
-          message:
-            "単語帳が選択されていません。\nホーム画面で単語帳を選択してください。",
+          title: t.warnings.warning,
+          message: t.warnings.unsavedChanges,
           onConfirm: () => setDialog({ ...dialog, isOpen: false }),
         });
       }
     },
-    [currentBooks]
+    [currentBooks, dialog, t]
   );
 
   const handleCreateVocabBook = useCallback(
@@ -542,13 +540,13 @@ const App: React.FC = () => {
         console.error("단어장 생성 실패:", error);
         setDialog({
           isOpen: true,
-          title: "エラー",
-          message: "単語帳の作成に失敗しました。",
+          title: t.common.error,
+          message: t.errors.vocabCreateFailed,
           onConfirm: () => setDialog({ ...dialog, isOpen: false }),
         });
       }
     },
-    []
+    [t]
   );
 
   const handleExportCSV = useCallback(async () => {
@@ -559,8 +557,8 @@ const App: React.FC = () => {
     if (dataToExport.length === 0) {
       setDialog({
         isOpen: true,
-        title: "警告",
-        message: "出力するデータがありません。",
+        title: t.warnings.warning,
+        message: t.warnings.noDataToExport,
         onConfirm: () => setDialog({ ...dialog, isOpen: false }),
       });
       return;
@@ -594,12 +592,12 @@ const App: React.FC = () => {
       console.error("CSV 출력 실패:", error);
       setDialog({
         isOpen: true,
-        title: "エラー",
-        message: "CSV出力に失敗しました。",
+        title: t.common.error,
+        message: t.errors.csvExportFailed,
         onConfirm: () => setDialog({ ...dialog, isOpen: false }),
       });
     }
-  }, [currentVocabulary, wrongAnswers]);
+  }, [currentVocabulary, wrongAnswers, t]);
 
   const handleUpdateCurrentBooks = useCallback(
     (books: VocabularyBook[], vocabulary: VocabularyItem[]) => {
@@ -693,25 +691,23 @@ const App: React.FC = () => {
   };
 
   if (isLoading) {
-    return (
-      <div className="app-container">
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            minHeight: "100vh",
-            fontSize: "1.2rem",
-            color: "#666",
-          }}
-        >
-          読み込み中...
-        </div>
-      </div>
-    );
-  }
-
   return (
+    <div className="app-container">
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "100vh",
+          fontSize: "1.2rem",
+          color: "#666",
+        }}
+      >
+        {t.common.loading}
+      </div>
+    </div>
+  );
+}  return (
     <div className="app-container">
       <Header
         currentView={view}
@@ -803,7 +799,7 @@ const App: React.FC = () => {
       <button
         onClick={() => setShowShortcutHelp(true)}
         className={`shortcut-hint-button ${view === AppView.Home && selectedVocabularyCount > 0 ? 'floating-bar-active' : ''}`}
-        title="キーボードショートカット (?) を表示"
+        title={t.common.showKeyboardShortcuts}
       >
         ⌨️
       </button>

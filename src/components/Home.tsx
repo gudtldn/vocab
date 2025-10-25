@@ -171,7 +171,7 @@ const Home: React.FC<HomeProps> = ({
       }
 
       if (allVocabulary.length === 0) {
-        throw new Error("有効なファイルがありません。");
+        throw new Error(t.errors.noValidFile);
       }
 
       // 중복 단어 병합

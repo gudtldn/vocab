@@ -25,19 +25,27 @@ export const createDialog = (
 
 /**
  * 에러 Dialog 생성
+ * @param title 다이얼로그 제목 (번역된 텍스트 사용)
+ * @param message 에러 메시지 (번역된 텍스트 사용)
+ * @param onClose 닫기 콜백
  */
 export const createErrorDialog = (
+  title: string,
   message: string,
   onClose: () => void
-): DialogConfig => createDialog("エラー", message, onClose);
+): DialogConfig => createDialog(title, message, onClose);
 
 /**
  * 경고 Dialog 생성
+ * @param title 다이얼로그 제목 (번역된 텍스트 사용)
+ * @param message 경고 메시지 (번역된 텍스트 사용)
+ * @param onClose 닫기 콜백
  */
 export const createWarningDialog = (
+  title: string,
   message: string,
   onClose: () => void
-): DialogConfig => createDialog("警告", message, onClose);
+): DialogConfig => createDialog(title, message, onClose);
 
 /**
  * 빈 Dialog (닫힌 상태)

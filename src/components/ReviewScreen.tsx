@@ -114,27 +114,25 @@ const ReviewScreen: React.FC<ReviewScreenProps> = ({
                     show={true}
                   />
                 </div>
-                <div className="review-meanings">
-                  <strong>{t.review.meaning}:</strong> {item.meanings.join(", ")}
-                </div>
-                {!item.isCorrect && item.userAnswer && (
-                  <div className="review-user-answer">
-                    <strong>{isSkipped ? "" : t.review.yourAnswer}:</strong>{" "}
-                    {item.userAnswer}
-                  </div>
-                )}
-                {item.note && (
-                  <div className="review-note">
-                    <strong>📝 メモ:</strong> {item.note}
-                  </div>
-                )}
-              </div>
+            <div className="review-meanings">
+              <strong>{t.review.meaning}:</strong> {item.meanings.join(", ")}
             </div>
-          );
-        })}
-      </div>
-
-      <div className="review-actions">
+            {!item.isCorrect && item.userAnswer && (
+              <div className="review-user-answer">
+                <strong>{isSkipped ? "" : t.review.yourAnswer}:</strong>{" "}
+                {item.userAnswer}
+              </div>
+            )}
+            {item.note && (
+              <div className="review-note">
+                <strong>📝 {t.review.note}:</strong> {item.note}
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    })}
+  </div>      <div className="review-actions">
         <button onClick={onReturnHome} className="button button-secondary">
           {t.review.returnHome}
         </button>
