@@ -12,7 +12,10 @@ pub fn run() {
             app.handle().plugin(tauri_plugin_updater::Builder::new().build())?;
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![commands::parse_vocab_file])
+        .invoke_handler(tauri::generate_handler![
+            commands::parse_vocab_file,
+            commands::save_text_file
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

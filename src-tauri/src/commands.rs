@@ -3,7 +3,7 @@
 use crate::types::VocabularyItem;
 use std::{
     fs::File,
-    io::{BufRead, BufReader},
+    io::{BufRead, BufReader, Write},
     path::PathBuf,
 };
 
@@ -33,6 +33,19 @@ pub async fn parse_vocab_file(file_path: PathBuf) -> Result<Vec<VocabularyItem>,
             .collect::<Vec<VocabularyItem>>();
 
         Ok(vocab_list)
+    })
+    .await
+    .map_err(|e| e.to_string())?
+}
+
+/// 파일에 텍스트를 저장합니다.
+#[tauri::command]
+pub async fn save_text_file(file_path: PathBuf, content: String) -> Result<(), String> {
+    tokio::task::spawn_blocking(move || {
+        let mut file = File::create(&file_path).map_err(|e| format!("파일 생성 실패: {}", e))?;
+        file.write_all(content.as_bytes())
+            .map_err(|e| format!("파일 쓰기 실패: {}", e))?;
+        Ok(())
     })
     .await
     .map_err(|e| e.to_string())?
