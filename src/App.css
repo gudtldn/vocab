@@ -864,6 +864,33 @@ body.dark-mode .language-select option {
   }
 }
 
+.version-info {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 0.5rem;
+}
+
+.version-text {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  background: var(--color-surface);
+  padding: 0.125rem 0.5rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  opacity: 0.7;
+  transition: opacity var(--transition-base);
+}
+
+.version-info:hover .version-text {
+  opacity: 1;
+}
+
+body.dark-mode .version-text {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
 .navigation {
   display: flex;
   gap: 0.375rem;

@@ -2,6 +2,7 @@ import React from "react";
 import { AppView } from "../types";
 import { useI18n } from "../i18n/I18nContext";
 import { LanguageSelector } from "../components/LanguageSelector";
+import VersionInfo from "./VersionInfo";
 
 interface HeaderProps {
   currentView: AppView;
@@ -51,6 +52,7 @@ const Header: React.FC<HeaderProps> = ({
               <path d="M12.38 .94a1.86 1.86 0 0 0-2.76 0L.94 9.62a1.86 1.86 0 0 0 .16 2.8l8.49 6.06a1.86 1.86 0 0 0 2.42 0l8.49-6.06a1.86 1.86 0 0 0 .16-2.8L12.38.94zM3.8 11.23l7.2-5.14a.36.36 0 0 1 .4 0l7.2 5.14-7.4 5.28-7.4-5.28zm8.6 11.23l-8.5-6.07-1.4 1a1.86 1.86 0 0 0-.16 2.8l9.67 6.91a1.86 1.86 0 0 0 2.6 0l9.67-6.91a1.86 1.86 0 0 0-.16-2.8l-1.4-1-8.5 6.07z" />
             </svg>
             <h1 className="app-title">{t.common.appName}</h1>
+            <VersionInfo />
           </div>
           <LanguageSelector />
         </div>

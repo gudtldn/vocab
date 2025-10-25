@@ -94,5 +94,5 @@ jobs:
           releaseBody: 'Download the installer for your platform below.'
           releaseDraft: false
           prerelease: false
-          includeUpdaterJson: true
+          includeUpdaterJson: ${{ matrix.os == 'ubuntu-latest' && matrix.target == 'x86_64-unknown-linux-gnu' }}
           args: --target ${{ matrix.target }}
