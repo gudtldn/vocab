@@ -466,17 +466,16 @@ const Home: React.FC<HomeProps> = ({
                 className={`book-item ${
                   selectedBookIds.includes(book.id) ? "selected" : ""
                 }`}
+                onClick={() => handleToggleBook(book.id)}
               >
                 <input
                   type="checkbox"
                   className="book-checkbox"
                   checked={selectedBookIds.includes(book.id)}
                   onChange={() => handleToggleBook(book.id)}
+                  onClick={(e) => e.stopPropagation()}
                 />
-                <div
-                  className="book-info"
-                  onClick={() => handleToggleBook(book.id)}
-                >
+                <div className="book-info">
                   <div className="book-name">{book.name}</div>
                   <div className="book-details">
                     {t.home.wordCount(book.wordCount)} • {t.home.lastUsed(
