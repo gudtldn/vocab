@@ -2,11 +2,6 @@ name: Release Build
 
 on:
   workflow_dispatch:
-    inputs:
-      bump_version:
-        description: 'Bump version? (leave empty to use current version from tauri.conf.json)'
-        required: false
-        type: string
   push:
     branches:
       - main
@@ -56,7 +51,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # 전체 히스토리 가져오기 (changelog 생성용)
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -72,29 +67,16 @@ jobs:
         with:
           targets: ${{ matrix.target }}
 
-      - name: Cache Rust cargo registry
+      - name: Cache Rust dependencies
         uses: actions/cache@v4
         with:
-          path: ~/.cargo/registry
-          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            src-tauri/target
+          key: ${{ runner.os }}-cargo-${{ matrix.target }}-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
-            ${{ runner.os }}-cargo-registry-
-
-      - name: Cache Rust cargo index
-        uses: actions/cache@v4
-        with:
-          path: ~/.cargo/git
-          key: ${{ runner.os }}-cargo-git-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-cargo-git-
-
-      - name: Cache Rust build
-        uses: actions/cache@v4
-        with:
-          path: src-tauri/target
-          key: ${{ runner.os }}-cargo-build-target-${{ matrix.target }}-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-cargo-build-target-${{ matrix.target }}-
+            ${{ runner.os }}-cargo-${{ matrix.target }}-
 
       - name: Install Linux dependencies
         if: matrix.os == 'ubuntu-latest'
@@ -108,12 +90,12 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tagName: v${{ needs.prepare.outputs.version }}
-          releaseName: 'Release v${{ needs.prepare.outputs.version }}'
-          releaseBody: 'See the assets to download this version and install.'
+          releaseName: 'v${{ needs.prepare.outputs.version }}'
+          releaseBody: 'Download the installer for your platform below.'
           releaseDraft: false
           prerelease: false
           includeUpdaterJson: true
-          args: ${{ matrix.target && format('--target {0}', matrix.target) || '' }}
+          args: --target ${{ matrix.target }}
 
   update-release-notes:
     needs: [prepare, build-tauri]
