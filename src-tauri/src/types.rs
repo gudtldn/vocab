@@ -11,15 +11,20 @@ pub struct VocabularyItem {
 
     /// 뜻 목록
     meanings: Vec<String>,
+
+    /// 메모 (선택 사항)
+    #[serde(skip_serializing_if = "Option::is_none")]
+    note: Option<String>,
 }
 
 impl VocabularyItem {
     /// 새로운 VocabularyItem을 생성합니다.
-    pub fn new(word: String, reading: String, meanings: Vec<String>) -> Self {
+    pub fn new(word: String, reading: String, meanings: Vec<String>, note: Option<String>) -> Self {
         Self {
             word,
             reading,
             meanings,
+            note,
         }
     }
 }

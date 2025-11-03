@@ -7,7 +7,8 @@ use std::{
     path::PathBuf,
 };
 
-/// 단어, 요미가나, 뜻1, 뜻2, ... 형식의 CSV 파일을 파싱하여 단어 목록을 반환합니다.
+/// 단어, 요미가나, 뜻1, 뜻2, ...|||메모 형식의 CSV 파일을 파싱하여 단어 목록을 반환합니다.
+/// 메모는 |||로 구분됩니다.
 #[tauri::command]
 pub async fn parse_vocab_file(file_path: PathBuf) -> Result<Vec<VocabularyItem>, String> {
     tokio::task::spawn_blocking(move || {
@@ -18,14 +19,33 @@ pub async fn parse_vocab_file(file_path: PathBuf) -> Result<Vec<VocabularyItem>,
             .lines()
             .filter_map(|line| line.ok())
             .filter_map(|line| {
-                let parts: Vec<&str> = line.split(',').collect();
+                // 먼저 메모 구분자로 분리
+                let parts_with_note: Vec<&str> = line.split("|||").collect();
+                let main_part = parts_with_note[0];
+                let note = if parts_with_note.len() > 1 {
+                    let note_str = parts_with_note[1].trim();
+                    if note_str.is_empty() {
+                        None
+                    } else {
+                        Some(note_str.to_string())
+                    }
+                } else {
+                    None
+                };
+
+                // 메인 부분을 쉼표로 분리
+                let parts: Vec<&str> = main_part.split(',').collect();
 
                 if parts.len() >= 2 {
-                    Some(VocabularyItem::new(
-                        parts[0].to_string(),
-                        parts[1].to_string(),
-                        parts[2..].iter().map(|s| s.to_string()).collect(),
-                    ))
+                    let word = parts[0].to_string();
+                    let reading = parts[1].to_string();
+                    let meanings: Vec<String> = parts[2..]
+                        .iter()
+                        .map(|s| s.to_string())
+                        .filter(|s| !s.is_empty())
+                        .collect();
+
+                    Some(VocabularyItem::new(word, reading, meanings, note))
                 } else {
                     None
                 }

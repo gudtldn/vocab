@@ -431,7 +431,7 @@ const App: React.FC = () => {
           const csvContent = updatedVocabulary
             .map((item) => {
               const meanings = item.meanings.join(",");
-              const note = item.note ? `,${item.note}` : "";
+              const note = item.note ? `|||${item.note}` : "";
               return `${item.word},${item.reading},${meanings}${note}`;
             })
             .join("\n");
@@ -492,23 +492,21 @@ const App: React.FC = () => {
           return;
         }
 
-        // CSV 형식으로 변환
-        const csvContent = vocabulary
-          .map((item) => {
-            const meanings = item.meanings.join(",");
-            const note = item.note ? `,${item.note}` : "";
-            return `${item.word},${item.reading},${meanings}${note}`;
-          })
-          .join("\n");
+      // CSV 형식으로 변환
+      const csvContent = vocabulary
+        .map((item) => {
+          const meanings = item.meanings.join(",");
+          const note = item.note ? `|||${item.note}` : "";
+          return `${item.word},${item.reading},${meanings}${note}`;
+        })
+        .join("\n");
 
-        // 파일 저장
-        await writeTextFile(filePath, csvContent);
-
-        
       // 파일 저장
-      await invoke("save_text_file", { filePath, content: csvContent });
+      await writeTextFile(filePath, csvContent);
 
-      // 단어장 목록에 추가
+      
+      // 파일 저장
+      await invoke("save_text_file", { filePath, content: csvContent });      // 단어장 목록에 추가
         const timestamp = Date.now();
         const fileName =
           filePath.split(/[\\/]/).pop() || `${sanitizedName}.csv`;
@@ -588,7 +586,7 @@ const App: React.FC = () => {
         const csvContent = dataToExport
           .map((item) => {
             const meanings = item.meanings.join(",");
-            const note = item.note ? `,${item.note}` : "";
+            const note = item.note ? `|||${item.note}` : "";
             return `${item.word},${item.reading},${meanings}${note}`;
           })
         .join("\n");
