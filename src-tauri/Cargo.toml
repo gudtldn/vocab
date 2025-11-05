@@ -1,6 +1,6 @@
 [package]
 name = "vocab"
-version = "0.4.1"
+version = "0.4.2"
 description = "Japanese vocabulary learning application"
 authors = ["hyongsiwoo"]
 edition = "2021"

@@ -534,6 +534,9 @@ const allTags = Array.from(
                     new Date(book.lastUsed).toLocaleDateString("ja-JP")
                     )}
                   </div>
+                  <div className="book-path" title={book.filePath}>
+                    📁 {book.filePath}
+                  </div>
                   {book.tags && book.tags.length > 0 && (
                     <div className="book-tags">
                       {book.tags.map((tag) => (

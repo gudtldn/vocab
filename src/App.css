@@ -339,6 +339,10 @@ body.dark-mode .book-details {
   color: #999;
 }
 
+body.dark-mode .book-path {
+  color: #888;
+}
+
 body.dark-mode .tag-input {
   background-color: #3d3d3d;
   border-color: #555;
@@ -1341,6 +1345,22 @@ body.dark-mode .button-bulk-delete:hover {
 @media (min-width: 768px) {
   .book-details {
     font-size: 0.875rem;
+  }
+}
+
+.book-path {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  margin-top: 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+@media (min-width: 768px) {
+  .book-path {
+    font-size: 0.8125rem;
   }
 }
 
