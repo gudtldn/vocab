@@ -253,7 +253,7 @@ const GameScreen: React.FC<GameScreenProps> = ({
           word={currentWord.word}
           reading={currentWord.reading}
           className="word-text"
-          show={showFurigana}
+          show={showFurigana || feedback !== null}
         />
       </div>
 

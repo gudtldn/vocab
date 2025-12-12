@@ -251,13 +251,6 @@ const Home: React.FC<HomeProps> = ({
       setTotalBeforeMerge(allVocabulary.length);
       setVocabulary(mergedVocabulary);
 
-      // 마지막 사용 시간 업데이트
-      const updatedBooks = savedBooks.map((b) =>
-        newSelectedIds.includes(b.id) ? { ...b, lastUsed: Date.now() } : b
-      );
-      setSavedBooks(updatedBooks.sort((a, b) => b.lastUsed - a.lastUsed));
-      await saveBooksToFile(updatedBooks);
-
       // 부모 컴포넌트에 현재 선택된 단어장 정보 전달
       onUpdateCurrentBooks(selectedBooks, mergedVocabulary);
     } catch (err) {
@@ -380,13 +373,6 @@ const allTags = Array.from(
       const mergedVocabulary = mergeVocabulary(allVocabulary);
       setTotalBeforeMerge(allVocabulary.length);
       setVocabulary(mergedVocabulary);
-
-      // 마지막 사용 시간 업데이트
-      const updatedBooks = savedBooks.map((b) =>
-        allFilteredIds.includes(b.id) ? { ...b, lastUsed: Date.now() } : b
-      );
-      setSavedBooks(updatedBooks.sort((a, b) => b.lastUsed - a.lastUsed));
-      await saveBooksToFile(updatedBooks);
     } catch (err) {
       console.error("단어장 불러오기 실패:", err);
       setError(err instanceof Error ? err.message : String(err));
@@ -640,13 +626,29 @@ const allTags = Array.from(
             </div>
             <div className="floating-buttons">
               <button
-                onClick={() => onStartGame(vocabulary, GameMode.MultipleChoice)}
+                onClick={async () => {
+                  // 게임 시작 시 lastUsed 업데이트
+                  const updatedBooks = savedBooks.map((b) =>
+                    selectedBookIds.includes(b.id) ? { ...b, lastUsed: Date.now() } : b
+                  );
+                  setSavedBooks(updatedBooks.sort((a, b) => b.lastUsed - a.lastUsed));
+                  await saveBooksToFile(updatedBooks);
+                  onStartGame(vocabulary, GameMode.MultipleChoice);
+                }}
                 className="button button-choice button-floating"
               >
                 {t.home.multipleChoice}
               </button>
               <button
-                onClick={() => onStartGame(vocabulary, GameMode.DirectInput)}
+                onClick={async () => {
+                  // 게임 시작 시 lastUsed 업데이트
+                  const updatedBooks = savedBooks.map((b) =>
+                    selectedBookIds.includes(b.id) ? { ...b, lastUsed: Date.now() } : b
+                  );
+                  setSavedBooks(updatedBooks.sort((a, b) => b.lastUsed - a.lastUsed));
+                  await saveBooksToFile(updatedBooks);
+                  onStartGame(vocabulary, GameMode.DirectInput);
+                }}
                 className="button button-input button-floating"
               >
                 {t.home.directInput}
